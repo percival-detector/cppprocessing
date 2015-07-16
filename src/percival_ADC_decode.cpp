@@ -5,7 +5,7 @@
  *      Author: pqm78245
  */
 
-#include"percival_ADC_decode.h"
+#include "percival_processing.h"
 
 void percival_ADC_decode(const percival_frame<int> & src_frame, percival_frame<int> & des_frame){
 	//initialize destination matrix

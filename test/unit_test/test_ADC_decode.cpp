@@ -5,14 +5,9 @@
  *      Author: pqm78245
  */
 
-#include "percival_ADC_decode.h"
-#include "percival_frame.h"
+#include "percival_processing.h"
 
-#define BOOST_TEST_MODULE stringtest
 #include <boost/test/included/unit_test.hpp>
-#include <boost/test/floating_point_comparison.hpp>
-
-#include<iostream>
 
 const int TEST_FRAME_HEIGHT 	= 	32;
 const int TEST_FRAME_WIDTH		=	1024;

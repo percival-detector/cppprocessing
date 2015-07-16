@@ -1,0 +1,36 @@
+Objects
+	H5std_string								//
+	hsize_t									//multiple precision integers, HDF5
+	H5File(FILE_NAME,H5F_ACC_TRUNC)						//HDF5 object with a constructor
+	Attribute
+	Group(a handle to the group)
+	DataSpace								//Dataspace (dimensions)
+	DataSet									//Dataset (actual numbers)
+Functions
+	dataspace(RANK, dims)							//RANK == NoOfDimensions
+
+	file.createDataSet(DATASET_NAME, PredType::STD_I32BE, dataspace)	//PredType
+	file.createGroup(string)						//string is in POSIX format
+	file.close()
+
+	dataset.createAttribute(ATTR_NAME, PredType::STD_I32BE, attr_dataspace)	//attr_dataspace == attribute object, attribute is attached to dataset
+	DataSet *dataset = new DataSet (file.createDataSet(DATASET_NAME1, PredType::STD_I32BE, *dataspace));							//gives H5std_string in return
+	dataset->write(dset1_data, PredType::NATIVE_INT);
+
+	group.close()								//gives H5std_string in return
+
+	attribute.write(PredType::NATIVE_INT, attr_data)			//attr_data == integer array to write to file
+
+	FILE_NAME(string)							//gives H5std_string in return
+	DATASET_NAME(string)
+	ATTR_NAME(string)							//gives H5std_string in return
+	
+	
+#ifndef H5_NO_NAMESPACE
+    using namespace H5;
+#endif
+
+
+Procedures
+
+file -> dataspace(dimensions) -> datasets -> create attributes
