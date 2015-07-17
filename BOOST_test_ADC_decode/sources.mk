@@ -25,4 +25,6 @@ C_DEPS :=
 SUBDIRS := \
 test/unit_test \
 src \
+.metadata/.plugins/org.eclipse.cdt.managedbuilder.core \
+.metadata/.plugins/org.eclipse.cdt.make.core \
 

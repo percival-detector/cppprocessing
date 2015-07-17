@@ -135,7 +135,6 @@ BOOST_FIXTURE_TEST_SUITE (percival_ADC_decode_test,fixture_frame)
 
 BOOST_AUTO_TEST_SUITE_END()
 
-//TODO:checking on input data types if using template functions
 
 
 

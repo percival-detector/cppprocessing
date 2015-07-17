@@ -24,4 +24,6 @@ C_DEPS :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 tools \
+.metadata/.plugins/org.eclipse.cdt.managedbuilder.core \
+.metadata/.plugins/org.eclipse.cdt.make.core \
 
