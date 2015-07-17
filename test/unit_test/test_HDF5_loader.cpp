@@ -55,36 +55,8 @@ BOOST_AUTO_TEST_CASE ( should_throw_exception_if_dataset_does_not_exist ){
 	std::cout << "test three finished" << std::endl;
 }// nonexistent groups are also tested
 
-BOOST_AUTO_TEST_CASE ( should_throw_if_data_type_is_neither_int_nor_32_bit_float ){
-	//Creating test_HDF5.h5
-	const std::string & CHAR_FRAME = "char_frame";
-
-	const H5std_string FILE_NAME(HDF5_FILE_NAME);
-	const H5std_string DATA_SET_NAME_CHAR(CHAR_FRAME);
-	H5File write_file(FILE_NAME,H5F_ACC_TRUNC);
-
-	//creating a dataspace object
-	hsize_t dims[RANK];
-	dims[0] = 1; dims[1] = 1;
-	DataSpace char_dataspace(RANK,dims);
-
-	//creating a dataset
-	DataSet dataset_char = write_file.createDataSet(DATA_SET_NAME_CHAR, PredType::NATIVE_CHAR, char_dataspace);
-	//creating data buffer
-	char char_test_data[] = {'a'};
-	//Write to data set
-	dataset_char.write(char_test_data, PredType::NATIVE_CHAR);
-
-	//close the file
-	dataset_char.close();
-	write_file.close();
-
-	percival_frame<char> char_buffer_frame;
-
-	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME,CHAR_FRAME, char_buffer_frame),FileIException);	//TODO: write an exception class for this
-
-	std::cout << "test three finished" << std::endl;
-}	//TODO:buffer_frame_char in class fixture HDF5
+//todo should throw if input data is not 2D
+//todo should throw if input data is not little endian
 
 BOOST_AUTO_TEST_CASE ( should_generate_output_of_the_same_size_as_input  ){
 	std::cout << "test four started" << std::endl;
@@ -93,14 +65,46 @@ BOOST_AUTO_TEST_CASE ( should_generate_output_of_the_same_size_as_input  ){
 	BOOST_REQUIRE_EQUAL(int_buffer_frame.height, TEST_FRAME_HEIGHT);
 	std::cout << "test four finished" << std::endl;
 }
+
+//BOOST_AUTO_TEST_CASE ( should_throw_if_data_type_is_neither_int_nor_32_bit_float ){
+//	//Creating test_HDF5.h5
+//	const std::string & CHAR_FRAME = "char_frame";
 //
-BOOST_AUTO_TEST_CASE ( should_throw_exception_if_input_percival_frame_is_of_wrong_type_double_vs_int ){
-	//should throw exception for wrong types -> guarantteed by language
-	//should not throw exception for correct types
-	BOOST_REQUIRE_NO_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_INT_DATA_SET_NAME, int_buffer_frame));
-	BOOST_REQUIRE_NO_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_DOUBLE_DATA_SET_NAME, double_buffer_frame));
-	std::cout << "test five finished" << std::endl;
-}
+//	const H5std_string FILE_NAME(HDF5_FILE_NAME);
+//	const H5std_string DATA_SET_NAME_CHAR(CHAR_FRAME);
+//	H5File write_file;
+//	write_file.openFile(FILE_NAME,H5F_ACC_RDWR);
+//
+//	//creating a dataspace object
+//	hsize_t dims[RANK];
+//	dims[0] = 1; dims[1] = 1;
+//	DataSpace char_dataspace(RANK,dims);
+//
+//	//creating a dataset
+//	DataSet dataset_char = write_file.createDataSet(DATA_SET_NAME_CHAR, PredType::NATIVE_CHAR, char_dataspace);
+//	//creating data buffer
+//	char char_test_data[] = {'a'};
+//	//Write to data set
+//	dataset_char.write(char_test_data, PredType::NATIVE_CHAR);
+//
+//	//close the file
+//	dataset_char.close();
+//	write_file.close();
+//
+//	percival_frame<char> char_buffer_frame;
+//
+//	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME,CHAR_FRAME, char_buffer_frame),DataTypeIException);	//TODO: write an exception class for this
+//
+//	std::cout << "test three finished" << std::endl;
+//}	//TODO:buffer_frame_char in class fixture HDF5
+//
+//BOOST_AUTO_TEST_CASE ( should_throw_exception_if_input_percival_frame_is_of_wrong_type_double_vs_int ){
+//	//should throw exception for wrong types -> guarantteed by language
+//	//should not throw exception for correct types
+//	BOOST_REQUIRE_NO_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_INT_DATA_SET_NAME, int_buffer_frame));
+//	BOOST_REQUIRE_NO_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_DOUBLE_DATA_SET_NAME, double_buffer_frame));
+//	std::cout << "test five finished" << std::endl;
+//}
 
 BOOST_AUTO_TEST_CASE ( should_preserve_data_integrity_int ){
 	BOOST_REQUIRE_NO_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_INT_DATA_SET_NAME, int_buffer_frame));
