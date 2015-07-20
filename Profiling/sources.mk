@@ -25,4 +25,6 @@ C_DEPS :=
 SUBDIRS := \
 src \
 profile \
+.metadata/.plugins/org.eclipse.cdt.managedbuilder.core \
+.metadata/.plugins/org.eclipse.cdt.make.core \
 

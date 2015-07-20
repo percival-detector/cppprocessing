@@ -1,12 +1,10 @@
 profile/main.d profile/main.o: ../profile/main.cpp \
- /home/pqm78245/percivalProcessing/2.0/Include/percival_ADC_decode.h \
- /home/pqm78245/percivalProcessing/2.0/Include/percival_frame.h \
- /home/pqm78245/percivalProcessing/2.0/Include/percival_frame.h \
- /home/pqm78245/percivalProcessing/2.0/Include/percival_processing.h \
- /home/pqm78245/percivalProcessing/2.0/Include/percival_frame_metadata.h \
- /home/pqm78245/percivalProcessing/2.0/Include/percival_ADC_decode.h \
- /home/pqm78245/percivalProcessing/2.0/Include/percival_HDF5_loader.h \
- /home/pqm78245/percivalProcessing/2.0/Include/percival_processing.h \
+ /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_processing.h \
+ /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_frame.h \
+ /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_calib_params.h \
+ /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_processing.h \
+ /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_ADC_decode.h \
+ /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_HDF5_loader.h \
  /home/pqm78245/lib/h5_cpp/include/H5Cpp.h \
  /home/pqm78245/lib/h5_cpp/include/H5Include.h \
  /home/pqm78245/lib/h5_cpp/include/hdf5.h \
@@ -71,21 +69,17 @@ profile/main.d profile/main.o: ../profile/main.cpp \
  /home/pqm78245/lib/h5_cpp/include/H5File.h \
  /home/pqm78245/lib/h5_cpp/include/H5Library.h
 
-/home/pqm78245/percivalProcessing/2.0/Include/percival_ADC_decode.h:
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_processing.h:
 
-/home/pqm78245/percivalProcessing/2.0/Include/percival_frame.h:
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_frame.h:
 
-/home/pqm78245/percivalProcessing/2.0/Include/percival_frame.h:
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_calib_params.h:
 
-/home/pqm78245/percivalProcessing/2.0/Include/percival_processing.h:
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_processing.h:
 
-/home/pqm78245/percivalProcessing/2.0/Include/percival_frame_metadata.h:
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_ADC_decode.h:
 
-/home/pqm78245/percivalProcessing/2.0/Include/percival_ADC_decode.h:
-
-/home/pqm78245/percivalProcessing/2.0/Include/percival_HDF5_loader.h:
-
-/home/pqm78245/percivalProcessing/2.0/Include/percival_processing.h:
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_HDF5_loader.h:
 
 /home/pqm78245/lib/h5_cpp/include/H5Cpp.h:
 

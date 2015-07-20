@@ -4,13 +4,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../src/percival_ADC_decode.cpp 
+../src/percival_ADC_decode.cpp \
+../src/percival_calib_params.cpp 
 
 OBJS += \
-./src/percival_ADC_decode.o 
+./src/percival_ADC_decode.o \
+./src/percival_calib_params.o 
 
 CPP_DEPS += \
-./src/percival_ADC_decode.d 
+./src/percival_ADC_decode.d \
+./src/percival_calib_params.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

@@ -66,6 +66,8 @@
 									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/bin"/>
 									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/share"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.2104861333" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -142,6 +144,8 @@
 									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/bin"/>
 									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/share"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1869294809" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -216,6 +220,8 @@
 									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/bin"/>
 									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/share"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.712647477" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -290,6 +296,8 @@
 									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/bin"/>
 									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/share"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.821610824" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -363,6 +371,8 @@
 									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/bin"/>
 									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/share"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1268882203" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>

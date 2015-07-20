@@ -10,6 +10,8 @@ RM := rm -rf
 -include sources.mk
 -include src/subdir.mk
 -include profile/subdir.mk
+-include .metadata/.plugins/org.eclipse.cdt.managedbuilder.core/subdir.mk
+-include .metadata/.plugins/org.eclipse.cdt.make.core/subdir.mk
 -include subdir.mk
 -include objects.mk
 
