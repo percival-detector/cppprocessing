@@ -40,8 +40,8 @@ for x in range(1, np.power(2, 15)):
     coarseDec.append(coarse)
     coarseBin.append("{0:05b}".format(coarse))
     # writing to file
-    #f.write("{0} \t {1}| \t {2} \t {3}| \t {4} \t {5}| \t {6} \t {7} \t {8}\n".format(inputDec[x], inputBin[x], output(gain, fine, coarse), gainDec[x], gainBin[x], fineDec[x], fineBin[x], coarseDec[x], coarseBin[x]))
-    f.write("{0}\t{1}\n".format(inputDec[x], output(gain, fine, coarse)))
+    f.write("{0} \t {1}| \t {2} \t {3}| \t {4} \t {5}| \t {6} \t {7} \t {8}\n".format(inputDec[x], inputBin[x], output(gain, fine, coarse), gainDec[x], gainBin[x], fineDec[x], fineBin[x], coarseDec[x], coarseBin[x]))
+    #f.write("{0}\t{1}\n".format(inputDec[x], output(gain, fine, coarse)))
 # closing file
 f.close()
 

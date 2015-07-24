@@ -263,6 +263,7 @@
 									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/bin"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 								</option>
+								<option id="gnu.cpp.compiler.option.debugging.gprof.623349241" superClass="gnu.cpp.compiler.option.debugging.gprof" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.145143441" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.release.1874685171" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.release">

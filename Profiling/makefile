@@ -47,7 +47,7 @@ all: cppProcessing2.0
 cppProcessing2.0: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L/home/pqm78245/lib/h5_cpp/lib -o "cppProcessing2.0" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L/home/pqm78245/lib/h5_cpp/lib -pg -o "cppProcessing2.0" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

@@ -149,15 +149,61 @@
 //
 //
 
-#include"percival_processing.h"
+#include "percival_processing.h"
+
+#include<string>
 #include<iostream>
 
+#include "H5Cpp.h"
+using namespace H5;
+
+
+const std::string path_name = "./data/KnifeQuadBPos1_2_21_int16.h5";
+const std::string data_set_name = "KnifeQuadBPos1/10/Sample";
+
+const std::string default_path_name_Gc = "./data/ADC_tr6_W14_14BSI_TChip-40C_bias10f_2014-02-28_14-05_CoarseGainArray.h5";
+const std::string default_data_set_name = "/data/data";
+
 int main(){
-	percival_calib_params calib_params;
-	int width = calib_params.Gc.width;
-	int height = calib_params.Gc.height;
-	for(int i = 0; i < width * height; i++)
-		std::cout << *(calib_params.Gc.data + i) << std::endl;
+	std::cout << "Initialising parameters ..." << std::endl;
+	percival_frame<short> src_frame;
+	percival_frame<float> des_frame;
+//used for profiling
+//	int width = des_frame.width;
+//	int height = des_frame.height;
+//	src_frame.set_frame_size(1024 * 32, 1024 * 32);
+//	des_frame.set_frame_size(height, width);
+//
+//	for(int i = 0; i < width * height; i++  )
+//		*(src_frame.data + i) = i % 32767;
+//
+////	percival_calib_params params;
+//	std::cout << "Starting processing ..." << std::endl;
+//	for(int i = 0; i < 10; i++){
+//		percival_HDF5_loader(path_name,data_set_name, src_frame);
+//		des_frame.set_frame_size(src_frame.height, src_frame.width);
+//		percival_ADC_decode(src_frame, des_frame);
+//		std::cout << "frame no " << i << " completed." << std::endl;
+//	}
+//	std::cout << "done!" << std::endl;
+
+//used for writing output
+	percival_HDF5_loader(path_name,data_set_name, src_frame);
+	des_frame.set_frame_size(src_frame.height, src_frame.width);
+	percival_ADC_decode(src_frame, des_frame);
+
+	std::string FILE_NAME = "./data/Output.h5";
+	H5File write_to_file(FILE_NAME,H5F_ACC_TRUNC);
+
+	hsize_t dims[2];
+	dims[0] = des_frame.height;	dims[1] = des_frame.width ;
+	DataSpace int_dataspace(2,dims);
+
+	DataSet dataset_int = write_to_file.createDataSet("Output", PredType::IEEE_F32LE, int_dataspace);
+	dataset_int.write(des_frame.data, PredType::IEEE_F32LE);
+	dataset_int.close();
+	write_to_file.close();
+
 	return 0;
 }
 

@@ -48,7 +48,6 @@ BOOST_AUTO_TEST_CASE ( should_throw_exception_if_input_file_is_not_a_HDF5_file )
 }
 
 BOOST_AUTO_TEST_CASE ( should_throw_exception_if_dataset_does_not_exist ){
-
 	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME,"NonexistentDataSet",int_buffer_frame), FileIException);
 
 }// nonexistent groups are also tested
@@ -63,8 +62,6 @@ BOOST_AUTO_TEST_CASE ( should_throw_if_input_file_is_not_little_endian  ){
 
 
 BOOST_AUTO_TEST_CASE ( should_generate_output_of_the_same_size_as_input  ){
-
-
 	BOOST_REQUIRE_NO_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_INT_DATA_SET_NAME, int_buffer_frame));
 	BOOST_REQUIRE_EQUAL(int_buffer_frame.width, TEST_FRAME_WIDTH);
 	BOOST_REQUIRE_EQUAL(int_buffer_frame.height, TEST_FRAME_HEIGHT);
