@@ -36,7 +36,3 @@ percival_calib_params::percival_calib_params(){
 	}
 }
 
-percival_calib_params::percival_calib_params(const std::string & name){
-
-}
-

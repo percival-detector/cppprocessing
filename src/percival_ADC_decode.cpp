@@ -11,11 +11,6 @@
 
 void percival_ADC_decode(const percival_frame<short int> & src_frame, percival_frame<float> & des_frame){
 	//initialize destination matrix
-	//Throw exception if dimensions are not the same
-//	if(src_frame.width != des_frame.width)
-//		throw dimension_mismatch_exception{};
-//	if(src_frame.height != des_frame.height)
-//		throw dimension_mismatch_exception{};
 
 	des_frame.set_frame_size(src_frame.height, src_frame.width);
 
@@ -27,7 +22,7 @@ void percival_ADC_decode(const percival_frame<short int> & src_frame, percival_f
 
 	//algorithm
 
-	for(short int i = 0; i < des_frame.width * des_frame.height; i++){
+	for(int i = 0; i < des_frame.width * des_frame.height; i++){
 		/*
 		 * minimising access
 		short int pixel = *(src_frame.data + i);

@@ -6,39 +6,38 @@ test/unit_test/test_HDF5_loader.d test/unit_test/test_HDF5_loader.o: \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_processing.h \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_ADC_decode.h \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_HDF5_loader.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/hdf5.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5public.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5pubconf.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5version.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5api_adpt.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Apublic.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Ipublic.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Opublic.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Lpublic.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Tpublic.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5ACpublic.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Cpublic.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Dpublic.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Epublic.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Epubgen.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Fpublic.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDpublic.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Gpublic.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5MMpublic.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Ppublic.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Zpublic.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5PLpublic.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Rpublic.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Spublic.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDcore.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDfamily.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDlog.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDmpi.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDmpio.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDmulti.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDsec2.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDstdio.h \
- /home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDdirect.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/hdf5.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5public.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5pubconf.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5version.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5api_adpt.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Apublic.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Ipublic.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Opublic.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Lpublic.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Tpublic.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5ACpublic.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Cpublic.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Dpublic.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Epublic.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Epubgen.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Fpublic.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDpublic.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Gpublic.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5MMpublic.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Ppublic.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Zpublic.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Rpublic.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Spublic.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDcore.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDfamily.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDlog.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDmpi.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDmpio.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDmulti.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDsec2.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDstdio.h \
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDdirect.h \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_HDF5_loader.h
 
 /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_processing.h:
@@ -53,70 +52,68 @@ test/unit_test/test_HDF5_loader.d test/unit_test/test_HDF5_loader.o: \
 
 /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_HDF5_loader.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/hdf5.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/hdf5.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5public.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5public.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5pubconf.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5pubconf.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5version.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5version.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5api_adpt.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5api_adpt.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Apublic.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Apublic.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Ipublic.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Ipublic.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Opublic.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Opublic.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Lpublic.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Lpublic.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Tpublic.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Tpublic.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5ACpublic.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5ACpublic.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Cpublic.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Cpublic.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Dpublic.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Dpublic.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Epublic.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Epublic.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Epubgen.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Epubgen.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Fpublic.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Fpublic.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDpublic.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDpublic.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Gpublic.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Gpublic.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5MMpublic.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5MMpublic.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Ppublic.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Ppublic.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Zpublic.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Zpublic.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5PLpublic.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Rpublic.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Rpublic.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5Spublic.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5Spublic.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDcore.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDcore.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDfamily.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDfamily.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDlog.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDlog.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDmpi.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDmpi.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDmpio.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDmpio.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDmulti.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDmulti.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDsec2.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDsec2.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDstdio.h:
 
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDstdio.h:
-
-/home/pqm78245/lib/hdf5-1.8.15-patch1/src/H5FDdirect.h:
+/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDdirect.h:
 
 /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_HDF5_loader.h:

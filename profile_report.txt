@@ -1,0 +1,68 @@
+	Command being timed: "./Profiling/cppProcessing2.0 49152 5"
+	User time (seconds): 0.67
+	System time (seconds): 0.00
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:00.67
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 198640
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 2400
+	Voluntary context switches: 11
+	Involuntary context switches: 69
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 8
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+
+CPU: Intel Haswell microarchitecture, speed 3.201e+06 MHz (estimated)
+Counted CPU_CLK_UNHALTED events (Clock cycles when not halted) with a unit mask of 0x00 (No unit mask) count 100000
+samples  %        image name               symbol name
+25739    97.1686  cppProcessing2.0         percival_ADC_decode(percival_frame<short> const&, percival_frame<float>&)
+399       1.5063  cppProcessing2.0         main
+283       1.0684  no-vmlinux               /no-vmlinux
+8         0.0302  ld-2.12.so               _dl_lookup_symbol_x
+8         0.0302  ld-2.12.so               do_lookup_x
+6         0.0227  libhdf5.so.9.0.0         H5C_flush_invalidate_cache
+5         0.0189  libhdf5.so.9.0.0         H5SL_insert_common
+4         0.0151  libhdf5.so.9.0.0         H5C_create
+2         0.0076  ld-2.12.so               _dl_fixup
+2         0.0076  ld-2.12.so               _dl_relocate_object
+2         0.0076  ld-2.12.so               check_match.12439
+2         0.0076  libc-2.12.so             __GI_memset
+2         0.0076  libhdf5.so.9.0.0         H5SL_remove
+1         0.0038  ld-2.12.so               _dl_check_map_versions
+1         0.0038  ld-2.12.so               _dl_map_object_from_fd
+1         0.0038  ld-2.12.so               _dl_new_object
+1         0.0038  ld-2.12.so               strcmp
+1         0.0038  libc-2.12.so             __strcpy_ssse3
+1         0.0038  libc-2.12.so             __strlen_sse42
+1         0.0038  libc-2.12.so             _dl_addr
+1         0.0038  libc-2.12.so             _int_free
+1         0.0038  libc-2.12.so             malloc_consolidate
+1         0.0038  libhdf5.so.9.0.0         H5E_init_interface
+1         0.0038  libhdf5.so.9.0.0         H5FD_close
+1         0.0038  libhdf5.so.9.0.0         H5FL_blk_malloc
+1         0.0038  libhdf5.so.9.0.0         H5FL_garbage_coll
+1         0.0038  libhdf5.so.9.0.0         H5G_mkroot
+1         0.0038  libhdf5.so.9.0.0         H5O_loc_reset
+1         0.0038  libhdf5.so.9.0.0         H5P__ocpy_reg_prop
+1         0.0038  libhdf5.so.9.0.0         H5P_add_prop
+1         0.0038  libhdf5.so.9.0.0         H5P_copy_plist
+1         0.0038  libhdf5.so.9.0.0         H5SL_search
+1         0.0038  libhdf5.so.9.0.0         H5T__conv_int_ushort
+1         0.0038  libhdf5.so.9.0.0         H5T__conv_schar_llong
+1         0.0038  libhdf5.so.9.0.0         H5T_cmp
+1         0.0038  libhdf5.so.9.0.0         H5T_get_order
+1         0.0038  libhdf5.so.9.0.0         H5T_path_find
+1         0.0038  libhdf5.so.9.0.0         H5T_term_interface
+1         0.0038  libhdf5.so.9.0.0         H5_hash_string
+1         0.0038  libz.so.1.2.3            /lib64/libz.so.1.2.3

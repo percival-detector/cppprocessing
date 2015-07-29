@@ -32,7 +32,7 @@ void percival_HDF5_loader(
 	hid_t error_stack;
 	herr_t status;
 	hid_t file_id, dataset_id, dataspace_id, datatype_id;
-	int rank;
+
 
 
 	if(print_error == 0){
@@ -40,7 +40,13 @@ void percival_HDF5_loader(
 		error_id = H5Eset_auto(error_stack, NULL, NULL);
 	}
 
-
+	/*
+	 *
+	 *
+	 * open HDF5 files and datasets
+	 *
+	 *
+	 */
 	file_id = H5Fopen(path_name,H5F_ACC_RDONLY, H5P_DEFAULT);
 	if(file_id<0)
 		throw file_exception{};
@@ -54,6 +60,13 @@ void percival_HDF5_loader(
 	if(dataspace_id<0)
 			throw file_exception{};
 
+	/*
+	 *
+	 *
+	 * examining data properties, dimension, type, size, order etc
+	 *
+	 */
+	int rank;
 	rank = H5Sget_simple_extent_ndims(dataspace_id);
 	if(rank != 2)
 		throw datatype_exception{};
@@ -124,6 +137,16 @@ void percival_HDF5_loader(
 			throw datatype_exception{};
 
 	}
+
+	/*
+	 *
+	 *
+	 * Properly closing the files and release resources
+	 *
+	 *
+	 */
+
+
 
 	status = H5Sclose(dataspace_id);
 	status = H5Dclose(dataset_id);

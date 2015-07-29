@@ -24,33 +24,7 @@ public:
 		des_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
 		output_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
 
-//		std::ifstream expected_result;
-//		BOOST_REQUIRE_NO_THROW(expected_result.open ("../data/ADC_decode_output"));
-
-		/*
-		 * files to be read have the format
-		 *
-		 * input'\t'output'n'
-		 *
-		 * all numbers assumed to be integral for atoi() to work
-		 */
-
-//		char readValue[255];
-//		int input, output;
-//		int i = 0;
-//		while(!expected_result.eof() && i < TEST_FRAME_WIDTH * TEST_FRAME_HEIGHT){
-//			expected_result.getline(readValue, 255, '\t');						//reading input data
-//			input = atoi(readValue);
-//			expected_result.getline(readValue, 255, '\n');						//reading output data
-//			output = atoi(readValue);
-//
-//			src_frame.data[i] = input;
-//			des_frame.data[i] = output;
-//			i++;
-//		}
-
 		BOOST_REQUIRE_NO_THROW(percival_ADC_decode(src_frame, des_frame));
-		//expected_result.close();
 	}
 };
 

@@ -1,0 +1,45 @@
+CPU: Intel Haswell microarchitecture, speed 3.201e+06 MHz (estimated)
+Counted CPU_CLK_UNHALTED events (Clock cycles when not halted) with a unit mask of 0x00 (No unit mask) count 100000
+samples  %        image name               symbol name
+21014    98.4447  cppProcessing2.0         percival_ADC_decode(percival_frame<short> const&, percival_frame<float>&)
+264       1.2368  no-vmlinux               /no-vmlinux
+9         0.0422  ld-2.12.so               do_lookup_x
+6         0.0281  ld-2.12.so               _dl_relocate_object
+5         0.0234  libhdf5.so.9.0.0         H5C_flush_invalidate_cache
+4         0.0187  ld-2.12.so               _dl_lookup_symbol_x
+4         0.0187  libhdf5.so.9.0.0         H5SL_insert_common
+3         0.0141  libc-2.12.so             __GI_memset
+2         0.0094  ld-2.12.so               strcmp
+2         0.0094  libhdf5.so.9.0.0         H5C_protect
+2         0.0094  libhdf5.so.9.0.0         H5_hash_string
+1         0.0047  ld-2.12.so               _dl_allocate_tls_storage
+1         0.0047  ld-2.12.so               _dl_cache_libcmp
+1         0.0047  ld-2.12.so               _dl_map_object
+1         0.0047  ld-2.12.so               _dl_sort_fini
+1         0.0047  ld-2.12.so               check_match.12439
+1         0.0047  libc-2.12.so             __strcmp_sse42
+1         0.0047  libc-2.12.so             _dl_addr
+1         0.0047  libc-2.12.so             _int_free
+1         0.0047  libc-2.12.so             _wordcopy_bwd_aligned
+1         0.0047  libc-2.12.so             llseek
+1         0.0047  libc-2.12.so             sprintf
+1         0.0047  libhdf5.so.9.0.0         H5B_node_dest
+1         0.0047  libhdf5.so.9.0.0         H5C_create
+1         0.0047  libhdf5.so.9.0.0         H5C_unprotect
+1         0.0047  libhdf5.so.9.0.0         H5Dget_space
+1         0.0047  libhdf5.so.9.0.0         H5FL_fac_free
+1         0.0047  libhdf5.so.9.0.0         H5FL_reg_free
+1         0.0047  libhdf5.so.9.0.0         H5I_nmembers
+1         0.0047  libhdf5.so.9.0.0         H5MM_xfree
+1         0.0047  libhdf5.so.9.0.0         H5O_efl_reset
+1         0.0047  libhdf5.so.9.0.0         H5P_create_prop
+1         0.0047  libhdf5.so.9.0.0         H5P_get
+1         0.0047  libhdf5.so.9.0.0         H5SL_insert
+1         0.0047  libhdf5.so.9.0.0         H5SL_remove
+1         0.0047  libhdf5.so.9.0.0         H5SL_search
+1         0.0047  libhdf5.so.9.0.0         H5T__conv_int_ushort
+1         0.0047  libhdf5.so.9.0.0         H5T_cmp
+1         0.0047  libhdf5.so.9.0.0         H5T_term_interface
+1         0.0047  libhdf5.so.9.0.0         H5T_unlock_cb
+1         0.0047  libhdf5.so.9.0.0         H5Tget_class
+1         0.0047  libstdc++.so.6.0.13      /usr/lib64/libstdc++.so.6.0.13
