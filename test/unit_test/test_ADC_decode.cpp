@@ -68,7 +68,6 @@ BOOST_FIXTURE_TEST_SUITE (percival_ADC_decode_test,fixture_frame)
 
 
 	BOOST_AUTO_TEST_CASE (output_pixel_should_be_32_bit_float){
-		std::cout << 4 << std::endl;
 		BOOST_CHECK_EQUAL(4,sizeof(*(des_frame.data)));
 	}
 

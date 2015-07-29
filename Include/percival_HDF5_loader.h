@@ -10,91 +10,125 @@
 
 #include "percival_processing.h"
 
-#include "H5Cpp.h"
-#include <string>
+#include "hdf5.h"
+#include <exception>
 #include <iostream>
 
-#ifndef H5_NO_NAMESPACE
-using namespace H5;
-#endif
+class file_exception : public std::exception{
 
+};
+
+class datatype_exception : public std::exception{
+
+};
 
 template<typename T>
 void percival_HDF5_loader(
-		const std::string & path_name,
-		const std::string & data_set_name,
-		percival_frame<T> & buffer_frame
+		const char * path_name,
+		const char * data_set_name,
+		percival_frame<T> & buffer_frame,
+		bool print_error = 0
 ){
-	Exception::dontPrint();
-	//should_throw_exception_if_input_path_does_not_exist
-	H5File file;
-	file.openFile(path_name, H5F_ACC_RDONLY);
+	hid_t error_stack;
+	herr_t status;
+	hid_t file_id, dataset_id, dataspace_id, datatype_id;
+	int rank;
+
+
+	if(print_error == 0){
+		herr_t error_id;
+		error_id = H5Eset_auto(error_stack, NULL, NULL);
+	}
+
+
+	file_id = H5Fopen(path_name,H5F_ACC_RDONLY, H5P_DEFAULT);
+	if(file_id<0)
+		throw file_exception{};
 
 	//should_throw_exception_if_dataset_does_not_exist
-	DataSet read_data_set = file.openDataSet(data_set_name);
-	DataSpace read_dataspace = read_data_set.getSpace();
+	dataset_id = H5Dopen2(file_id, data_set_name, H5P_DEFAULT);
+	if(dataset_id<0)
+			throw file_exception{};
 
-	if(read_dataspace.getSimpleExtentNdims() != 2)
-		throw DataSpaceIException{};
+	dataspace_id = H5Dget_space(dataset_id);
+	if(dataspace_id<0)
+			throw file_exception{};
 
-	hsize_t dims_out[2];
-	int ndims = read_dataspace.getSimpleExtentDims( dims_out, NULL);
-	int percival_frame_height = dims_out[0];
-	int percival_frame_width  = dims_out[1];
+	rank = H5Sget_simple_extent_ndims(dataspace_id);
+	if(rank != 2)
+		throw datatype_exception{};
 
-	//should_generate_output_of_the_same_size_as_input
-	buffer_frame.set_frame_size(percival_frame_height, percival_frame_width);
+	hsize_t* current_dims, *maximum_dims;
 
-	//should_throw_if_data_type_is_neither_int_nor_32_bit_float
-	H5T_class_t type_class = read_data_set.getTypeClass();
-	//todo: check if T is of type int
-	if(type_class == H5T_INTEGER){
-		IntType intype = read_data_set.getIntType();
-		H5std_string order_string;
-		H5T_order_t order = intype.getOrder( order_string );
-		size_t size = intype.getSize();
-		if(size < 2)
-			throw DataTypeIException{};
-		if(order == H5T_ORDER_BE )
-			throw DataTypeIException{};
-		if((size == 2) && (size == sizeof(T)))
-			read_data_set.read( buffer_frame.data, PredType::STD_I16LE, read_dataspace );
-		else if((size == 4) && (size == sizeof(T)))
-			read_data_set.read( buffer_frame.data, PredType::NATIVE_INT, read_dataspace );
-		else{
-			throw DataTypeIException{};
-		}
-		//should_preserve_data_integrity_int
+	current_dims = new hsize_t[rank];
+	maximum_dims = new hsize_t[rank];
+
+			//Alternative C syntax
+			//current_dims = (hsize_t*)malloc(rank*sizeof(hsize_t));
+			//maximum_dims = (hsize_t*)malloc(rank*sizeof(hsize_t));
+
+	H5Sget_simple_extent_dims(dataspace_id, current_dims, maximum_dims);
+
+
+
+	buffer_frame.set_frame_size(current_dims[0], current_dims[1]);
+//
+//	//should_throw_if_data_type_is_neither_int_nor_32_bit_float
+	delete [] current_dims;
+	delete [] maximum_dims;
+
+//==============================================================================================
+	//this part is important to know
+	datatype_id = H5Dget_type(dataset_id);
+//	if(H5Tget_class(datatype_id)==H5T_INTEGER)
+//		std::cout << H5Tget_class(datatype_id) << std::endl;
+//==============================================================================================
+
+
+
+	int size = H5Tget_size(datatype_id);
+
+	if(size != sizeof(T))
+		throw datatype_exception{};
+
+
+	if(H5Tget_order(datatype_id)==H5T_ORDER_BE)
+		throw datatype_exception{};
+
+	switch(H5Tget_class(datatype_id)){
+		case H5T_INTEGER:
+			if(size == 2){
+				status = H5Dread (dataset_id, H5T_STD_U16LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, buffer_frame.data);
+			}
+			else if(size == 4){
+				status = H5Dread (dataset_id, H5T_STD_U32LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, buffer_frame.data);
+			}
+			else{
+				throw datatype_exception{};
+			}
+			break;
+
+		case H5T_FLOAT:
+			if(size == 4){
+				status = H5Dread (dataset_id, H5T_IEEE_F32LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, buffer_frame.data);
+			}
+			else if(size == 8){
+				status = H5Dread (dataset_id, H5T_IEEE_F64LE, H5S_ALL, H5S_ALL, H5P_DEFAULT, buffer_frame.data);
+			}
+			else{
+				throw datatype_exception{};
+			}
+			break;
+
+		default:
+			throw datatype_exception{};
+
 	}
-	else if(type_class == H5T_FLOAT){
 
-		//should_throw_exception_if_input_percival_frame_is_of_wrong_type_float_vs_int
-		//todo check if T is float
-
-		FloatType intype = read_data_set.getFloatType();
-		H5std_string order_string;
-		H5T_order_t order = intype.getOrder( order_string );
-		size_t size = intype.getSize();
-		if(order == H5T_ORDER_BE )
-			throw DataTypeIException{};
-		if((size == 4) && (size == sizeof(T))){
-			read_data_set.read( buffer_frame.data, PredType::IEEE_F32LE, read_dataspace );}//IEEE_F32LE
-		else if((size == 8) && (size == sizeof(T))){
-			read_data_set.read( buffer_frame.data, PredType::IEEE_F64LE, read_dataspace );
-		//should_preserve_data_integrity_double
-		}
-		else{
-			throw DataTypeIException{};
-		}
-	}
-	else{
-		//should_throw_exception_if_input_percival_frame_is_of_wrong_type_float_vs_int
-		throw DataTypeIException{};
-
-	}
-	//todo: write exception for each of the throws above, pay particular attention to the message.
+	status = H5Sclose(dataspace_id);
+	status = H5Dclose(dataset_id);
+	status = H5Fclose(file_id);
 }
-
 
 #endif /* INCLUDE_PERCIVAL_HDF5_LOADER_H_ */
 

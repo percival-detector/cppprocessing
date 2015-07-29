@@ -7,13 +7,13 @@
 
 #include"percival_calib_params.h"
 
-const std::string default_path_name_Gc = "./data/ADC_tr6_W14_14BSI_TChip-40C_bias10f_2014-02-28_14-05_CoarseGainArray.h5";
-const std::string default_path_name_Oc = "./data/ADC_tr6_W14_14BSI_TChip-40C_bias10f_2014-02-28_14-05_CoarseOffsetArray.h5";
-const std::string default_path_name_Gf = "./data/ADC_tr6_W14_14BSI_TChip-40C_bias10f_2014-02-28_14-05_FineGainArray.h5";
-const std::string default_path_name_Of = "./data/ADC_tr6_W14_14BSI_TChip-40C_bias10f_2014-02-28_14-05_FineOffsetArray.h5";
+const char* default_path_name_Gc = "./data/ADC_tr6_W14_14BSI_TChip-40C_bias10f_2014-02-28_14-05_CoarseGainArray.h5";
+const char* default_path_name_Oc = "./data/ADC_tr6_W14_14BSI_TChip-40C_bias10f_2014-02-28_14-05_CoarseOffsetArray.h5";
+const char* default_path_name_Gf = "./data/ADC_tr6_W14_14BSI_TChip-40C_bias10f_2014-02-28_14-05_FineGainArray.h5";
+const char* default_path_name_Of = "./data/ADC_tr6_W14_14BSI_TChip-40C_bias10f_2014-02-28_14-05_FineOffsetArray.h5";
 
 //const std::string default_path_name_Gc = "./data/test_HDF5.h5";
-const std::string default_data_set_name = "/data/data";
+const char* default_data_set_name = "/data/data";
 //const std::string default_data_set_name_Gc = "float_sample_frame";
 
 

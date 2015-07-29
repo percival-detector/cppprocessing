@@ -10,25 +10,20 @@
 #include "percival_HDF5_loader.h"
 
 #include <boost/test/unit_test.hpp>
-#include <H5Cpp.h>
 #include <string>
 
 #include <iostream>
-
-#ifndef H5_NO_NAMESPACE
-using namespace H5;
-#endif
 
 //defining parameters for test fixtures
 const int TEST_FRAME_HEIGHT 	= 	32;
 const int TEST_FRAME_WIDTH		=	512;
 const int RANK 					= 	2;
-const std::string HDF5_FILE_NAME			= 	"./data/test_HDF5.h5";
-const std::string HDF5_INT_DATA_SET_NAME	= 	"int_sample_frame";
-const std::string HDF5_DOUBLE_DATA_SET_NAME	= 	"double_sample_frame";
-const std::string HDF5_CHAR_DATA_SET_NAME 	= 	"char_frame";
-const std::string HDF5_three_dimension_DATA_SET_NAME 	= 	"three_dimension_data";
-const std::string HDF5_BE_DATA_SET_NAME 	= 	"BE_data";
+const char* HDF5_FILE_NAME			= 	"./data/test_HDF5.h5";
+const char* HDF5_INT_DATA_SET_NAME	= 	"int_sample_frame";
+const char* HDF5_DOUBLE_DATA_SET_NAME	= 	"double_sample_frame";
+const char* HDF5_CHAR_DATA_SET_NAME 	= 	"char_frame";
+const char* HDF5_three_dimension_DATA_SET_NAME 	= 	"three_dimension_data";
+const char* HDF5_BE_DATA_SET_NAME 	= 	"BE_data";
 
 class fixture_HDF5{
 	public:
@@ -38,26 +33,26 @@ class fixture_HDF5{
 
 
 BOOST_FIXTURE_TEST_SUITE(percival_HDF5_loader_test, fixture_HDF5)
-
+//TODO: write exception classes for the loader
 BOOST_AUTO_TEST_CASE ( should_throw_exception_if_input_path_does_not_exist ){
-	BOOST_REQUIRE_THROW(percival_HDF5_loader("./data/-NonexistentPath.h5","dataset",int_buffer_frame),FileIException);	//exception provided by H5Cpp.h
+	BOOST_REQUIRE_THROW(percival_HDF5_loader("./data/-NonexistentPath.h5","dataset",int_buffer_frame),file_exception);
 }
 
 BOOST_AUTO_TEST_CASE ( should_throw_exception_if_input_file_is_not_a_HDF5_file ){
-	BOOST_REQUIRE_THROW(percival_HDF5_loader("./data/NotAHDF5File.txt","dataset",int_buffer_frame),FileIException);	//exception provided by H5Cpp.h
+	BOOST_REQUIRE_THROW(percival_HDF5_loader("./data/NotAHDF5File.txt","dataset",int_buffer_frame),file_exception);
 }
 
 BOOST_AUTO_TEST_CASE ( should_throw_exception_if_dataset_does_not_exist ){
-	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME,"NonexistentDataSet",int_buffer_frame), FileIException);
+	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME,"NonexistentDataSet",int_buffer_frame), file_exception);
 
 }// nonexistent groups are also tested
 
 BOOST_AUTO_TEST_CASE ( should_throw_if_input_file_is_not_2D  ){
-	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_three_dimension_DATA_SET_NAME, int_buffer_frame),DataSpaceIException);
+	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_three_dimension_DATA_SET_NAME, int_buffer_frame),datatype_exception);
 }
 
 BOOST_AUTO_TEST_CASE ( should_throw_if_input_file_is_not_little_endian  ){
-	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_BE_DATA_SET_NAME, int_buffer_frame),DataTypeIException);
+	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_BE_DATA_SET_NAME, int_buffer_frame),datatype_exception);
 }
 
 
@@ -70,7 +65,7 @@ BOOST_AUTO_TEST_CASE ( should_generate_output_of_the_same_size_as_input  ){
 
 BOOST_AUTO_TEST_CASE ( should_throw_if_data_type_is_neither_int_nor_32_bit_float ){
 	percival_frame<char> char_buffer_frame;
-	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME,HDF5_CHAR_DATA_SET_NAME, char_buffer_frame),DataTypeIException);	//TODO: write an exception class for this
+	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME,HDF5_CHAR_DATA_SET_NAME, char_buffer_frame),datatype_exception);	//TODO: write an exception class for this
 
 }
 
