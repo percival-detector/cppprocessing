@@ -9,8 +9,8 @@
 
 #include <boost/test/included/unit_test.hpp>
 
-const int TEST_FRAME_HEIGHT 	= 	32;
-const int TEST_FRAME_WIDTH		=	32;
+const int TEST_FRAME_HEIGHT 	= 	32;		//cannot be 10
+const int TEST_FRAME_WIDTH		=	32;		//cannot be 10
 
 class fixture_frame{
 public:
@@ -44,6 +44,18 @@ BOOST_FIXTURE_TEST_SUITE (percival_ADC_decode_test,fixture_frame)
 	BOOST_AUTO_TEST_CASE (output_pixel_should_be_32_bit_float){
 		BOOST_CHECK_EQUAL(4,sizeof(*(des_frame.data)));
 	}
+
+//Data check
+//	BOOST_AUTO_TEST_CASE(two_input_data_point_with_the_last_fifteen_bits_equal_should_return_same_result){
+//		*(src_frame.data) = 0b1111111111101111;		//overflow if all digits are 1's
+//		BOOST_REQUIRE_NO_THROW(percival_ADC_decode(src_frame, des_frame));
+//		std::cout << *(src_frame.data) << std::endl;
+//		float result = *(des_frame.data);
+//		*(src_frame.data) = 0b0111111111101111;
+//		BOOST_REQUIRE_NO_THROW(percival_ADC_decode(src_frame, des_frame));
+//		BOOST_REQUIRE_CLOSE(result, *(des_frame.data), 0.01);
+//
+//	}
 
 //	BOOST_AUTO_TEST_CASE (output_pixel_should_be_non_negative){
 //		std::cout << 5 << std::endl;
