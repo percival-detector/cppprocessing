@@ -25,8 +25,9 @@
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.821708728" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1152963285" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
-									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
+									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.1109019478" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.gprof.490638293" name="Generate gprof information (-pg)" superClass="gnu.cpp.compiler.option.debugging.gprof" value="true" valueType="boolean"/>
@@ -51,6 +52,7 @@
 								<option id="gnu.cpp.link.option.paths.846081929" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/lib"/>
 								</option>
+								<option id="gnu.cpp.link.option.flags.1620544846" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1607113814" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -97,12 +99,10 @@
 								<option id="gnu.cpp.compiler.exe.release.option.optimization.level.188505757" name="Optimization Level" superClass="gnu.cpp.compiler.exe.release.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.exe.release.option.debugging.level.1551698596" name="Debug Level" superClass="gnu.cpp.compiler.exe.release.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1078883995" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
-									<listOptionValue builtIn="false" value="/home/pqm78245/lib/hdf5-1.8.15-patch1/src"/>
-									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/include"/>
-									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/bin"/>
-									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/share"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
+									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.debugging.gprof.1805717649" name="Generate gprof information (-pg)" superClass="gnu.cpp.compiler.option.debugging.gprof" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1300456091" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -129,6 +129,7 @@
 									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/lib"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/lib"/>
 								</option>
+								<option id="gnu.cpp.link.option.flags.1572661298" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1141153946" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -180,15 +181,16 @@
 							<targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.debug.857351227" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
 							<builder buildPath="${workspace_loc:/cppProcessing2.0}/Debug" id="cdt.managedbuild.target.gnu.builder.exe.debug.28026067" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1975522263" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.909810796" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
+							<tool command="g++" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.909810796" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
 								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.1458196312" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.1675122014" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1298004098" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.dialect.std.66675400" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.dialect.std.66675400" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.c++11" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.gprof.1587761410" name="Generate gprof information (-pg)" superClass="gnu.cpp.compiler.option.debugging.gprof" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1829444056" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -212,6 +214,7 @@
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/lib"/>
 								</option>
 								<option id="gnu.cpp.link.option.debugging.gprof.1168387260" name="Generate gprof information (-pg)" superClass="gnu.cpp.link.option.debugging.gprof" value="true" valueType="boolean"/>
+								<option id="gnu.cpp.link.option.flags.1291350182" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.907313574" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -270,11 +273,12 @@
 								<option id="gnu.cpp.compiler.exe.release.option.debugging.level.1455325681" name="Debug Level" superClass="gnu.cpp.compiler.exe.release.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1191996786" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.debugging.gprof.623349241" name="Generate gprof information (-pg)" superClass="gnu.cpp.compiler.option.debugging.gprof" value="true" valueType="boolean"/>
-								<option id="gnu.cpp.compiler.option.dialect.std.1731832066" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.dialect.std.1731832066" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.c++11" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.145143441" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.release.1874685171" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.release">
@@ -297,6 +301,7 @@
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="hdf5"/>
 								</option>
 								<option id="gnu.cpp.link.option.debugging.gprof.815858847" name="Generate gprof information (-pg)" superClass="gnu.cpp.link.option.debugging.gprof" value="true" valueType="boolean"/>
+								<option id="gnu.cpp.link.option.flags.1513457015" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1859474346" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -343,9 +348,8 @@
 								<option id="gnu.cpp.compiler.exe.release.option.optimization.level.456034995" name="Optimization Level" superClass="gnu.cpp.compiler.exe.release.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.exe.release.option.debugging.level.1378233528" name="Debug Level" superClass="gnu.cpp.compiler.exe.release.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.390560221" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/include"/>
-									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/bin"/>
-									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/share"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 								</option>
@@ -373,6 +377,7 @@
 									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/lib"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/lib"/>
 								</option>
+								<option id="gnu.cpp.link.option.flags.1502350714" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.2091617099" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>

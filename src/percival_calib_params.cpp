@@ -34,5 +34,14 @@ percival_calib_params::percival_calib_params(){
 		percival_calib_params::is_initialised = true;
 
 	}
+
+
 }
 
+percival_calib_params::percival_calib_params(const std::string &){
+
+}
+
+void percival_calib_params::initialisation(const std::string &){
+
+}

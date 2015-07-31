@@ -4,6 +4,7 @@ test/unit_test/test_HDF5_loader.d test/unit_test/test_HDF5_loader.o: \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_frame.h \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_calib_params.h \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_processing.h \
+ /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_global_params.h \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_ADC_decode.h \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_HDF5_loader.h \
  /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/hdf5.h \
@@ -47,6 +48,8 @@ test/unit_test/test_HDF5_loader.d test/unit_test/test_HDF5_loader.o: \
 /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_calib_params.h:
 
 /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_processing.h:
+
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_global_params.h:
 
 /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_ADC_decode.h:
 

@@ -1,11 +1,10 @@
 
 import re
 import subprocess
-from email._parseaddr import parsedate
 
 def run_the_function(repeat, width, print_result):
-    subprocess.call('LD_LIBRARY_PATH="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-15/prefix/lib"', shell=True)
-    subprocess.call('HDF5_DISABLE_VERSION_CHECK="1"', shell=True)
+    #subprocess.call('LD_LIBRARY_PATH="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-15/prefix/lib"', shell=True)
+    #subprocess.call('HDF5_DISABLE_VERSION_CHECK="1"', shell=True)
     
 #     repeat = 5;
 #     width = 1024 * 55

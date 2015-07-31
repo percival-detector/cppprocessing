@@ -22,6 +22,8 @@ class percival_calib_params{
 
 		percival_calib_params();
 		percival_calib_params(const std::string &);
+
+		void percival_calib_params::initialisation(const std::string &);
 };
 
 #endif /* INCLUDE_PERCIVAL_CALIB_PARAMS_H_ */

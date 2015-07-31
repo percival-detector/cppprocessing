@@ -48,13 +48,17 @@ BOOST_AUTO_TEST_CASE ( should_throw_exception_if_dataset_does_not_exist ){
 }// nonexistent groups are also tested
 
 BOOST_AUTO_TEST_CASE ( should_throw_if_input_file_is_not_2D  ){
-	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_three_dimension_DATA_SET_NAME, int_buffer_frame),datatype_exception);
+	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_three_dimension_DATA_SET_NAME, int_buffer_frame),dataspace_exception);
 }
 
 BOOST_AUTO_TEST_CASE ( should_throw_if_input_file_is_not_little_endian  ){
 	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_BE_DATA_SET_NAME, int_buffer_frame),datatype_exception);
 }
 
+BOOST_AUTO_TEST_CASE ( should_throw_if_buffer_is_of_wrong_type  ){
+	percival_frame<float> float_buffer_frame;
+	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_INT_DATA_SET_NAME, float_buffer_frame), datatype_exception);
+}
 
 BOOST_AUTO_TEST_CASE ( should_generate_output_of_the_same_size_as_input  ){
 	BOOST_REQUIRE_NO_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_INT_DATA_SET_NAME, int_buffer_frame));
@@ -70,6 +74,7 @@ BOOST_AUTO_TEST_CASE ( should_throw_if_data_type_is_neither_int_nor_32_bit_float
 }
 
 BOOST_AUTO_TEST_CASE ( should_preserve_data_integrity_int ){
+	//percival_HDF5_loader(HDF5_FILE_NAME, HDF5_INT_DATA_SET_NAME, int_buffer_frame);
 	BOOST_REQUIRE_NO_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_INT_DATA_SET_NAME, int_buffer_frame));
 	//four corners
 	BOOST_REQUIRE_EQUAL(*(int_buffer_frame.data), 0);												//upper left

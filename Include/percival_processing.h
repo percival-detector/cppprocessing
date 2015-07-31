@@ -11,6 +11,7 @@
 //data classes
 #include "percival_frame.h"
 #include "percival_calib_params.h"
+#include "percival_global_params.h"
 //functions
 #include "percival_ADC_decode.h"
 #include "percival_HDF5_loader.h"
