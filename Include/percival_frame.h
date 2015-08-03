@@ -8,18 +8,32 @@
 #ifndef PERCIVAL_FRAME_H_
 #define PERCIVAL_FRAME_H_
 
+#include "percival_processing.h"
+
 template<typename T>
 class percival_frame{
 public:
-	int width, height;
+	/*
+	 * typically width, height ~= 10,000, use signed short is sufficient. width * height ~= 100,000,000, 27 bit unsigned int, int is sufficient.
+	 * if number of pixels is to be assumed less than range of int (INT_MIN - (2^31 -1)), width and height should be at most 2^15
+	 * thus use int width, height to allow multiplications etc
+	 * use a check in method set_frame_size to set width and height less than 2^15
+	 */
+	int width, height;			//
 	T* data;
 
 	void set_frame_size(int h, int w)
 	{
-		delete [] data;
-		width = w;
-		height = h;
-		data = new T[width * height];
+		if(h > 0x7fff || w > 0x7fff ){
+			throw datatype_exception{"Image size overflows. Should be less than 32768 pixels in each dimension."};
+		}else if(h < 0 || w < 0){
+			throw datatype_exception{"Image size overflows. Should be greater than or equal to 0 and less than 32768 pixels in each dimension."};
+		}else{
+			delete [] data;
+			width = w;
+			height = h;
+			data = new T[width * height];
+		}
 	}
 
 	percival_frame(){data = new T[1]; set_frame_size(1,1);}

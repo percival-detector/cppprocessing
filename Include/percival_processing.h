@@ -7,14 +7,23 @@
 
 #ifndef INCLUDE_PERCIVAL_PROCESSING_H_
 #define INCLUDE_PERCIVAL_PROCESSING_H_
+//todo:find a better way for forward declaration
+class percival_global_params;
+class percival_calib_params;
+class file_exception;
+class datatype_exception;
+class dataspace_exception;
+
 
 //data classes
 #include "percival_frame.h"
 #include "percival_calib_params.h"
 #include "percival_global_params.h"
+
 //functions
 #include "percival_ADC_decode.h"
 #include "percival_HDF5_loader.h"
+#include "percival_HDF5_writer.h"
 //STL libraries
 
 

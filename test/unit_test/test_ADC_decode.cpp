@@ -12,6 +12,9 @@
 const int TEST_FRAME_HEIGHT 	= 	32;		//cannot be 10
 const int TEST_FRAME_WIDTH		=	32;		//cannot be 10
 
+percival_global_params global_params;
+percival_calib_params calib_params(global_params);
+
 class fixture_frame{
 public:
 	percival_frame<short int> src_frame;
@@ -24,7 +27,7 @@ public:
 		des_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
 		output_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
 
-		BOOST_REQUIRE_NO_THROW(percival_ADC_decode(src_frame, des_frame));
+		BOOST_REQUIRE_NO_THROW(percival_ADC_decode(src_frame, des_frame, calib_params));
 	}
 };
 
@@ -34,7 +37,7 @@ BOOST_FIXTURE_TEST_SUITE (percival_ADC_decode_test,fixture_frame)
 	BOOST_AUTO_TEST_CASE (should_set_size_of_the_destination_image_to_be_the_same_as_src){
 		percival_frame<float> wrong_size_frame;
 		wrong_size_frame.set_frame_size(10,10);
-		percival_ADC_decode(src_frame,wrong_size_frame);
+		percival_ADC_decode(src_frame,wrong_size_frame, calib_params);
 		BOOST_REQUIRE_EQUAL(src_frame.width, wrong_size_frame.width);
 		BOOST_REQUIRE_EQUAL(src_frame.height, wrong_size_frame.height);
 	}

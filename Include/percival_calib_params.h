@@ -20,10 +20,10 @@ class percival_calib_params{
 		static percival_frame<float> Gf;
 		static percival_frame<float> Of;
 
-		percival_calib_params();
-		percival_calib_params(const std::string &);
+		static percival_global_params params;
 
-		void percival_calib_params::initialisation(const std::string &);
+		percival_calib_params();
+		percival_calib_params(percival_global_params &);
 };
 
 #endif /* INCLUDE_PERCIVAL_CALIB_PARAMS_H_ */

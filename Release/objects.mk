@@ -4,5 +4,5 @@
 
 USER_OBJS :=
 
-LIBS :=
+LIBS := -lhdf5 -l/home/pqm78245/lib/h5_cpp/lib/libhdf5.so -lhdf5_cpp
 

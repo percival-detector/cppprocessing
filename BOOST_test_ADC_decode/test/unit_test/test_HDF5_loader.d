@@ -2,8 +2,8 @@ test/unit_test/test_HDF5_loader.d test/unit_test/test_HDF5_loader.o: \
  ../test/unit_test/test_HDF5_loader.cpp \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_processing.h \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_frame.h \
- /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_calib_params.h \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_processing.h \
+ /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_calib_params.h \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_global_params.h \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_ADC_decode.h \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_HDF5_loader.h \
@@ -39,15 +39,16 @@ test/unit_test/test_HDF5_loader.d test/unit_test/test_HDF5_loader.o: \
  /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDsec2.h \
  /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDstdio.h \
  /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDdirect.h \
+ /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_HDF5_writer.h \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_HDF5_loader.h
 
 /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_processing.h:
 
 /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_frame.h:
 
-/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_calib_params.h:
-
 /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_processing.h:
+
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_calib_params.h:
 
 /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_global_params.h:
 
@@ -118,5 +119,7 @@ test/unit_test/test_HDF5_loader.d test/unit_test/test_HDF5_loader.o: \
 /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDstdio.h:
 
 /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDdirect.h:
+
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_HDF5_writer.h:
 
 /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_HDF5_loader.h:

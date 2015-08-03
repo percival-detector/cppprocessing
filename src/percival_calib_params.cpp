@@ -23,8 +23,24 @@ percival_frame<float> percival_calib_params::Oc;
 percival_frame<float> percival_calib_params::Gf;
 percival_frame<float> percival_calib_params::Of;
 
+//percival_calib_params::percival_global_params params;
+
 percival_calib_params::percival_calib_params(){
 	if(!percival_calib_params::is_initialised){
+		percival_HDF5_loader(default_path_name_Gc, default_data_set_name, percival_calib_params::Gc);
+		percival_HDF5_loader(default_path_name_Oc, default_data_set_name, percival_calib_params::Oc);
+		percival_HDF5_loader(default_path_name_Gf, default_data_set_name, percival_calib_params::Gf);
+		percival_HDF5_loader(default_path_name_Of, default_data_set_name, percival_calib_params::Of);
+
+		percival_calib_params::is_initialised = true;
+	}
+}
+percival_calib_params::percival_calib_params(percival_global_params & master_file){
+		default_path_name_Gc	= (master_file.default_location_Gc).c_str();
+		default_path_name_Oc	= (master_file.default_location_Oc).c_str();
+		default_path_name_Gf	= (master_file.default_location_Gf).c_str();
+		default_path_name_Of	= (master_file.default_location_Of).c_str();
+		default_data_set_name	= (master_file.default_calib_params_dataset_name).c_str();
 
 		percival_HDF5_loader(default_path_name_Gc, default_data_set_name, percival_calib_params::Gc);
 		percival_HDF5_loader(default_path_name_Oc, default_data_set_name, percival_calib_params::Oc);
@@ -32,16 +48,4 @@ percival_calib_params::percival_calib_params(){
 		percival_HDF5_loader(default_path_name_Of, default_data_set_name, percival_calib_params::Of);
 
 		percival_calib_params::is_initialised = true;
-
-	}
-
-
-}
-
-percival_calib_params::percival_calib_params(const std::string &){
-
-}
-
-void percival_calib_params::initialisation(const std::string &){
-
 }

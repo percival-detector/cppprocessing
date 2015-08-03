@@ -2,8 +2,8 @@ src/percival_ADC_decode.d src/percival_ADC_decode.o: \
  ../src/percival_ADC_decode.cpp \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_processing.h \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_frame.h \
- /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_calib_params.h \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_processing.h \
+ /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_calib_params.h \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_global_params.h \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_ADC_decode.h \
  /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_HDF5_loader.h \
@@ -38,15 +38,16 @@ src/percival_ADC_decode.d src/percival_ADC_decode.o: \
  /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDmulti.h \
  /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDsec2.h \
  /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDstdio.h \
- /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDdirect.h
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDdirect.h \
+ /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_HDF5_writer.h
 
 /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_processing.h:
 
 /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_frame.h:
 
-/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_calib_params.h:
-
 /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_processing.h:
+
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_calib_params.h:
 
 /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_global_params.h:
 
@@ -117,3 +118,5 @@ src/percival_ADC_decode.d src/percival_ADC_decode.o: \
 /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDstdio.h:
 
 /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDdirect.h:
+
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_HDF5_writer.h:

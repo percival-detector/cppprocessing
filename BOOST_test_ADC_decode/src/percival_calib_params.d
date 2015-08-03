@@ -38,7 +38,8 @@ src/percival_calib_params.d src/percival_calib_params.o: \
  /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDmulti.h \
  /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDsec2.h \
  /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDstdio.h \
- /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDdirect.h
+ /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDdirect.h \
+ /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_HDF5_writer.h
 
 /home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_calib_params.h:
 
@@ -117,3 +118,5 @@ src/percival_calib_params.d src/percival_calib_params.o: \
 /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDstdio.h:
 
 /dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include/H5FDdirect.h:
+
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_HDF5_writer.h:

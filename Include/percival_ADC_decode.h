@@ -11,7 +11,7 @@
 #include "percival_processing.h"
 #include<exception>
 
-void percival_ADC_decode(const percival_frame<short int> &, percival_frame<float> &);
+void percival_ADC_decode(const percival_frame<short int> &, percival_frame<float> &, percival_calib_params & calib_params);
 
 /*
  * TODO:

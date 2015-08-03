@@ -9,20 +9,18 @@
 
 //todo change this to a template
 
-void percival_ADC_decode(const percival_frame<short int> & src_frame, percival_frame<float> & des_frame){
+void percival_ADC_decode(const percival_frame<short int> & src_frame, percival_frame<float> & des_frame, percival_calib_params & calib_params){
 	//initialize destination matrix
 
 	des_frame.set_frame_size(src_frame.height, src_frame.width);
 
 	//calibration parameters
-	percival_calib_params calib_params;
-
 	const int calib_data_height = calib_params.Gc.height;
 	const int calib_data_width = calib_params.Gc.width;
 
 	//algorithm
 
-	for(int i = 0; i < des_frame.width * des_frame.height; i++){
+	for(int i = 0; i < des_frame.width * des_frame.height; i++){	//int i is sufficient
 		/*
 		 * minimising access
 		short int pixel = *(src_frame.data + i);

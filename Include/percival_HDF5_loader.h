@@ -21,7 +21,6 @@ class file_exception : public std::exception{
 private:
 	std::string err_msg;
 	std::string file_name;
-
 public:
 	file_exception(const char *file_name, const char *msg) : file_name(file_name), err_msg(msg) {};
 	~file_exception() throw() {};
@@ -81,30 +80,37 @@ void percival_HDF5_loader(
 		const char * path_name,
 		const char * data_set_name,
 		percival_frame<T> & buffer_frame,
-		bool print_error = 0
+		bool print_error = 0			//default 0
 ){
 	herr_t status;
 	hid_t file_id, dataset_id, dataspace_id, datatype_id;
 
-	if(print_error == 0)
-		H5Eset_auto(H5E_DEFAULT, NULL, NULL);
+	if(!print_error)
+	/* Turn off error handling */
+	  H5Eset_auto(H5E_DEFAULT, NULL, NULL);
+
 	/*
 	 *
 	 * open HDF5 files and datasets
 	 *
 	 */
 	file_id = H5Fopen(path_name,H5F_ACC_RDONLY, H5P_DEFAULT);
-	if(file_id<0)
+	if(file_id<0){
+		H5close();
 		throw file_exception{path_name, " does not exist or is not an HDF5 file. Failed to open."};
-
+	}
 	//should_throw_exception_if_dataset_does_not_exist
 	dataset_id = H5Dopen2(file_id, data_set_name, H5P_DEFAULT);
-	if(dataset_id<0)
+	if(dataset_id<0){
+		H5close();
 		throw file_exception{data_set_name, " dataset does not exist. Failed to open."};
+	}
 
 	dataspace_id = H5Dget_space(dataset_id);
-	if(dataspace_id<0)
+	if(dataspace_id<0){
+		H5close();
 		throw file_exception{path_name, " Fail to get dataspace."};
+	}
 	/*
 	 *
 	 *
@@ -113,9 +119,10 @@ void percival_HDF5_loader(
 	 */
 	int rank;
 	rank = H5Sget_simple_extent_ndims(dataspace_id);
-	if(rank != 2)
+	if(rank != 2){
+		H5close();
 		throw dataspace_exception{"Dimension != 2."};
-
+	}
 	hsize_t* current_dims, *maximum_dims;
 
 	current_dims = new hsize_t[rank];
@@ -139,8 +146,10 @@ void percival_HDF5_loader(
 	//	if(size != sizeof(T))
 	//		throw datatype_exception{};
 
-	if(H5Tget_order(datatype_id)==H5T_ORDER_BE)
+	if(H5Tget_order(datatype_id)==H5T_ORDER_BE){
+		H5close();
 		throw datatype_exception{"Only little endian data is permitted."};
+	}
 
 	hid_t memtype_id;
 	H5T_class_t data_class = H5Tget_class(datatype_id);
@@ -154,31 +163,36 @@ void percival_HDF5_loader(
 			memtype_id = H5T_STD_U32LE;
 
 		}
-		else
+		else{
+			H5close();
 			throw datatype_exception{size, "int" , sign, "Invalid input datatype or wrong destination datatype."};
+		}
 	}
 	else if(data_class == H5T_FLOAT){
 		if( (size == 4) && (typeid(T) == typeid(float)))
 			memtype_id = H5T_IEEE_F32LE;
 		else if((size == 8) && (typeid(T) == typeid(double)))
 			memtype_id = H5T_IEEE_F64LE;
-		else
+		else{
+			H5close();
 			throw datatype_exception{size, "float" , sign, "Invalid input datatype or wrong destination datatype."};
+		}
 	}
-	else
+	else{
 		throw datatype_exception{"Invalid input datatype or wrong destination datatype."};
+		H5close();
+	}
 
 	//only little endian, unsigned int, unsigned short int, single and double float are accepted
 
 	status = H5Dread (dataset_id, memtype_id, H5S_ALL, H5S_ALL, H5P_DEFAULT, buffer_frame.data);	//todo change these four read statement into one
 
-	if(status < 0)
+	if(status < 0){
+		H5close();
 		throw file_exception{path_name, " cannot be read."};
+	}
 
-	status = H5Tclose(datatype_id);
-	status = H5Sclose(dataspace_id);
-	status = H5Dclose(dataset_id);
-	status = H5Fclose(file_id);
+	H5close();
 }
 
 #endif /* INCLUDE_PERCIVAL_HDF5_LOADER_H_ */
