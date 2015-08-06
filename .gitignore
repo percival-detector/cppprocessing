@@ -26,6 +26,21 @@
 *.exe
 *.out
 *.app
+
+# Editor backup files
+*~
+*.swp
+
+# System NFS crash files
+.nfs*
+
+# Eclipse build dirs
+
 /BOOST_test_ADC_decode/
+/Debug/
+/Profiling/
+/Release/
+/test_data_generation/
 /oprofile_data/
 /gmon.out
+
