@@ -23,6 +23,40 @@ description of functions
     |percival_frame|   with   |calib_params|      -> percival_ADC_decode  -> |percival_frame| (decoded image)
 
 
+Eclipse Build Configurations
+----------------------------
 
+The different products of this project are built using the Eclipse build system.
+The following build configurations are available:
+
+BOOST_test_ADC_decode
+^^^^^^^^^^^^^^^^^^^^^
+
+* **Description:**
+* **Build product:**
+
+Debug
+^^^^^
+
+* **Description:**
+* **Build product:**
+
+Profiling
+^^^^^^^^^
+
+* **Description:**
+* **Build product:**
+
+Release
+^^^^^^^
+
+* **Description:**
+* **Build product:**
+
+test_data_generation
+^^^^^^^^^^^^^^^^^^^^
+
+* **Description:**
+* **Build product:**
 
 
