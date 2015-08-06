@@ -3,6 +3,7 @@
 *.lo
 *.o
 *.obj
+*.d
 
 # Precompiled Headers
 *.gch
@@ -42,5 +43,7 @@
 /Release/
 /test_data_generation/
 /oprofile_data/
-/gmon.out
+gmon.out
+/data/test_write_to_HDF5.h5
+
 
