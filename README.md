@@ -1,4 +1,4 @@
-cppprocessing
+cppProcessing
 ===================================================================
 
 C++ implementation of the Percival processing algorithms
@@ -15,14 +15,16 @@ directories
 * test/unit_test   BOOST unit tests files
 * tools            generating HDF5 test data; python script for profiling
 
-description of functions
+List of functions
 --------------------------------------------------------------------
+```
+percival_HDF5_loader
+percival_ADC_decode
+percival_CDS_correction
+percival_ADU-to_electron_correction
+percival_HDF5_writer
 
-    |input image data (unsigned int8 HDF5 files)| -> percival_HDF5_loader -> |percival_frame| (raw image)
-    |calibration data (32bits float HDF5 files)|  -> percival_HDF5_loader -> |calib_params|
-    |percival_frame|   with   |calib_params|      -> percival_ADC_decode  -> |percival_frame| (decoded image)
-
-
+```
 Eclipse Build Configurations
 ----------------------------
 
@@ -33,30 +35,58 @@ BOOST_test_ADC_decode
 ^^^^^^^^^^^^^^^^^^^^^
 
 * **Description:**
+	Build unit tests
+	Require Boost Library and HDF5 C library (dynamic and static) to run
+	HDF5 C library can be found in dls-sw
 * **Build product:**
-
-Debug
-^^^^^
-
-* **Description:**
-* **Build product:**
+	BOOST_test_ADC_decode/cppProcessing2.0
+* **Dependencies:**
+	source: Include/, src/, tests/,
+	test data files: data/
+* **Files generated:**
+	data/test_write_to_HDF5.hf
 
 Profiling
 ^^^^^^^^^
 
 * **Description:**
+	Contains a main function. Used for profiling and testing.
+	Require HDF5 C library (dynamic and static) to run
+	HDF5 C library can be found in dls-sw
 * **Build product:**
-
-Release
-^^^^^^^
-
-* **Description:**
-* **Build product:**
+	Profiling/cppProcessing2.0
+* **Dependencies:**
+	source: Include/, src/, profile/,
+	test data files: data/
 
 test_data_generation
 ^^^^^^^^^^^^^^^^^^^^
 
 * **Description:**
+	Generate test data for unit test on HDF5 loader
+	Require HDF5 C++ library (dynamic and static) to run. C library will be used in later commits
 * **Build product:**
+	test_data_generation/cppProcessing2.0
+* **Dependencies:**
+	source: tools/HDF5_test_file_generator.cpp
+* **Files generated:**
+	data/test_HDF5.hf
+	data/NotAHDF5File.txt
+
+Debug
+^^^^^
+
+* **Description:**
+	Currently unused build configuration
+* **Build product:**
+
+
+Release
+^^^^^^^
+
+* **Description:**
+	Currently unused build configuration
+* **Build product:**
+
 
 
