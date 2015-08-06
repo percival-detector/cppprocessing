@@ -9,8 +9,8 @@
 
 using namespace H5;
 
-const int TEST_FRAME_HEIGHT 	= 	32;
-const int TEST_FRAME_WIDTH		=	512;
+const int TEST_FRAME_HEIGHT 	= 	160;
+const int TEST_FRAME_WIDTH		=	210;
 const int RANK 					= 	2;
 const std::string HDF5_FILE_NAME			= 	"./data/test_HDF5.h5";
 const std::string HDF5_INT_DATA_SET_NAME	= 	"int_sample_frame";
@@ -38,17 +38,17 @@ void write_to_another_file(){
 	}
 
 	/*		four corners of int_test_data
-	 * 		0	......	511
+	 * 		0	......	209
 	 * 		.			.
 	 * 		.			.
-	 * 		31	......	542
+	 * 		159	......	249
 	 */
 
 	/*		four corners of double_test_data
-	 * 		0.0		......	511.0
+	 * 		0.0		......	209.0
 	 * 		.				.
 	 * 		.				.
-	 * 		31.0	......	542.0
+	 * 		159.0	......	249.0
 	 */
 
 	//Creating test_HDF5.h5

@@ -9,8 +9,11 @@
 
 #include <boost/test/included/unit_test.hpp>
 
-const int TEST_FRAME_HEIGHT 	= 	32;
-const int TEST_FRAME_WIDTH		=	32;
+const int TEST_FRAME_HEIGHT 	= 	160;		//cannot be 10
+const int TEST_FRAME_WIDTH		=	210;		//cannot be 10
+
+percival_global_params global_params;
+percival_calib_params calib_params(global_params);
 
 class fixture_frame{
 public:
@@ -24,33 +27,7 @@ public:
 		des_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
 		output_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
 
-//		std::ifstream expected_result;
-//		BOOST_REQUIRE_NO_THROW(expected_result.open ("../data/ADC_decode_output"));
-
-		/*
-		 * files to be read have the format
-		 *
-		 * input'\t'output'n'
-		 *
-		 * all numbers assumed to be integral for atoi() to work
-		 */
-
-//		char readValue[255];
-//		int input, output;
-//		int i = 0;
-//		while(!expected_result.eof() && i < TEST_FRAME_WIDTH * TEST_FRAME_HEIGHT){
-//			expected_result.getline(readValue, 255, '\t');						//reading input data
-//			input = atoi(readValue);
-//			expected_result.getline(readValue, 255, '\n');						//reading output data
-//			output = atoi(readValue);
-//
-//			src_frame.data[i] = input;
-//			des_frame.data[i] = output;
-//			i++;
-//		}
-
-		BOOST_REQUIRE_NO_THROW(percival_ADC_decode(src_frame, des_frame));
-		//expected_result.close();
+		BOOST_REQUIRE_NO_THROW(percival_ADC_decode(src_frame, des_frame, calib_params));
 	}
 };
 
@@ -60,7 +37,7 @@ BOOST_FIXTURE_TEST_SUITE (percival_ADC_decode_test,fixture_frame)
 	BOOST_AUTO_TEST_CASE (should_set_size_of_the_destination_image_to_be_the_same_as_src){
 		percival_frame<float> wrong_size_frame;
 		wrong_size_frame.set_frame_size(10,10);
-		percival_ADC_decode(src_frame,wrong_size_frame);
+		percival_ADC_decode(src_frame,wrong_size_frame, calib_params);
 		BOOST_REQUIRE_EQUAL(src_frame.width, wrong_size_frame.width);
 		BOOST_REQUIRE_EQUAL(src_frame.height, wrong_size_frame.height);
 	}
@@ -68,9 +45,20 @@ BOOST_FIXTURE_TEST_SUITE (percival_ADC_decode_test,fixture_frame)
 
 
 	BOOST_AUTO_TEST_CASE (output_pixel_should_be_32_bit_float){
-		std::cout << 4 << std::endl;
 		BOOST_CHECK_EQUAL(4,sizeof(*(des_frame.data)));
 	}
+
+//Data check
+//	BOOST_AUTO_TEST_CASE(two_input_data_point_with_the_last_fifteen_bits_equal_should_return_same_result){
+//		*(src_frame.data) = 0b1111111111101111;		//overflow if all digits are 1's
+//		BOOST_REQUIRE_NO_THROW(percival_ADC_decode(src_frame, des_frame));
+//		std::cout << *(src_frame.data) << std::endl;
+//		float result = *(des_frame.data);
+//		*(src_frame.data) = 0b0111111111101111;
+//		BOOST_REQUIRE_NO_THROW(percival_ADC_decode(src_frame, des_frame));
+//		BOOST_REQUIRE_CLOSE(result, *(des_frame.data), 0.01);
+//
+//	}
 
 //	BOOST_AUTO_TEST_CASE (output_pixel_should_be_non_negative){
 //		std::cout << 5 << std::endl;

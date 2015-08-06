@@ -1,0 +1,23 @@
+
+
+default_path_name					: 	"./data/KnifeQuadBPos1_2_21_int16.h5";
+default_data_set_name					: 	"KnifeQuadBPos1/!X!/Sample";
+
+default_location_Gc					:	"./data/ADC_tr6_W14_14BSI_TChip-40C_bias10f_2014-02-28_14-05_CoarseGainArray.h5"
+default_location_Oc					:	"./data/ADC_tr6_W14_14BSI_TChip-40C_bias10f_2014-02-28_14-05_CoarseOffsetArray.h5"
+default_location_Gf					:	"./data/ADC_tr6_W14_14BSI_TChip-40C_bias10f_2014-02-28_14-05_FineGainArray.h5"
+default_location_Of					:	"./data/ADC_tr6_W14_14BSI_TChip-40C_bias10f_2014-02-28_14-05_FineOffsetArray.h5"
+default_calib_params_dataset_name			:	"/data/data"
+
+total_number_of_frames					: 	100
+is_transposed_calib_params				:	yes
+frame_height						: 	210
+frame_width						: 	160
+calib_params_height					: 	7
+calib_params_width					:	160
+
+
+this is the first line			
+this is the second line
+this is the third line
+this is the fourth line

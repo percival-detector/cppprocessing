@@ -10,91 +10,220 @@
 
 #include "percival_processing.h"
 
-#include "H5Cpp.h"
+#include "hdf5.h"
+#include <stdexcept>
+#include <exception>
 #include <string>
+#include <typeinfo>
 #include <iostream>
 
-#ifndef H5_NO_NAMESPACE
-using namespace H5;
-#endif
+class file_exception : public std::exception{
+private:
+	std::string err_msg;
+	std::string file_name;
+public:
+	file_exception(const char *file_name, const char *msg) : file_name(file_name), err_msg(msg) {};
+	~file_exception() throw() {};
+	const char *what() const throw() { std::string message = "\"" + file_name + "\"" + err_msg; return message.c_str(); };
+};
 
+class datatype_exception : public std::exception{
+private:
+	std::string err_msg;
+	std::string type;
+	std::string sign_string;
+	std::string return_message;
+	std::string size_string;
+	int size;
+	bool sign;
+
+
+public:
+	datatype_exception(const int size, const char* type, const bool sign, const char *msg) :
+		size(size),
+		type(type),
+		sign(sign),
+		err_msg(msg)
+{
+		if(sign == true)
+			sign_string = "signed";
+		else
+			sign_string = "unsigned";
+
+		size_string = std::to_string((long long int)(size * 8 ));
+
+		return_message = err_msg
+				+ "\nActual input datatype: "
+				+  size_string + " bits " + sign_string + " "+ type + ".\n"
+				+ "Datatypes permitted are:\n"
+				+ "H5T_STD_U16LE\nH5T_STD_U32LE\nH5T_IEEE_F32LE\nH5T_IEEE_F64LE\n";
+};
+
+	datatype_exception(const char *msg) : return_message(msg){};
+
+	~datatype_exception() throw() {};
+	const char *what() const throw() {return return_message.c_str();};
+};
+
+class dataspace_exception : public std::exception{
+private:
+	std::string err_msg;
+
+public:
+	dataspace_exception(const char *msg) : err_msg(msg) {};
+	~dataspace_exception() throw() {};
+	const char *what() const throw() {return err_msg.c_str();};
+};
+
+template<typename T>
+void transpose_percival_frame(percival_frame<T> & original_frame){
+	//rather expensive operations
+
+	percival_frame<T> temp_frame;
+	int original_width = original_frame.width;
+	int original_height = original_frame.height;
+
+	int new_width	= original_height;
+	int new_height	= original_width;
+
+	temp_frame.set_frame_size(new_height, new_width);
+
+	for(int i = 0; i < original_width; i ++){
+		for(int j = 0; j < original_height; j ++)
+			*(temp_frame.data + j + i * original_height) = *(original_frame.data + i + j * original_width);
+	}
+
+	original_frame.set_frame_size(new_height, new_width);
+
+	for(int i = 0; i < new_width; i ++){
+		for(int j = 0; j < new_height; j ++)
+			*(original_frame.data + i + j * new_width) = *(temp_frame.data + i + j * new_width);
+	}
+}
 
 template<typename T>
 void percival_HDF5_loader(
-		const std::string & path_name,
-		const std::string & data_set_name,
-		percival_frame<T> & buffer_frame
+		const char * path_name,
+		const char * data_set_name,
+		percival_frame<T> & buffer_frame,
+		bool transposed = 0,
+		bool print_error = 0			//default 0
 ){
-	Exception::dontPrint();
-	//should_throw_exception_if_input_path_does_not_exist
-	H5File file;
-	file.openFile(path_name, H5F_ACC_RDONLY);
+	herr_t status;
+	hid_t file_id, dataset_id, dataspace_id, datatype_id;
 
+	if(!print_error)
+	/* Turn off error handling */
+	  H5Eset_auto(H5E_DEFAULT, NULL, NULL);
+
+	/*
+	 *
+	 * open HDF5 files and datasets
+	 *
+	 */
+	file_id = H5Fopen(path_name,H5F_ACC_RDONLY, H5P_DEFAULT);
+	if(file_id<0){
+		H5close();
+		throw file_exception{path_name, " does not exist or is not an HDF5 file. Failed to open."};
+	}
 	//should_throw_exception_if_dataset_does_not_exist
-	DataSet read_data_set = file.openDataSet(data_set_name);
-	DataSpace read_dataspace = read_data_set.getSpace();
-
-	if(read_dataspace.getSimpleExtentNdims() != 2)
-		throw DataSpaceIException{};
-
-	hsize_t dims_out[2];
-	int ndims = read_dataspace.getSimpleExtentDims( dims_out, NULL);
-	int percival_frame_height = dims_out[0];
-	int percival_frame_width  = dims_out[1];
-
-	//should_generate_output_of_the_same_size_as_input
-	buffer_frame.set_frame_size(percival_frame_height, percival_frame_width);
-
-	//should_throw_if_data_type_is_neither_int_nor_32_bit_float
-	H5T_class_t type_class = read_data_set.getTypeClass();
-	//todo: check if T is of type int
-	if(type_class == H5T_INTEGER){
-		IntType intype = read_data_set.getIntType();
-		H5std_string order_string;
-		H5T_order_t order = intype.getOrder( order_string );
-		size_t size = intype.getSize();
-		if(size < 2)
-			throw DataTypeIException{};
-		if(order == H5T_ORDER_BE )
-			throw DataTypeIException{};
-		if((size == 2) && (size == sizeof(T)))
-			read_data_set.read( buffer_frame.data, PredType::STD_I16LE, read_dataspace );
-		else if((size == 4) && (size == sizeof(T)))
-			read_data_set.read( buffer_frame.data, PredType::NATIVE_INT, read_dataspace );
-		else{
-			throw DataTypeIException{};
-		}
-		//should_preserve_data_integrity_int
+	dataset_id = H5Dopen2(file_id, data_set_name, H5P_DEFAULT);
+	if(dataset_id<0){
+		H5close();
+		throw file_exception{data_set_name, " dataset does not exist. Failed to open."};
 	}
-	else if(type_class == H5T_FLOAT){
 
-		//should_throw_exception_if_input_percival_frame_is_of_wrong_type_float_vs_int
-		//todo check if T is float
-
-		FloatType intype = read_data_set.getFloatType();
-		H5std_string order_string;
-		H5T_order_t order = intype.getOrder( order_string );
-		size_t size = intype.getSize();
-		if(order == H5T_ORDER_BE )
-			throw DataTypeIException{};
-		if((size == 4) && (size == sizeof(T))){
-			read_data_set.read( buffer_frame.data, PredType::IEEE_F32LE, read_dataspace );}//IEEE_F32LE
-		else if((size == 8) && (size == sizeof(T))){
-			read_data_set.read( buffer_frame.data, PredType::IEEE_F64LE, read_dataspace );
-		//should_preserve_data_integrity_double
-		}
-		else{
-			throw DataTypeIException{};
-		}
+	dataspace_id = H5Dget_space(dataset_id);
+	if(dataspace_id<0){
+		H5close();
+		throw file_exception{path_name, " Fail to get dataspace."};
 	}
+	/*
+	 *
+	 *
+	 * examining data properties, dimension, type, size, order etc
+	 *
+	 */
+	int rank;
+	rank = H5Sget_simple_extent_ndims(dataspace_id);
+	if(rank != 2){
+		H5close();
+		throw dataspace_exception{"Dimension != 2."};
+	}
+	hsize_t* current_dims, *maximum_dims;
+
+	current_dims = new hsize_t[rank];
+	maximum_dims = new hsize_t[rank];
+
+	//Alternative C syntax
+	//current_dims = (hsize_t*)malloc(rank*sizeof(hsize_t));
+	//maximum_dims = (hsize_t*)malloc(rank*sizeof(hsize_t));
+
+	H5Sget_simple_extent_dims(dataspace_id, current_dims, maximum_dims);
+	buffer_frame.set_frame_size(current_dims[0], current_dims[1]);
+	//
+	//
+	delete [] current_dims;
+	delete [] maximum_dims;
+
+	datatype_id = H5Dget_type(dataset_id);
+
+	int size = H5Tget_size(datatype_id);
+	//
+	//	if(size != sizeof(T))
+	//		throw datatype_exception{};
+
+	if(H5Tget_order(datatype_id)==H5T_ORDER_BE){
+		H5close();
+		throw datatype_exception{"Only little endian data is permitted."};
+	}
+
+	hid_t memtype_id;
+	H5T_class_t data_class = H5Tget_class(datatype_id);
+	H5T_sign_t sign = H5Tget_sign(datatype_id);
+
+	hid_t native_type = H5Tget_native_type(datatype_id, H5T_DIR_ASCEND);
+
+	if( H5Tequal( native_type, H5T_NATIVE_INT16) && (typeid(T) == typeid(short int)) )
+			memtype_id = H5T_NATIVE_INT16;
+
+	else if( H5Tequal(native_type, H5T_NATIVE_UINT16) && (typeid(T) == typeid(short unsigned int)) )
+			memtype_id = H5T_NATIVE_UINT16;
+
+	else if( H5Tequal( native_type, H5T_NATIVE_INT32) && (typeid(T) == typeid(int)) )
+			memtype_id = H5T_NATIVE_INT32;
+
+	else if( H5Tequal( native_type , H5T_NATIVE_UINT32) && (typeid(T) == typeid(unsigned int)) )
+			memtype_id = H5T_NATIVE_UINT32;
+
+
+
+	else if( H5Tequal( native_type , H5T_NATIVE_FLOAT) && (typeid(T) == typeid(float)) )
+			memtype_id = H5T_NATIVE_FLOAT;
+
+	else if( H5Tequal( native_type , H5T_NATIVE_DOUBLE) && (typeid(T) == typeid(double)) )
+			memtype_id = H5T_NATIVE_DOUBLE;
+
 	else{
-		//should_throw_exception_if_input_percival_frame_is_of_wrong_type_float_vs_int
-		throw DataTypeIException{};
-
+			throw datatype_exception{"Invalid input datatype or wrong destination datatype."};
+			H5close();
 	}
-	//todo: write exception for each of the throws above, pay particular attention to the message.
-}
 
+
+	//only little endian, unsigned int, unsigned short int, single and double float are accepted
+
+	status = H5Dread (dataset_id, memtype_id, H5S_ALL, H5S_ALL, H5P_DEFAULT, buffer_frame.data);	//todo change these four read statement into one
+
+	if(status < 0){
+		H5close();
+		throw file_exception{path_name, " cannot be read."};
+	}
+
+	if(transposed == 1){
+		transpose_percival_frame(buffer_frame);
+	}
+	H5close();
+}
 
 #endif /* INCLUDE_PERCIVAL_HDF5_LOADER_H_ */
 

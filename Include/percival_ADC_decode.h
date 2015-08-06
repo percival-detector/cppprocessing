@@ -11,9 +11,7 @@
 #include "percival_processing.h"
 #include<exception>
 
-class dimension_mismatch_exception: public std::exception{};
-
-void percival_ADC_decode(const percival_frame<short int> &, percival_frame<float> &);
+void percival_ADC_decode(const percival_frame<short int> &, percival_frame<float> &, const percival_calib_params & calib_params, bool store_gain = false);
 
 /*
  * TODO:

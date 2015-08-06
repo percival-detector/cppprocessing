@@ -4,5 +4,5 @@
 
 USER_OBJS :=
 
-LIBS := -lhdf5 -lhdf5_cpp
+LIBS := -lhdf5
 
