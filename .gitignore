@@ -26,3 +26,11 @@
 *.exe
 *.out
 *.app
+
+# Editor backup files
+*~
+*.swp
+
+# System NFS crash files
+.nfs*
+
