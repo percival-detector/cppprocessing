@@ -27,3 +27,5 @@
 *.out
 *.app
 /BOOST_test_ADC_decode/
+/oprofile_data/
+/gmon.out
