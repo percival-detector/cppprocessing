@@ -9,8 +9,8 @@
 
 #include <boost/test/included/unit_test.hpp>
 
-const int TEST_FRAME_HEIGHT 	= 	32;		//cannot be 10
-const int TEST_FRAME_WIDTH		=	32;		//cannot be 10
+const int TEST_FRAME_HEIGHT 	= 	160;		//cannot be 10
+const int TEST_FRAME_WIDTH		=	210;		//cannot be 10
 
 percival_global_params global_params;
 percival_calib_params calib_params(global_params);

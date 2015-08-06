@@ -24,7 +24,9 @@ std::string percival_global_params::default_location_Gc;
 std::string percival_global_params::default_location_Gf;
 std::string percival_global_params::default_location_Oc;
 std::string percival_global_params::default_location_Of;
+std::string percival_global_params::default_location_ADU_to_electrons_conversion;
 std::string percival_global_params::default_calib_params_dataset_name;
+
 
 percival_global_params::percival_global_params(const std::string & master_param_file){
 		percival_global_params::initialisation(master_param_file);
@@ -119,6 +121,11 @@ bool percival_global_params::load_master_param_file(const std::string & master_p
 						percival_global_params::default_calib_params_dataset_name = line.substr(quotation_begin,quotation_end-quotation_begin);
 						is_initialised_every_member[12] = true;
 					}
+					if(line.find("default_location_ADU_to_electrons_conversion") != std::string::npos){
+						percival_global_params::default_location_ADU_to_electrons_conversion = line.substr(quotation_begin,quotation_end-quotation_begin);
+						is_initialised_every_member[13] = true;
+					}
+
 				}
 			}
 			//			std::cout << std::stoi(" 124 ") << std::endl;
@@ -181,7 +188,8 @@ bool percival_global_params::check_initialisation(){
 					(percival_global_params::is_initialised_every_member[9] == false) ||
 						(percival_global_params::is_initialised_every_member[10] == false) ||
 							(percival_global_params::is_initialised_every_member[11] == false)||
-								(percival_global_params::is_initialised_every_member[12] == false)){
+								(percival_global_params::is_initialised_every_member[12] == false)||
+									(percival_global_params::is_initialised_every_member[13] == false)){
 		return 0;
 	}
 //	else if((percival_global_params::is_initialised_every_member[0] == false) ||

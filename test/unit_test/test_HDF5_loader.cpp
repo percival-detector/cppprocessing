@@ -15,8 +15,8 @@
 #include <iostream>
 
 //defining parameters for test fixtures
-const int TEST_FRAME_HEIGHT 	= 	32;
-const int TEST_FRAME_WIDTH		=	512;
+const int TEST_FRAME_HEIGHT 	= 	160;
+const int TEST_FRAME_WIDTH		=	210;
 const int RANK 					= 	2;
 const char* HDF5_FILE_NAME			= 	"./data/test_HDF5.h5";
 const char* HDF5_INT_DATA_SET_NAME	= 	"int_sample_frame";
@@ -50,10 +50,10 @@ BOOST_AUTO_TEST_CASE ( should_throw_exception_if_dataset_does_not_exist ){
 BOOST_AUTO_TEST_CASE ( should_throw_if_input_file_is_not_2D  ){
 	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_three_dimension_DATA_SET_NAME, int_buffer_frame),dataspace_exception);
 }
-
-BOOST_AUTO_TEST_CASE ( should_throw_if_input_file_is_not_little_endian  ){
-	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_BE_DATA_SET_NAME, int_buffer_frame),datatype_exception);
-}
+//
+//BOOST_AUTO_TEST_CASE ( should_throw_if_input_file_is_not_little_endian  ){
+//	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_BE_DATA_SET_NAME, int_buffer_frame),datatype_exception);
+//}
 
 BOOST_AUTO_TEST_CASE ( should_throw_if_buffer_is_of_wrong_type  ){
 	percival_frame<float> float_buffer_frame;
@@ -78,9 +78,9 @@ BOOST_AUTO_TEST_CASE ( should_preserve_data_integrity_int ){
 	BOOST_REQUIRE_NO_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_INT_DATA_SET_NAME, int_buffer_frame));
 	//four corners
 	BOOST_REQUIRE_EQUAL(*(int_buffer_frame.data), 0);												//upper left
-	BOOST_REQUIRE_EQUAL(*(int_buffer_frame.data + TEST_FRAME_HEIGHT * TEST_FRAME_WIDTH - 1), 542);	//Lower right
-	BOOST_REQUIRE_EQUAL(*(int_buffer_frame.data + 					 TEST_FRAME_WIDTH - 1), 511);	//upper right
-	BOOST_REQUIRE_EQUAL(*(int_buffer_frame.data + TEST_FRAME_WIDTH * (TEST_FRAME_HEIGHT - 1) ), 31);	//lower left
+	BOOST_REQUIRE_EQUAL(*(int_buffer_frame.data + TEST_FRAME_HEIGHT * TEST_FRAME_WIDTH - 1), 368);	//Lower right
+	BOOST_REQUIRE_EQUAL(*(int_buffer_frame.data + 					 TEST_FRAME_WIDTH - 1), 209);	//upper right
+	BOOST_REQUIRE_EQUAL(*(int_buffer_frame.data + TEST_FRAME_WIDTH * (TEST_FRAME_HEIGHT - 1) ), 159);	//lower left
 
 }
 
@@ -88,15 +88,26 @@ BOOST_AUTO_TEST_CASE ( should_preserve_data_integrity_double ){
 	BOOST_REQUIRE_NO_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_DOUBLE_DATA_SET_NAME, double_buffer_frame));
 	//four corners
 		/*		four corners of double_test_data
-		 * 		0.0		......	511.0
-		 * 		.				.
-		 * 		.				.
-		 * 		31.0	......	542.0
+		 * 		0	......	209
+		 * 		.			.
+		 * 		.			.
+		 * 		159	......	368
 		 */
 	BOOST_REQUIRE_CLOSE_FRACTION(*(double_buffer_frame.data), 0, 0.01);												//upper left
-	BOOST_REQUIRE_CLOSE_FRACTION(*(double_buffer_frame.data + TEST_FRAME_HEIGHT * TEST_FRAME_WIDTH - 1), 542, 0.01);	//Lower right
-	BOOST_REQUIRE_CLOSE_FRACTION(*(double_buffer_frame.data + 					 TEST_FRAME_WIDTH - 1), 511, 0.01);	//upper right
-	BOOST_REQUIRE_CLOSE_FRACTION(*(double_buffer_frame.data + TEST_FRAME_WIDTH * (TEST_FRAME_HEIGHT - 1) ), 31, 0.01);	//lower left
+	BOOST_REQUIRE_CLOSE_FRACTION(*(double_buffer_frame.data + TEST_FRAME_HEIGHT * TEST_FRAME_WIDTH - 1), 368, 0.01);	//Lower right
+	BOOST_REQUIRE_CLOSE_FRACTION(*(double_buffer_frame.data + 					 TEST_FRAME_WIDTH - 1), 209, 0.01);	//upper right
+	BOOST_REQUIRE_CLOSE_FRACTION(*(double_buffer_frame.data + TEST_FRAME_WIDTH * (TEST_FRAME_HEIGHT - 1) ), 159, 0.01);	//lower left
+
+}
+
+BOOST_AUTO_TEST_CASE ( should_preserve_data_integrity_after_transposition_option_enabled_int ){
+	//percival_HDF5_loader(HDF5_FILE_NAME, HDF5_INT_DATA_SET_NAME, int_buffer_frame);
+	BOOST_REQUIRE_NO_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_INT_DATA_SET_NAME, int_buffer_frame, true));
+	//four corners
+	BOOST_REQUIRE_EQUAL(*(int_buffer_frame.data), 0);												//upper left
+	BOOST_REQUIRE_EQUAL(*(int_buffer_frame.data + TEST_FRAME_HEIGHT * TEST_FRAME_WIDTH - 1), 368);	//Lower right
+	BOOST_REQUIRE_EQUAL(*(int_buffer_frame.data + 					 TEST_FRAME_HEIGHT - 1), 159);	//upper right
+	BOOST_REQUIRE_EQUAL(*(int_buffer_frame.data + TEST_FRAME_HEIGHT * (TEST_FRAME_WIDTH - 1) ), 209);	//lower left
 
 }
 

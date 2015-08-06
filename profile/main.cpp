@@ -10,7 +10,10 @@
 #include<cstdio>
 #include<iostream>
 
-
+//todo there is a problem in converting from combined hdf datatype to int 16 hdf5 file
+//particularly, gain bits in Hazem's source range from 1 - 4. In Arvindar's code, it was assumed that the gain bits range from 0 - 3
+//this problem is significant when the actual gain bit goes beyond 3 such that the fine bits are affected.
+//urgent need correction!!!
 
 int main(int argn, char* argv[]){
 	/*
@@ -22,12 +25,21 @@ int main(int argn, char* argv[]){
 	 *
 	 */
 
-	percival_frame<short> src_frame;
-	percival_frame<float> des_frame;
+	percival_frame<short> sample_frame;
+	percival_frame<short> reset_frame;
+	percival_frame<float> ADC_decoded_sample_frame;
+	percival_frame<float> ADC_decoded_reset_frame;
+	percival_frame<float> CDS_frame;
+	percival_frame<float> electron_corrected_frame;
 
 //default location
 	char path_name[255]     = "./data/KnifeQuadBPos1_2_21_int16.h5";
 	char data_set_name[255] = "KnifeQuadBPos1/10/Sample";
+
+	char sample_data_set_name[255] = "KnifeQuadBPos1/10/Sample";
+	char reset_data_set_name[255] = "KnifeQuadBPos1/9/Reset";
+
+	char top_level_data_set_name[255]  = "KnifeQuadBPos1/";
 	char config_file[255] = "/home/pqm78245/percivalProcessing/cppProcessing2.0/test_param_file.txt";
 
 	int width, height;
@@ -59,23 +71,43 @@ int main(int argn, char* argv[]){
 
 	if(use_meaningless_image){
 		for(int i = 0; i < width * height; i++  )
-			*(src_frame.data + i) = i % 32767;
+			*(sample_frame.data + i) = i % 32767;
 	}else{
+
 		try{
-			percival_HDF5_loader(path_name, data_set_name, src_frame);
+			percival_HDF5_loader(path_name, sample_data_set_name, sample_frame);
+			percival_HDF5_loader(path_name, reset_data_set_name, reset_frame);
 		}
 		catch(file_exception & e){
 			std::cerr << e.what() << std::endl;
 		}
 	}
 
+
 	for(int i = 0; i < repeat; i++){
-		percival_ADC_decode(src_frame, des_frame, calib_params);
+		percival_ADC_decode(sample_frame, ADC_decoded_sample_frame, calib_params);
+		percival_ADC_decode(reset_frame, ADC_decoded_reset_frame, calib_params);
+
+		percival_CDS_correction(ADC_decoded_sample_frame, ADC_decoded_reset_frame, CDS_frame);
+		percival_ADU_to_electron_correction(CDS_frame, electron_corrected_frame, calib_params);
+
 		std::cout << i << std::endl;
 	}
+
 	std::cout << "done!" << std::endl;
 //used for writing output
-	percival_HDF5_writer(des_frame, "./generic_output.h5", "output");
+	percival_HDF5_writer(ADC_decoded_sample_frame,  "./04-08-2015 output.h5", "ADC_decoded_sample_frame");
+	percival_HDF5_writer(ADC_decoded_reset_frame,  "./04-08-2015 output.h5", "ADC_decoded_reset_frame");
+	percival_HDF5_writer(CDS_frame, "./04-08-2015 output.h5", "CDS_frame");
+	percival_HDF5_writer(electron_corrected_frame,  "./04-08-2015 output.h5", "electron_corrected_frame");
+
+//	std::cout << *(calib_params.ADU_to_electrons_conversion.data + 2) << std::endl;
+	percival_HDF5_writer(calib_params.Gc,  "./04-08-2015 output.h5", "calib_params_Gc");
+	percival_HDF5_writer(calib_params.Gf,  "./04-08-2015 output.h5", "calib_params_Gf");
+	percival_HDF5_writer(calib_params.Oc,  "./04-08-2015 output.h5", "calib_params_Oc");
+	percival_HDF5_writer(calib_params.Of,  "./04-08-2015 output.h5", "calib_params_Of");
+	percival_HDF5_writer(calib_params.ADU_to_electrons_conversion,  "./04-08-2015 output.h5", "ADU_to_electrons_conversion");
+
 	return 0;
 }
 

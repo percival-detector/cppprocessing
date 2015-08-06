@@ -41,6 +41,7 @@ class percival_global_params{
 		static std::string default_location_Gf;
 		static std::string default_location_Oc;
 		static std::string default_location_Of;
+		static std::string default_location_ADU_to_electrons_conversion;
 
 		static std::string default_calib_params_dataset_name;
 

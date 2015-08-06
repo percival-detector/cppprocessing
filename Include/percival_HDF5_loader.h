@@ -76,10 +76,37 @@ public:
 };
 
 template<typename T>
+void transpose_percival_frame(percival_frame<T> & original_frame){
+	//rather expensive operations
+
+	percival_frame<T> temp_frame;
+	int original_width = original_frame.width;
+	int original_height = original_frame.height;
+
+	int new_width	= original_height;
+	int new_height	= original_width;
+
+	temp_frame.set_frame_size(new_height, new_width);
+
+	for(int i = 0; i < original_width; i ++){
+		for(int j = 0; j < original_height; j ++)
+			*(temp_frame.data + j + i * original_height) = *(original_frame.data + i + j * original_width);
+	}
+
+	original_frame.set_frame_size(new_height, new_width);
+
+	for(int i = 0; i < new_width; i ++){
+		for(int j = 0; j < new_height; j ++)
+			*(original_frame.data + i + j * new_width) = *(temp_frame.data + i + j * new_width);
+	}
+}
+
+template<typename T>
 void percival_HDF5_loader(
 		const char * path_name,
 		const char * data_set_name,
 		percival_frame<T> & buffer_frame,
+		bool transposed = 0,
 		bool print_error = 0			//default 0
 ){
 	herr_t status;
@@ -155,33 +182,33 @@ void percival_HDF5_loader(
 	H5T_class_t data_class = H5Tget_class(datatype_id);
 	H5T_sign_t sign = H5Tget_sign(datatype_id);
 
+	hid_t native_type = H5Tget_native_type(datatype_id, H5T_DIR_ASCEND);
 
-	if(data_class == H5T_INTEGER){
-		if((size == 2)&& (typeid(T) == typeid(short int)))
-			memtype_id = H5T_STD_U16LE;
-		else if((size == 4) && (typeid(T) == typeid(int))){ //&& (sign == 0)
-			memtype_id = H5T_STD_U32LE;
+	if( H5Tequal( native_type, H5T_NATIVE_INT16) && (typeid(T) == typeid(short int)) )
+			memtype_id = H5T_NATIVE_INT16;
 
-		}
-		else{
-			H5close();
-			throw datatype_exception{size, "int" , sign, "Invalid input datatype or wrong destination datatype."};
-		}
-	}
-	else if(data_class == H5T_FLOAT){
-		if( (size == 4) && (typeid(T) == typeid(float)))
-			memtype_id = H5T_IEEE_F32LE;
-		else if((size == 8) && (typeid(T) == typeid(double)))
-			memtype_id = H5T_IEEE_F64LE;
-		else{
-			H5close();
-			throw datatype_exception{size, "float" , sign, "Invalid input datatype or wrong destination datatype."};
-		}
-	}
+	else if( H5Tequal(native_type, H5T_NATIVE_UINT16) && (typeid(T) == typeid(short unsigned int)) )
+			memtype_id = H5T_NATIVE_UINT16;
+
+	else if( H5Tequal( native_type, H5T_NATIVE_INT32) && (typeid(T) == typeid(int)) )
+			memtype_id = H5T_NATIVE_INT32;
+
+	else if( H5Tequal( native_type , H5T_NATIVE_UINT32) && (typeid(T) == typeid(unsigned int)) )
+			memtype_id = H5T_NATIVE_UINT32;
+
+
+
+	else if( H5Tequal( native_type , H5T_NATIVE_FLOAT) && (typeid(T) == typeid(float)) )
+			memtype_id = H5T_NATIVE_FLOAT;
+
+	else if( H5Tequal( native_type , H5T_NATIVE_DOUBLE) && (typeid(T) == typeid(double)) )
+			memtype_id = H5T_NATIVE_DOUBLE;
+
 	else{
-		throw datatype_exception{"Invalid input datatype or wrong destination datatype."};
-		H5close();
+			throw datatype_exception{"Invalid input datatype or wrong destination datatype."};
+			H5close();
 	}
+
 
 	//only little endian, unsigned int, unsigned short int, single and double float are accepted
 
@@ -192,6 +219,9 @@ void percival_HDF5_loader(
 		throw file_exception{path_name, " cannot be read."};
 	}
 
+	if(transposed == 1){
+		transpose_percival_frame(buffer_frame);
+	}
 	H5close();
 }
 

@@ -9,7 +9,7 @@
 #define PERCIVAL_FRAME_H_
 
 #include "percival_processing.h"
-
+#include <vector>
 template<typename T>
 class percival_frame{
 public:
@@ -21,6 +21,8 @@ public:
 	 */
 	int width, height;			//
 	T* data;
+	//add an offset if splitting up the image is needed
+	std::vector<int> CDS_subtraction_indices;		//stores pixel indices requiring CDS_substraction
 
 	void set_frame_size(int h, int w)
 	{
