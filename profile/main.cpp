@@ -40,7 +40,7 @@ int main(int argn, char* argv[]){
 	char reset_data_set_name[255] = "KnifeQuadBPos1/9/Reset";
 
 	char top_level_data_set_name[255]  = "KnifeQuadBPos1/";
-	char config_file[255] = "/home/pqm78245/percivalProcessing/cppProcessing2.0/test_param_file.txt";
+	char config_file[255] = "./test_param_file.txt";
 
 	int width, height;
 	int repeat=10;
