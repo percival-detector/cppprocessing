@@ -40,7 +40,7 @@ int main(int argn, char* argv[]){
 	char reset_data_set_name[255] = "KnifeQuadBPos1/9/Reset";
 
 	char top_level_data_set_name[255]  = "KnifeQuadBPos1/";
-	char config_file[255] = "./test_param_file.txt";
+	char config_file[255] = "./data/test_param_file.txt";
 
 	int width, height;
 	int repeat=10;
@@ -91,22 +91,22 @@ int main(int argn, char* argv[]){
 		percival_CDS_correction(ADC_decoded_sample_frame, ADC_decoded_reset_frame, CDS_frame);
 		percival_ADU_to_electron_correction(CDS_frame, electron_corrected_frame, calib_params);
 
-		std::cout << i << std::endl;
+//		std::cout << i << std::endl;
 	}
 
 	std::cout << "done!" << std::endl;
 //used for writing output
-	percival_HDF5_writer(ADC_decoded_sample_frame,  "./04-08-2015 output.h5", "ADC_decoded_sample_frame");
-	percival_HDF5_writer(ADC_decoded_reset_frame,  "./04-08-2015 output.h5", "ADC_decoded_reset_frame");
-	percival_HDF5_writer(CDS_frame, "./04-08-2015 output.h5", "CDS_frame");
-	percival_HDF5_writer(electron_corrected_frame,  "./04-08-2015 output.h5", "electron_corrected_frame");
+	percival_HDF5_writer(ADC_decoded_sample_frame,  "./07-08-2015 output.h5", "ADC_decoded_sample_frame");
+	percival_HDF5_writer(ADC_decoded_reset_frame,  "./07-08-2015 output.h5", "ADC_decoded_reset_frame");
+	percival_HDF5_writer(CDS_frame, "./07-08-2015 output.h5", "CDS_frame");
+	percival_HDF5_writer(electron_corrected_frame,  "./07-08-2015 output.h5", "electron_corrected_frame");
 
 //	std::cout << *(calib_params.ADU_to_electrons_conversion.data + 2) << std::endl;
-	percival_HDF5_writer(calib_params.Gc,  "./04-08-2015 output.h5", "calib_params_Gc");
-	percival_HDF5_writer(calib_params.Gf,  "./04-08-2015 output.h5", "calib_params_Gf");
-	percival_HDF5_writer(calib_params.Oc,  "./04-08-2015 output.h5", "calib_params_Oc");
-	percival_HDF5_writer(calib_params.Of,  "./04-08-2015 output.h5", "calib_params_Of");
-	percival_HDF5_writer(calib_params.ADU_to_electrons_conversion,  "./04-08-2015 output.h5", "ADU_to_electrons_conversion");
+	percival_HDF5_writer(calib_params.Gc,  "./07-08-2015 output.h5", "calib_params_Gc");
+	percival_HDF5_writer(calib_params.Gf,  "./07-08-2015 output.h5", "calib_params_Gf");
+	percival_HDF5_writer(calib_params.Oc,  "./07-08-2015 output.h5", "calib_params_Oc");
+	percival_HDF5_writer(calib_params.Of,  "./07-08-2015 output.h5", "calib_params_Of");
+	percival_HDF5_writer(calib_params.ADU_to_electrons_conversion,  "./07-08-2015 output.h5", "ADU_to_electrons_conversion");
 
 	return 0;
 }
