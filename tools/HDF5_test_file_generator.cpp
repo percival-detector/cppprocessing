@@ -30,7 +30,6 @@ void write_to_test_file(){
 		}
 	}
 	char char_test_data[] = {'a'};
-	int BE_test_data[] = {20};
 	int* three_dimension_test_data = new int[27];
 
 	for(int i = 0; i < 27; i++){
@@ -54,7 +53,7 @@ void write_to_test_file(){
 	//Creating test_HDF5.h5
 	herr_t status;
 	hid_t file_id;
-	hid_t dataset_int_id, dataset_double_id, dataset_char_id, dataset_BE_id, dataset_three_dimension_id;
+	hid_t dataset_int_id, dataset_double_id, dataset_char_id, dataset_three_dimension_id;
 	hid_t dataspace_char_id, dataspace_two_dimension_id, dataspace_three_dimension_id;
 	hsize_t two_dims[2], three_dims[3], one_element[2];
 
