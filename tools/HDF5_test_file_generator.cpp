@@ -5,9 +5,7 @@
  *      Author: pqm78245
  */
 
-#include "H5Cpp.h"
-
-using namespace H5;
+#include "hdf5.h"
 
 const int TEST_FRAME_HEIGHT 	= 	160;
 const int TEST_FRAME_WIDTH		=	210;
@@ -19,7 +17,7 @@ const std::string HDF5_CHAR_DATA_SET_NAME 	= 	"char_frame";
 const std::string HDF5_three_dimension_DATA_SET_NAME 	= 	"three_dimension_data";
 const std::string HDF5_BE_DATA_SET_NAME 	= 	"BE_data";
 
-void write_to_another_file(){
+void write_to_test_file(){
 	int* int_test_data = new int[TEST_FRAME_HEIGHT * TEST_FRAME_WIDTH];
 	double* double_test_data = new double[TEST_FRAME_HEIGHT * TEST_FRAME_WIDTH];
 
@@ -52,51 +50,55 @@ void write_to_another_file(){
 	 */
 
 	//Creating test_HDF5.h5
+	herr_t status;
+	hid_t file_id;
+	hid_t dataset_int_id, dataset_double_id, dataset_char_id, dataset_BE_id, dataset_three_dimension_id;
+	hid_t dataspace_two_dimension_id, dataspace_three_dimension_id;
+	hsize_t two_dims[2], three_dims[3];
 
-	H5File write_file(HDF5_FILE_NAME,H5F_ACC_TRUNC);
+	/*
+	 *
+	 * open HDF5 files and datasets
+	 *
+	 */
 
-	//creating a dataspace object for int and double
-	hsize_t dims[RANK];
-	dims[0] = TEST_FRAME_HEIGHT;	dims[1] = TEST_FRAME_WIDTH ;
-	DataSpace int_dataspace(RANK,dims);
-	DataSpace double_dataspace(RANK,dims);
+	file_id = H5Fcreate(HDF5_FILE_NAME, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 
-	//creating a dataspace object for char and Big Endian data
-	hsize_t char_dims[RANK];
-	char_dims[0] = 1; char_dims[1] = 1;
-	DataSpace char_dataspace(RANK,char_dims);
-	DataSpace BE_dataspace(RANK,char_dims);
+	/* Create the data space for the dataset. */
+	two_dims[0] = TEST_FRAME_HEIGHT;
+	two_dims[1] = TEST_FRAME_WIDTH;
 
-	//creating a dataspace object for char and Big Endian data
-	hsize_t three_dimension_dims[3];
-	three_dimension_dims[0] = 3; three_dimension_dims[1] = 3; three_dimension_dims[2] = 3;
-	DataSpace three_dimension_dataspace(3,three_dimension_dims);
+	three_dims[0] = 3; 	three_dims[1] = 3; 	three_dims[2] = 3;
 
-	//creating a dataset
-	DataSet dataset_int = write_file.createDataSet(HDF5_INT_DATA_SET_NAME, PredType::NATIVE_INT, int_dataspace);
-	DataSet dataset_double = write_file.createDataSet(HDF5_DOUBLE_DATA_SET_NAME,PredType::IEEE_F64LE, double_dataspace);
-	DataSet dataset_char = write_file.createDataSet(HDF5_CHAR_DATA_SET_NAME, PredType::NATIVE_CHAR, char_dataspace);
-	DataSet dataset_BE = write_file.createDataSet(HDF5_BE_DATA_SET_NAME, PredType::STD_U32BE, BE_dataspace);
-	DataSet dataset_three_dimension = write_file.createDataSet(HDF5_three_dimension_DATA_SET_NAME, PredType::NATIVE_INT, three_dimension_dataspace);
+	dataspace_two_dimension_id = H5Screate_simple(2, two_dims, NULL);
+	dataspace_three_dimension_id = H5Screate_simple(3, three_dims, NULL);
 
-	//Write to data set
-	dataset_int.write(int_test_data, PredType::NATIVE_INT);
-	dataset_double.write(double_test_data, PredType::IEEE_F64LE);
-	dataset_char.write(char_test_data, PredType::NATIVE_CHAR);
-	dataset_BE.write(BE_test_data, PredType::STD_U32BE);
-	dataset_three_dimension.write(three_dimension_test_data, PredType::NATIVE_INT);
+	/* Create int dataset. */
 
-	//close the file
-	dataset_int.close();
-	dataset_double.close();
-	dataset_char.close();
-	dataset_BE.close();
-	dataset_three_dimension.close();
+	dataset_int_id = H5Dcreate(file_id, HDF5_INT_DATA_SET_NAME, H5T_NATIVE_INT32, dataspace_two_dimension_id,
+			H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	status = H5Dwrite(dataset_int_id, H5T_NATIVE_INT32, H5S_ALL, H5S_ALL, H5P_DEFAULT, int_test_data);
 
-	write_file.close();
+	/* Create double dataset. */
 
+	dataset_double_id = H5Dcreate(file_id, HDF5_DOUBLE_DATA_SET_NAME, H5T_NATIVE_DOUBLE, dataspace_two_dimension_id,
+			H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	status = H5Dwrite(dataset_double_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, double_test_data);
+
+	/* Create char dataset. */
+
+	dataset_char_id = H5Dcreate(file_id, HDF5_CHAR_DATA_SET_NAME, H5T_NATIVE_CHAR, dataspace_two_dimension_id,
+			H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	status = H5Dwrite(dataset_char_id, H5T_NATIVE_CHAR, H5S_ALL, H5S_ALL, H5P_DEFAULT, char_test_data);
+
+	/* Create three dimension dataset. */
+
+	dataset_int_id = H5Dcreate(file_id, HDF5_three_dimension_DATA_SET_NAME, H5T_NATIVE_INT32, dataspace_three_dimension_id,
+			H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	status = H5Dwrite(dataset_three_dimension_id, H5T_NATIVE_INT32, H5S_ALL, H5S_ALL, H5P_DEFAULT, three_dimension_test_data);
+
+	H5close();
 }
-
 
 #include <iostream>
 #include <fstream>
@@ -104,13 +106,13 @@ void write_to_another_file(){
 int main (void)
 {
 
-		write_to_another_file();
+	write_to_test_file();
 
 
-		std::ofstream myfile;
-		myfile.open ("./data/NotAHDF5File.txt");
-		myfile << "This file is used as a dummy file to check the behaviour of C++ HDF5 loader when the user attempts to use a non-HDF5 file.";
-		myfile.close();
+	std::ofstream myfile;
+	myfile.open ("./data/NotAHDF5File.txt");
+	myfile << "This file is used as a dummy file to check the behaviour of C++ HDF5 loader when the user attempts to use a non-HDF5 file.";
+	myfile.close();
 
 	return 0;
 }
