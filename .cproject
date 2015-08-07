@@ -353,7 +353,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
-									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/include"/>
+									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.debugging.gprof.875074951" name="Generate gprof information (-pg)" superClass="gnu.cpp.compiler.option.debugging.gprof" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.2066205603" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -364,7 +364,7 @@
 								<option id="gnu.c.compiler.option.include.paths.353457459" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Include}&quot;"/>
-									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/include"/>
+									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 								</option>
 								<option id="gnu.c.compiler.option.dialect.std.1592161129" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.865266178" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
@@ -373,10 +373,9 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.725057607" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release">
 								<option id="gnu.cpp.link.option.libs.175552457" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="hdf5"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="hdf5_cpp"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.797284269" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/lib"/>
+									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/lib"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.1502350714" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
 								<option id="gnu.cpp.link.option.debugging.gprof.663031082" name="Generate gprof information (-pg)" superClass="gnu.cpp.link.option.debugging.gprof" value="true" valueType="boolean"/>
@@ -390,7 +389,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0}&quot;"/>
-									<listOptionValue builtIn="false" value="/home/pqm78245/lib/h5_cpp/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1268882203" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
