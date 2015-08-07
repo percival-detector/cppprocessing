@@ -8,7 +8,8 @@ def run_the_function(print_result):
     
     repeat = 10
     width = 210
-    program_to_execute = './Profiling/cppProcessing2.0 '#Use meaningful data to run # + str(width) + ' ' + str(repeat) 
+    #program_to_execute = './Profiling/cppProcessing2.0 '#Use meaningful data to run # + str(width) + ' ' + str(repeat) 
+    program_to_execute = './Debug/cppProcessing2.0 '
     subprocess.call('(/usr/bin/time -v ' + program_to_execute + ') &> profile_report.txt', shell=True)
     subprocess.call("echo $'\n' >> profile_report.txt", shell=True)
     subprocess.call('operf '+program_to_execute, shell=True)
@@ -56,7 +57,7 @@ def run_the_function(print_result):
             percentage_time_ADU_to_electron_correction = float(parsed[1])
         s = f.readline()
         
-    function_time_ADC_decode = total_time * percentage_time_ADC_decode /100 /repeat /2
+    function_time_ADC_decode = total_time * percentage_time_ADC_decode /100 /repeat
     function_time_CDS_subtraction = total_time * percentage_time_CDS_correction /100 /repeat
     function_time_ADU_to_electron = total_time * percentage_time_ADU_to_electron_correction /100 /repeat
     total_processing_time = function_time_ADC_decode + function_time_ADU_to_electron + function_time_CDS_subtraction
@@ -64,15 +65,15 @@ def run_the_function(print_result):
     image_size = width * 160 * 2
     if print_result == True:
         print '=' * 100
-        print 'The processing functions took in total ' + str(total_processing_time) + 'ms to run.'
-        print 'Image size ' + str(width * 160) + '('+str(width) +' * ' + '160)' + ' pixels.' 
+        print 'The program took ' + str(total_time/repeat) + 'ms per sample/reset pair.'
+        print 'Of which the processing functions took in total ' + str(total_processing_time) + 'ms to run.'
+        print 'Image size ' + str(width * 160) + '('+str(width) +' * ' + '160)' + ' pixels.', 
         print str(image_size) + ' Bytes.'
         print 'Statistics collected for '+str(repeat)+' iterations'
-        print 'Total bandwidth(counting both sample and reset): ' + str(1000 * image_size/total_processing_time /1024/1024) + "MB/s"
-        print 'ADC_deocde bandwidth: ' + str(1000 * image_size/function_time_ADC_decode /1024/1024) + "MB/s"
-        print 'CDS_subtraction bandwidth: ' + str(1000 * image_size/function_time_CDS_subtraction /1024/1024) + "MB/s"
-        print 'ADU_to_electron bandwidth: ' + str(1000 * image_size/function_time_ADU_to_electron /1024/1024) + "MB/s"
-        
+        print 'Total bandwidth(counting both sample and reset): ' + str(1000 * image_size * 2/total_processing_time /1024/1024) + "MB/s"    #2 because of sample and reset
+        print 'ADC_deocde bandwidth: ' + str(1000 * image_size * 2/function_time_ADC_decode /1024/1024) + "MB/s"
+        print 'CDS_subtraction bandwidth (two float input): ' + str(1000 * 2 * 2 * image_size/function_time_CDS_subtraction /1024/1024) + "MB/s" #2 for float, 2 for sample and reset
+        print 'ADU_to_electron bandwidth (one float input): ' + str(1000 * 2 * image_size/function_time_ADU_to_electron /1024/1024) + "MB/s"
         print '=' * 100
 
 run_the_function(True)

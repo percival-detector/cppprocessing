@@ -43,7 +43,7 @@ int main(int argn, char* argv[]){
 	char config_file[255] = "./data/test_param_file.txt";
 
 	int width, height;
-	int repeat=10;
+	int repeat=100;
 
 //used for profiling
 	height = 160;		//fixed

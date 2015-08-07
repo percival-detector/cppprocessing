@@ -71,7 +71,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="test|test_data_generation|tools|h5cpp_examples" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="annotated|test|test_data_generation|tools|h5cpp_examples" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -158,7 +158,7 @@
 						</tool>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="test|test_data_generation|tools|h5cpp_examples" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="annotated|test|test_data_generation|tools|h5cpp_examples" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -245,7 +245,7 @@
 					</fileInfo>
 					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.1306835761.2038365748.998982379" name="ADC_decoding_output_generator.py" rcbsApplicability="disable" resourcePath="tools/ADC_decoding_output_generator.py" toolsToInvoke=""/>
 					<sourceEntries>
-						<entry excluding="test_data_generation|tools|h5cpp_examples|profile|tools/ADC_decoding_output_generator.py" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="annotated|test_data_generation|tools|h5cpp_examples|profile|tools/ADC_decoding_output_generator.py" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -321,7 +321,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="test|test_data_generation|tools|h5cpp_examples" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="annotated|test|test_data_generation|tools|h5cpp_examples" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -404,7 +404,7 @@
 						</tool>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="test|src|profile|h5cpp_examples" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="annotated|test|src|profile|h5cpp_examples" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
