@@ -33,17 +33,19 @@ int main(int argn, char* argv[]){
 	percival_frame<float> electron_corrected_frame;
 
 //default location
-	char path_name[255]     = "./data/KnifeQuadBPos1_2_21_int16.h5";
-	char data_set_name[255] = "KnifeQuadBPos1/10/Sample";
+	std::string path_name     = "./data/KnifeQuadBPos1_2_21_int16.h5";
+	std::string data_set_name = "KnifeQuadBPos1/10/Sample";
 
-	char sample_data_set_name[255] = "KnifeQuadBPos1/10/Sample";
-	char reset_data_set_name[255] = "KnifeQuadBPos1/9/Reset";
+	std::string top_level_data_set_name  = "KnifeQuadBPos1/";
 
-	char top_level_data_set_name[255]  = "KnifeQuadBPos1/";
-	char config_file[255] = "./data/test_param_file.txt";
+	std::string sample_data_set_name = "KnifeQuadBPos1/10/Sample";
+	std::string reset_data_set_name = "KnifeQuadBPos1/9/Reset";
+
+
+	std::string config_file = "./data/test_param_file.txt";
 
 	int width, height;
-	int repeat=100;
+	int repeat=1000;
 
 //used for profiling
 	height = 160;		//fixed
@@ -58,8 +60,12 @@ int main(int argn, char* argv[]){
 		}//using computer generated data
 		else{
 			if(argn >= 3){
-				sscanf(argv[2], "%s", path_name);
-				sscanf(argv[3], "%s", data_set_name);
+				char tmp1[255];
+				char tmp2[255];
+				sscanf(argv[2], "%s", tmp1);
+				sscanf(argv[3], "%s", tmp2);
+				path_name = tmp1;
+				top_level_data_set_name = tmp2;
 				if(argn == 5)
 					sscanf(argv[4], "%d", &repeat);
 			}
@@ -75,8 +81,8 @@ int main(int argn, char* argv[]){
 	}else{
 
 		try{
-			percival_HDF5_loader(path_name, sample_data_set_name, sample_frame);
-			percival_HDF5_loader(path_name, reset_data_set_name, reset_frame);
+			percival_HDF5_loader(path_name.c_str(), (top_level_data_set_name + "10/Sample").c_str(), sample_frame);
+			percival_HDF5_loader(path_name.c_str(), (top_level_data_set_name + "9/Reset").c_str(), reset_frame);
 		}
 		catch(file_exception & e){
 			std::cerr << e.what() << std::endl;

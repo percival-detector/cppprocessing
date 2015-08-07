@@ -5,11 +5,13 @@ import subprocess
 def run_the_function(print_result):
     #subprocess.call('LD_LIBRARY_PATH="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-15/prefix/lib"', shell=True)
     #subprocess.call('HDF5_DISABLE_VERSION_CHECK="1"', shell=True)
+    path_name= "./data/KnifeQuadBPos1_2_21_int16.h5"
+    top_level_data_set_name= "KnifeQuadBPos1/"
     
-    repeat = 10
+    repeat = 1000
     width = 210
     #program_to_execute = './Profiling/cppProcessing2.0 '#Use meaningful data to run # + str(width) + ' ' + str(repeat) 
-    program_to_execute = './Debug/cppProcessing2.0 '
+    program_to_execute = './Debug/cppProcessing2.0 ' + "0 "+ path_name + " " + top_level_data_set_name + " " + str(repeat)
     subprocess.call('(/usr/bin/time -v ' + program_to_execute + ') &> profile_report.txt', shell=True)
     subprocess.call("echo $'\n' >> profile_report.txt", shell=True)
     subprocess.call('operf '+program_to_execute, shell=True)
@@ -41,7 +43,7 @@ def run_the_function(print_result):
                 min = int(time[length-3]) * 60 * 1000
             if length > 3:
                 hrs = int(time[length-4]) * 60 * 60 * 1000
-            total_time = hrs + msc + sec + min
+            total_time = float(hrs + msc + sec + min)
             
         elif 'percival_ADC_decode' in s:
             delimited = s.split(' ')
@@ -57,10 +59,10 @@ def run_the_function(print_result):
             percentage_time_ADU_to_electron_correction = float(parsed[1])
         s = f.readline()
         
-    function_time_ADC_decode = total_time * percentage_time_ADC_decode /100 /repeat
-    function_time_CDS_subtraction = total_time * percentage_time_CDS_correction /100 /repeat
-    function_time_ADU_to_electron = total_time * percentage_time_ADU_to_electron_correction /100 /repeat
-    total_processing_time = function_time_ADC_decode + function_time_ADU_to_electron + function_time_CDS_subtraction
+    function_time_ADC_decode = float(total_time * percentage_time_ADC_decode /100 /repeat)
+    function_time_CDS_subtraction = float(total_time * percentage_time_CDS_correction /100 /repeat)
+    function_time_ADU_to_electron = float(total_time * percentage_time_ADU_to_electron_correction /100 /repeat)
+    total_processing_time = float(function_time_ADC_decode + function_time_ADU_to_electron + function_time_CDS_subtraction)
     
     image_size = width * 160 * 2
     if print_result == True:
