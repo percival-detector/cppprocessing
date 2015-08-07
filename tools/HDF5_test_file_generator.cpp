@@ -6,6 +6,7 @@
  */
 
 #include "hdf5.h"
+#include <string>
 
 const int TEST_FRAME_HEIGHT 	= 	160;
 const int TEST_FRAME_WIDTH		=	210;
@@ -62,7 +63,7 @@ void write_to_test_file(){
 	 *
 	 */
 
-	file_id = H5Fcreate(HDF5_FILE_NAME, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+	file_id = H5Fcreate(HDF5_FILE_NAME.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 
 	/* Create the data space for the dataset. */
 	two_dims[0] = TEST_FRAME_HEIGHT;
@@ -75,25 +76,25 @@ void write_to_test_file(){
 
 	/* Create int dataset. */
 
-	dataset_int_id = H5Dcreate(file_id, HDF5_INT_DATA_SET_NAME, H5T_NATIVE_INT32, dataspace_two_dimension_id,
+	dataset_int_id = H5Dcreate(file_id, HDF5_INT_DATA_SET_NAME.c_str(), H5T_NATIVE_INT32, dataspace_two_dimension_id,
 			H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	status = H5Dwrite(dataset_int_id, H5T_NATIVE_INT32, H5S_ALL, H5S_ALL, H5P_DEFAULT, int_test_data);
 
 	/* Create double dataset. */
 
-	dataset_double_id = H5Dcreate(file_id, HDF5_DOUBLE_DATA_SET_NAME, H5T_NATIVE_DOUBLE, dataspace_two_dimension_id,
+	dataset_double_id = H5Dcreate(file_id, HDF5_DOUBLE_DATA_SET_NAME.c_str(), H5T_NATIVE_DOUBLE, dataspace_two_dimension_id,
 			H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	status = H5Dwrite(dataset_double_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, double_test_data);
 
 	/* Create char dataset. */
 
-	dataset_char_id = H5Dcreate(file_id, HDF5_CHAR_DATA_SET_NAME, H5T_NATIVE_CHAR, dataspace_two_dimension_id,
+	dataset_char_id = H5Dcreate(file_id, HDF5_CHAR_DATA_SET_NAME.c_str(), H5T_NATIVE_CHAR, dataspace_two_dimension_id,
 			H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	status = H5Dwrite(dataset_char_id, H5T_NATIVE_CHAR, H5S_ALL, H5S_ALL, H5P_DEFAULT, char_test_data);
 
 	/* Create three dimension dataset. */
 
-	dataset_int_id = H5Dcreate(file_id, HDF5_three_dimension_DATA_SET_NAME, H5T_NATIVE_INT32, dataspace_three_dimension_id,
+	dataset_int_id = H5Dcreate(file_id, HDF5_three_dimension_DATA_SET_NAME.c_str(), H5T_NATIVE_INT32, dataspace_three_dimension_id,
 			H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	status = H5Dwrite(dataset_three_dimension_id, H5T_NATIVE_INT32, H5S_ALL, H5S_ALL, H5P_DEFAULT, three_dimension_test_data);
 
