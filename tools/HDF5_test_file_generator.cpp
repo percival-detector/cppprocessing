@@ -7,6 +7,7 @@
 
 #include "hdf5.h"
 #include <string>
+#include <iostream>
 
 const int TEST_FRAME_HEIGHT 	= 	160;
 const int TEST_FRAME_WIDTH		=	210;
@@ -54,8 +55,8 @@ void write_to_test_file(){
 	herr_t status;
 	hid_t file_id;
 	hid_t dataset_int_id, dataset_double_id, dataset_char_id, dataset_BE_id, dataset_three_dimension_id;
-	hid_t dataspace_two_dimension_id, dataspace_three_dimension_id;
-	hsize_t two_dims[2], three_dims[3];
+	hid_t dataspace_char_id, dataspace_two_dimension_id, dataspace_three_dimension_id;
+	hsize_t two_dims[2], three_dims[3], one_element[2];
 
 	/*
 	 *
@@ -65,39 +66,63 @@ void write_to_test_file(){
 
 	file_id = H5Fcreate(HDF5_FILE_NAME.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 
+	if(file_id<0)
+		std::cerr << "Unable to open file." << std::endl;
+
 	/* Create the data space for the dataset. */
+	one_element[0] = 1; one_element[1]=1;
+
 	two_dims[0] = TEST_FRAME_HEIGHT;
 	two_dims[1] = TEST_FRAME_WIDTH;
 
 	three_dims[0] = 3; 	three_dims[1] = 3; 	three_dims[2] = 3;
 
+	dataspace_char_id = H5Screate_simple(2, one_element, NULL);
 	dataspace_two_dimension_id = H5Screate_simple(2, two_dims, NULL);
 	dataspace_three_dimension_id = H5Screate_simple(3, three_dims, NULL);
+
+	if(dataspace_two_dimension_id<0)
+		std::cerr << "Unable to create dataspace_two_dimension." << std::endl;
+	if(dataspace_three_dimension_id<0)
+		std::cerr << "Unable to create dataspace_three_dimension." << std::endl;
 
 	/* Create int dataset. */
 
 	dataset_int_id = H5Dcreate(file_id, HDF5_INT_DATA_SET_NAME.c_str(), H5T_NATIVE_INT32, dataspace_two_dimension_id,
 			H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	if(dataset_int_id<0)
+		std::cerr << "Unable to create dataset_int." << std::endl;
 	status = H5Dwrite(dataset_int_id, H5T_NATIVE_INT32, H5S_ALL, H5S_ALL, H5P_DEFAULT, int_test_data);
+	if(status <0)
+		std::cerr << "Unable to write dataset_int." << std::endl;
 
 	/* Create double dataset. */
 
 	dataset_double_id = H5Dcreate(file_id, HDF5_DOUBLE_DATA_SET_NAME.c_str(), H5T_NATIVE_DOUBLE, dataspace_two_dimension_id,
 			H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	if(dataset_double_id<0)
+		std::cerr << "Unable to create dataset_double." << std::endl;
 	status = H5Dwrite(dataset_double_id, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, double_test_data);
-
+	if(status<0)
+		std::cerr << "Unable to write dataset_double." << std::endl;
 	/* Create char dataset. */
 
-	dataset_char_id = H5Dcreate(file_id, HDF5_CHAR_DATA_SET_NAME.c_str(), H5T_NATIVE_CHAR, dataspace_two_dimension_id,
+	dataset_char_id = H5Dcreate(file_id, HDF5_CHAR_DATA_SET_NAME.c_str(), H5T_NATIVE_CHAR, dataspace_char_id,
 			H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	if(dataset_char_id<0)
+		std::cerr << "Unable to create dataset_char." << std::endl;
 	status = H5Dwrite(dataset_char_id, H5T_NATIVE_CHAR, H5S_ALL, H5S_ALL, H5P_DEFAULT, char_test_data);
-
+	if(status<0)
+		std::cerr << "Unable to write dataset_char." << std::endl;
 	/* Create three dimension dataset. */
 
-	dataset_int_id = H5Dcreate(file_id, HDF5_three_dimension_DATA_SET_NAME.c_str(), H5T_NATIVE_INT32, dataspace_three_dimension_id,
+	dataset_three_dimension_id = H5Dcreate(file_id, HDF5_three_dimension_DATA_SET_NAME.c_str(), H5T_NATIVE_INT32, dataspace_three_dimension_id,
 			H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	if(dataset_three_dimension_id<0)
+		std::cerr << "Unable to create dataset_three_dimension." << std::endl;
 	status = H5Dwrite(dataset_three_dimension_id, H5T_NATIVE_INT32, H5S_ALL, H5S_ALL, H5P_DEFAULT, three_dimension_test_data);
-
+	if(status<0)
+		std::cerr << "Unable to write dataset_three_dimension." << std::endl;
 	H5close();
 }
 
