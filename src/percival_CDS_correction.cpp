@@ -17,7 +17,7 @@ void percival_CDS_correction(percival_frame<float> &sample, const percival_frame
 //can also put this as operator overloading
 	//todo: Confirm which gain bit indicates CDS_subtraction, 00, 01, 10, or 11
 	//exclude points in the list
-	for(int i = 0; i < sample.width * sample.height; i ++){
+	for(unsigned int i = 0; i < sample.width * sample.height; i ++){
 		if(( sample.CDS_subtraction_indices.size()==0 ) || ( i != sample.CDS_subtraction_indices.back())){
 			*( output.data + i ) = *( sample.data + i ) - *( reset.data + i );			//todo:apply the delta mask!!!!!!!!
 		}else{

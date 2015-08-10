@@ -9,8 +9,8 @@
 void percival_ADU_to_electron_correction(percival_frame<float> &CDS_Img, percival_frame<float> &output, const percival_calib_params & calib){
 		//dimension checks
 		float *ADU_per_el = calib.ADU_to_electrons_conversion.data;
-		int width = calib.ADU_to_electrons_conversion.width;
-		int height = calib.ADU_to_electrons_conversion.height;
+		unsigned int width = calib.ADU_to_electrons_conversion.width;
+		unsigned int height = calib.ADU_to_electrons_conversion.height;
 
 //		if((CDS_Img.width != width) || (CDS_Img.height != height))
 //			throw dataspace_exception{"In percival_ADU_to_electron_correction(): CDS_Img dimension and ADU_per_el dimension mismatch."};

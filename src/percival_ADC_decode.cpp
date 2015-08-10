@@ -23,33 +23,33 @@ void percival_ADC_decode(const percival_frame<short int> & src_frame, percival_f
 		throw dataspace_exception{"percival_ADC_decode: calibration array width and sample array width mismatch. Expected: width == 7."};
 
 	//calibration parameters
-	const int calib_data_height = calib_params.Gc.height;
-	const int calib_data_width = calib_params.Gc.width;
+	const unsigned int calib_data_height = calib_params.Gc.height;
+	const unsigned int calib_data_width = calib_params.Gc.width;
 
 	//algorithm
 
-	for(int i = 0; i < des_frame.width * des_frame.height; i++){	//int i is sufficient
+	for(unsigned int i = 0; i < des_frame.width * des_frame.height; i++){	//int i is sufficient
 		/*
 		 * minimising access
 		short int pixel = *(src_frame.data + i);
 		*/
 //use unsigned datatypes
-		short int gain = *(src_frame.data + i) % 4;
-		short int fineBits = (*(src_frame.data + i) >> 2) % 256; // the next 8 digits
-		short int coarseBits = (*(src_frame.data + i) >> 10) % 32; // the next 5 bits
+		short unsigned int gain = *(src_frame.data + i) % 4;
+		short unsigned int fineBits = (*(src_frame.data + i) >> 2) % 256; // the next 8 digits
+		short unsigned int coarseBits = (*(src_frame.data + i) >> 10) % 32; // the next 5 bits
 
 //stores pixels that DO NOT need CDS_substraction todo:change this to "that DO" later
 		if((gain & 0x1) && store_gain)		//change value here for selection criteria
 			des_frame.CDS_subtraction_indices.push_back(i);		//note that some reset frame does not need to be ADCdecoded.
 //This bit of code was used when the calibration arrays were all transposed.
 //		//converting from linear representation to 2D representation. To speed up take modulo no of calibration pixels.
-		int col = i % src_frame.width;			//0 ~ frame_width - 1
-		int row = (i - col) / src_frame.width;
+		unsigned int col = i % src_frame.width;			//0 ~ frame_width - 1
+		unsigned int row = (i - col) / src_frame.width;
 //		int position_in_calib_array = (col % calib_data_height) * calib_data_width + row;
 
 
 //this bit is used when the arrays are property transposed.
-		int position_in_calib_array = (col % 7) + (row * calib_data_width); //7 from 7 ADCs. todo code this in config.
+		unsigned int position_in_calib_array = (col % 7) + (row * calib_data_width); //7 from 7 ADCs. todo code this in config.
 
 
 

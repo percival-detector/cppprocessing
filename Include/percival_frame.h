@@ -19,16 +19,16 @@ public:
 	 * thus use int width, height to allow multiplications etc
 	 * use a check in method set_frame_size to set width and height less than 2^15
 	 */
-	int width, height;			//
+	unsigned int width, height;			//
 	T* data;
 	//add an offset if splitting up the image is needed
 	std::vector<int> CDS_subtraction_indices;		//stores pixel indices requiring CDS_substraction
 
-	void set_frame_size(int h, int w)
+	void set_frame_size(unsigned int h, unsigned int w)
 	{
-		if(h * w > 0xffff ){
+		if((unsigned int)(h * w) > 0x7fffffff ){
 			throw datatype_exception{"Image size overflows. Should be less than 32768 pixels in each dimension."};
-		}else if(h < 0 || w < 0){
+		}else if(h < 0 || w < 0 || h * w < 0){
 			throw datatype_exception{"Image size overflows. Should be greater than or equal to 0 and less than 32768 pixels in each dimension."};
 		}else{
 			delete [] data;
@@ -39,7 +39,7 @@ public:
 	}
 
 	percival_frame(){data = new T[1]; set_frame_size(1,1);}
-	percival_frame(int x, int y){data = new T[1]; set_frame_size(x,y);}
+	percival_frame(unsigned int x, int y){data = new T[1]; set_frame_size(x,y);}
 	~percival_frame(){delete [] data;}
 };
 
