@@ -76,8 +76,12 @@ int main(int argn, char* argv[]){
 	percival_calib_params calib_params(global_params);
 
 	if(use_meaningless_image){
-		for(int i = 0; i < width * height; i++  )
+		sample_frame.set_frame_size(height, width);
+		reset_frame.set_frame_size(height, width);
+		for(int i = 0; i < width * height; i++  ){
 			*(sample_frame.data + i) = i % 32767;
+			*(reset_frame.data + i) = i % 32766;
+		}
 	}else{
 
 		try{
