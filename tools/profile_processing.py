@@ -8,15 +8,40 @@ def run_the_function(print_result):
     path_name= "./data/KnifeQuadBPos1_2_21_int16.h5"
     top_level_data_set_name= "KnifeQuadBPos1/"
     
-    repeat = 1000
+    repeat = 500
     width = 210
     #program_to_execute = './Profiling/cppProcessing2.0 '#Use meaningful data to run # + str(width) + ' ' + str(repeat) 
     program_to_execute = './Debug/cppProcessing2.0 ' + "0 "+ path_name + " " + top_level_data_set_name + " " + str(repeat)
+    
+    #events to monitor
+    #clock cycle
+    cpu_clock_sample_counts = 100000
+    unit_mask = 0x00
+    CPU_CLK_UNHALTED = 'CPU_CLK_UNHALTED:' + str(cpu_clock_sample_counts) + ':' + str(unit_mask) + ':1:1,'
+    #cache miss
+    
+    mem_load_uops_llc_hit_retired_0x02_sample_counts = 100000                #100000 min
+    unit_mask = 0x02
+    mem_load_uops_llc_hit_retired_0x02 = 'mem_load_uops_llc_hit_retired:' + str(mem_load_uops_llc_hit_retired_0x02_sample_counts) + ':' + str(unit_mask) + ':1:1,'
+    
+    mem_load_uops_llc_hit_retired_0x04_sample_counts = 100000                #100000 min
+    unit_mask = 0x04
+    mem_load_uops_llc_hit_retired_0x04 = 'mem_load_uops_llc_hit_retired:' + str(mem_load_uops_llc_hit_retired_0x04_sample_counts) + ':' + str(unit_mask) + ':1:1,'
+    
+    mem_load_uops_retired_0x04_sample_counts = 2000000                #2000000 min
+    unit_mask = 0x04
+    mem_load_uops_retired_0x04 = 'mem_load_uops_retired:' + str(mem_load_uops_retired_0x04_sample_counts) + ':' + str(unit_mask) + ':1:1,'
+    
+    operf_events = '-e ' + mem_load_uops_llc_hit_retired_0x02 + mem_load_uops_llc_hit_retired_0x04 + mem_load_uops_retired_0x04
+    
+    print 'operf ' + operf_events + ' '+ program_to_execute
+    
     subprocess.call('(/usr/bin/time -v ' + program_to_execute + ') &> profile_report.txt', shell=True)
     subprocess.call("echo $'\n' >> profile_report.txt", shell=True)
-    subprocess.call('operf '+program_to_execute, shell=True)
+    subprocess.call('operf ' + operf_events + ' '+ program_to_execute, shell=True)
     subprocess.call('opreport --symbols >> profile_report.txt', shell=True)
     
+    #subprocess.call('opannotate -s --output-dir=annotated ' + program_to_execute, shell=True)
     
     f = open('./profile_report.txt', 'r')
     s = f.readline()
@@ -79,4 +104,12 @@ def run_the_function(print_result):
         print '=' * 100
 
 run_the_function(True)
+
+
+
+
+
+
+#operf -e CPU_CLK_UNHALTED=100000:0:1:1,mem_load_uops_llc_hit_retired=100000:2:1:1,mem_load_uops_llc_hit_retired=100000:4:1:1,mem_load_uops_retired=100000:4:1:1, ./Debug/cppProcessing2.0 0 ./data/KnifeQuadBPos1_2_21_int16.h5 KnifeQuadBPos1/ 500
+
 
