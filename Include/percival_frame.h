@@ -18,6 +18,9 @@ public:
 	 * if number of pixels is to be assumed less than range of int (INT_MIN - (2^31 -1)), width and height should be at most 2^15
 	 * thus use int width, height to allow multiplications etc
 	 * use a check in method set_frame_size to set width and height less than 2^15
+	 *
+	 * Evetually I still decide to use unsigned int for width and height, and unsigned int for all loop using width * height. This allows a larger range of widht and height.
+	 * Width * height is guaranteed to be less than the range of unsigned int (0x7fffffff)
 	 */
 	unsigned int width, height;			//
 	T* data;
