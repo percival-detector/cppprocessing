@@ -26,7 +26,7 @@ public:
 
 	void set_frame_size(int h, int w)
 	{
-		if(h > 0x7fff || w > 0x7fff ){
+		if(h * w > 0xffff ){
 			throw datatype_exception{"Image size overflows. Should be less than 32768 pixels in each dimension."};
 		}else if(h < 0 || w < 0){
 			throw datatype_exception{"Image size overflows. Should be greater than or equal to 0 and less than 32768 pixels in each dimension."};
