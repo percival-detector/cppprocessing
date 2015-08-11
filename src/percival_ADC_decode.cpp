@@ -16,11 +16,11 @@ void percival_ADC_decode(const percival_frame<short int> & src_frame, percival_f
 	if(calib_params.Gc.height != src_frame.height){
 		std::cout << calib_params.Gc.height << std::endl;
 		std::cout << src_frame.height << std::endl;
-		throw dataspace_exception{"percival_ADC_decode: calibration array height and sample array height mismatch."};
+		throw dataspace_exception("percival_ADC_decode: calibration array height and sample array height mismatch.");
 	}
 
 	if(calib_params.Gc.width != 7)
-		throw dataspace_exception{"percival_ADC_decode: calibration array width and sample array width mismatch. Expected: width == 7."};
+		throw dataspace_exception("percival_ADC_decode: calibration array width and sample array width mismatch. Expected: width == 7.");
 
 	//calibration parameters
 	const unsigned int calib_data_height = calib_params.Gc.height;

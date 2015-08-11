@@ -10,7 +10,7 @@
 void percival_CDS_correction(percival_frame<float> &sample, const percival_frame<float> &reset, percival_frame<float> &output){
 	//dimension checks
 	if((sample.width != reset.width) || (sample.height != reset.height))
-		throw dataspace_exception{"In percival_CDS_correction(): sample dimension and reset dimension mismatch."};
+		throw dataspace_exception("In percival_CDS_correction(): sample dimension and reset dimension mismatch.");
 
 	if((output.width != sample.width) || (output.height != sample.height))
 		output.set_frame_size(sample.height, sample.width);

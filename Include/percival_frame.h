@@ -29,10 +29,10 @@ public:
 
 	void set_frame_size(unsigned int h, unsigned int w)
 	{
-		if((unsigned int)(h * w) > 0x7fffffff ){
-			throw datatype_exception{"Image size overflows. Should be less than 32768 pixels in each dimension."};
+		if((unsigned int)(h * w) > 0x7fffffff ){			//separated into two ifs to make code more readable
+			throw datatype_exception("Image size overflows. Should be less than 32768 pixels in each dimension.");
 		}else if(h < 0 || w < 0 || h * w < 0){
-			throw datatype_exception{"Image size overflows. Should be greater than or equal to 0 and less than 32768 pixels in each dimension."};
+			throw datatype_exception("Image size overflows. Should be greater than or equal to 0 and less than 32768 pixels in each dimension.");
 		}else{
 			delete [] data;
 			width = w;
