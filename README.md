@@ -84,4 +84,21 @@ The following build configurations are available:
 * **Build product:**
 
 
+Building with cmake
+-------------------
+
+For building the project without Eclipse, use the cmake configuration system.
+
+Example:
+
+    mkdir build
+    cd build
+    cmake ..
+    make VERBOSE=1
+
+The build should result in the following output:
+
+* A library: pcvl-algorithms
+* A binary executable: pcvl-profiling
+* A unittest executable: pcvl-unittests
 
