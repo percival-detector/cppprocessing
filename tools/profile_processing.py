@@ -1,6 +1,7 @@
 
 import re
 import subprocess
+import socket
 
 class oprofile_events:
     event_name = ''
@@ -48,7 +49,8 @@ def get_bytes(bytes):
 def run_the_function(print_result, width, repeat):
     path_name= "./data/KnifeQuadBPos1_2_21_int16.h5"
     top_level_data_set_name= "KnifeQuadBPos1/"
-    
+    host_name = socket.gethostname()
+    #Program to execute
     debug_version = './Debug/cppProcessing2.0 '
     profile_version = './Profiling/cppProcessing2.0 '
 
@@ -57,35 +59,42 @@ def run_the_function(print_result, width, repeat):
 
     #events to monitor
     #instructions
-    event1 = oprofile_events('CPU_CLK_UNHALTED','0x00',100000000)
+    event1 = oprofile_events('CPU_CLK_UNHALTED','0x00',100000)
     event2 = oprofile_events('INST_RETIRED','0x00',60000)
     #cache misses
     event3 = oprofile_events('LLC_MISSES','0x41',6000)
     event4 = oprofile_events('mem_load_uops_llc_hit_retired','0x02',100000)
     event5 = oprofile_events('mem_load_uops_llc_hit_retired','0x04',100000)
     event6 = oprofile_events('mem_load_uops_retired','0x04',2000000)
- 
-    list_of_events = [event1, event2, event3, event4, event5, event6]
+    event7 = oprofile_events('UNHALTED_REFERENCE_CYCLES','0x01',100000)
+    
+    list_of_events = [event1, event2, event3, event4, event5, event6, event7]
+    
     dict_of_attributes = {}
     list_of_functions = ['percival_ADC_decode', 'percival_CDS_correction','percival_ADU_to_electron_correction']
     list_of_events_recorded = []
 
     operf_events = get_operf_option(list_of_events)
-    print 'operf ' + operf_events + ' '+ program_to_execute
     
-    subprocess.call('(/usr/bin/time -v ' + program_to_execute + ') &> profile_report.txt', shell=True)
-    subprocess.call("echo $'\n' >> profile_report.txt", shell=True)
-    subprocess.call('operf ' + operf_events + ' '+ program_to_execute, shell=True)
-    subprocess.call('opreport --symbols >> profile_report.txt', shell=True)
+    
+    result_directory = './oprof_reports/'
+    report_destination = './oprof_reports/' + host_name + '_profile_report.txt'
+    sample_data_destination = './oprof_reports/' + host_name + "_oprof_data/"
+    print 'operf ' + '-d ' + sample_data_destination + ' ' + operf_events + ' '+ program_to_execute
+    
+    subprocess.call('rm -rf ' + result_directory, shell=True)
+    subprocess.call('mkdir ' + result_directory, shell=True)
+    subprocess.call('mkdir ' + sample_data_destination, shell=True)
+    subprocess.call('(/usr/bin/time -v ' + program_to_execute + ') &> ' + report_destination, shell=True)
+    subprocess.call("echo $'\n' >> " + report_destination, shell=True)
+    subprocess.call('operf ' + '-d ' + sample_data_destination + ' ' + operf_events + ' '+ program_to_execute, shell=True)
+    subprocess.call('opreport --symbols --session-dir=' + sample_data_destination +  ' >> ' + report_destination, shell=True)
     
     #subprocess.call('opannotate -s --output-dir=annotated ' + program_to_execute, shell=True)
     
-    f = open('./profile_report.txt', 'r')
+    f = open(report_destination, 'r')
     s = f.readline()
     total_time = 0
-    percentage_time_ADC_decode = 0
-    percentage_time_CDS_correction = 0
-    percentage_time_ADU_to_electron_correction = 0
     while s != '':
 	if 'Counted' in s:
 	    for event in list_of_events:
@@ -127,12 +136,10 @@ def run_the_function(print_result, width, repeat):
     total_processing_time = float(function_time_ADC_decode + function_time_ADU_to_electron + function_time_CDS_subtraction)
     
     llc_misses_per_instruction = get_llc_misses(list_of_functions, dict_of_attributes, list_of_events_recorded)
-    
-    print llc_misses_per_instruction
     image_size = width * 160 * 2    #memory size
     if print_result == True:
         print '=' * 100
-        print 'operf ' + operf_events + ' '+ program_to_execute
+        print 'operf ' + '-d ' + sample_data_destination + ' ' + operf_events + ' '+ program_to_execute
         print 'The program took {0:.4} ms per sample/reset pair.'.format(total_time/repeat)
         print 'Of which the processing functions took in total {0:.4} ms to run.'.format(total_processing_time)
         print 'Image size {0:d} (160 * {1:d}) pixels.'.format(width * 160, width), 
@@ -152,12 +159,20 @@ def run_the_function(print_result, width, repeat):
         
         print '=' * 100
 
-repeat = 10
-#width = 60000
 
-width_arr = [200, 1000, 10000, 100000]
+
+
+repeat = 1
+width_arr = [2000, 5000, 10000, 20000, 50000, 100000, 500000]
 for width in width_arr:
     run_the_function(True, width, repeat)
+
+
+# width = 50000
+# repeat_arr = [1,2,5,10,20,50,100]
+# for repeat in repeat_arr:
+#     run_the_function(True, width, repeat)
+
 
 
 
