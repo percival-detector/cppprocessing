@@ -21,18 +21,14 @@ def get_operf_option(list):
     return str[:-1]
 
 def run_the_function(print_result):
-    #subprocess.call('LD_LIBRARY_PATH="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-15/prefix/lib"', shell=True)
-    #subprocess.call('HDF5_DISABLE_VERSION_CHECK="1"', shell=True)
     path_name= "./data/KnifeQuadBPos1_2_21_int16.h5"
     top_level_data_set_name= "KnifeQuadBPos1/"
     
-    repeat = 500
-    width = 1024
+    repeat = 1
+    width = 60000
     debug_version = './Debug/cppProcessing2.0 '
     profile_version = './Profiling/cppProcessing2.0 '
 
-    #program_to_execute = './Profiling/cppProcessing2.0 '#Use meaningful data to run # + str(width) + ' ' + str(repeat) 
-#    program_to_execute = './Debug/cppProcessing2.0 ' + "0 "+ path_name + " " + top_level_data_set_name + " " + str(repeat)
     cmdl_arg = '1 ' + str(width) + ' ' + str(repeat)    
     program_to_execute = debug_version + cmdl_arg
 
@@ -44,27 +40,16 @@ def run_the_function(print_result):
     #cache miss
     event1 = oprofile_events('CPU_CLK_UNHALTED','0x00',100000)
     event2 = oprofile_events('INST_RETIRED','0x00',6000)
-    event3 = oprofile_events('mem_load_uops_llc_hit_retired','0x02',100000)
-    event4 = oprofile_events('mem_load_uops_llc_hit_retired','0x04',100000)
-    event5 = oprofile_events('mem_load_uops_retired','0x04',2000000)
+    event3 = oprofile_events('LLC_MISSES','0x41',6000)
+    event4 = oprofile_events('mem_load_uops_llc_hit_retired','0x02',100000)
+    event5 = oprofile_events('mem_load_uops_llc_hit_retired','0x04',100000)
+    event6 = oprofile_events('mem_load_uops_retired','0x04',2000000)
  
-    list_of_events = [event1, event2, event3, event4, event5]
-    list_of_attributes = []
-#    mem_load_uops_llc_hit_retired_0x02_sample_counts = 100000                #100000 min
-#    unit_mask = 0x02
-#    mem_load_uops_llc_hit_retired_0x02 = 'mem_load_uops_llc_hit_retired:' + str(mem_load_uops_llc_hit_retired_0x02_sample_counts) + ':' + str(unit_mask) + ':1:1,'
-    
+    list_of_events = [event1, event2, event3, event4, event5, event6]
+    dict_of_attributes = {}
+    list_of_functions = ['percival_ADC_decode', 'percival_CDS_correction','percival_ADU_to_electron_correction']
+    list_of_events_recorded = []
 
-#    mem_load_uops_llc_hit_retired_0x04_sample_counts = 100000                #100000 min
-#    unit_mask = 0x04
-#    mem_load_uops_llc_hit_retired_0x04 = 'mem_load_uops_llc_hit_retired:' + str(mem_load_uops_llc_hit_retired_0x04_sample_counts) + ':' + str(unit_mask) + ':1:1,'
-    
-#    mem_load_uops_retired_0x04_sample_counts = 2000000                #2000000 min
-#    unit_mask = 0x04
-#    mem_load_uops_retired_0x04 = 'mem_load_uops_retired:' + str(mem_load_uops_retired_0x04_sample_counts) + ':' + str(unit_mask) + ':1:1,'
-    
-#    operf_events = '-e ' + mem_load_uops_llc_hit_retired_0x02 + mem_load_uops_llc_hit_retired_0x04 + mem_load_uops_retired_0x04
- 
     operf_events = get_operf_option(list_of_events)
     print 'operf ' + operf_events + ' '+ program_to_execute
     
@@ -106,24 +91,35 @@ def run_the_function(print_result):
                 hrs = int(time[length-4]) * 60 * 60 * 1000
             total_time = float(hrs + msc + sec + min)
             
-        elif 'percival_ADC_decode' in s:
-            delimited = s.split(' ')
-            parsed = [item for item in delimited if item != '']    
-            percentage_time_ADC_decode = float(parsed[1])
-	    
-        elif 'percival_CDS_correction'in s:
-            delimited = s.split(' ')
-            parsed = [item for item in delimited if item != '']
-            percentage_time_CDS_correction = float(parsed[1])
-        elif 'percival_ADU_to_electron_correction' in s:
-            delimited = s.split(' ')
-            parsed = [item for item in delimited if item != '']
-            percentage_time_ADU_to_electron_correction = float(parsed[1])
+#         elif 'percival_ADC_decode' in s:
+#             delimited = s.split(' ')
+#             parsed = [item for item in delimited if item != '']    
+#             percentage_time_ADC_decode = float(parsed[1])
+# 	    
+#         elif 'percival_CDS_correction'in s:
+#             delimited = s.split(' ')
+#             parsed = [item for item in delimited if item != '']
+#             percentage_time_CDS_correction = float(parsed[1])
+#         elif 'percival_ADU_to_electron_correction' in s:
+#             delimited = s.split(' ')
+#             parsed = [item for item in delimited if item != '']
+#             percentage_time_ADU_to_electron_correction = float(parsed[1])
+        for function_name in list_of_functions:
+            if function_name in s:
+                delimited = s.split(' ')
+                parsed = [item for item in delimited if item != '']
+                attributes = []
+                attributes.append(float(parsed[1]))
+                for index in range(1,len(list_of_events_recorded)):  # manually add the percentage clock cycles
+                    attributes.append(float(parsed[index * 2])) 
+                dict_of_attributes[function_name] = attributes
+                print dict_of_attributes
         s = f.readline()
         
-    function_time_ADC_decode = float(total_time * percentage_time_ADC_decode /100 /repeat)
-    function_time_CDS_subtraction = float(total_time * percentage_time_CDS_correction /100 /repeat)
-    function_time_ADU_to_electron = float(total_time * percentage_time_ADU_to_electron_correction /100 /repeat)
+    function_time_ADC_decode = float(total_time * dict_of_attributes['percival_ADC_decode'][0] /100 /repeat)
+    function_time_CDS_subtraction = float(total_time * dict_of_attributes['percival_CDS_correction'][0] /100 /repeat)
+    function_time_ADU_to_electron = float(total_time * dict_of_attributes['percival_ADU_to_electron_correction'][0] /100 /repeat)
+    
     total_processing_time = float(function_time_ADC_decode + function_time_ADU_to_electron + function_time_CDS_subtraction)
     
     image_size = width * 160 * 2
