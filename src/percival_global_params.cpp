@@ -35,7 +35,7 @@ percival_global_params::percival_global_params(const std::string & master_param_
 
 percival_global_params::percival_global_params(){
 	if(!percival_global_params::is_initialised){
-	std::string default_master_param_file = "./test_param_file.txt";
+	std::string default_master_param_file = "./data/test_param_file.txt";
 	percival_global_params::initialisation(default_master_param_file);
 	}
 }
