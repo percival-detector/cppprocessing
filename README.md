@@ -31,8 +31,7 @@ Eclipse Build Configurations
 The different products of this project are built using the Eclipse build system.
 The following build configurations are available:
 
-BOOST_test_ADC_decode
-^^^^^^^^^^^^^^^^^^^^^
+#### BOOST_test_ADC_decode
 
 * **Description:**
 	Build unit tests
@@ -46,8 +45,7 @@ BOOST_test_ADC_decode
 * **Files generated:**
 	data/test_write_to_HDF5.hf
 
-Profiling
-^^^^^^^^^
+#### Profiling
 
 * **Description:**
 	Contains a main function. Used for profiling and testing.
@@ -59,8 +57,7 @@ Profiling
 	source: Include/, src/, profile/,
 	test data files: data/
 
-test_data_generation
-^^^^^^^^^^^^^^^^^^^^
+#### test_data_generation
 
 * **Description:**
 	Generate test data for unit test on HDF5 loader
@@ -73,16 +70,14 @@ test_data_generation
 	data/test_HDF5.hf
 	data/NotAHDF5File.txt
 
-Debug
-^^^^^
+#### Debug
 
 * **Description:**
 	Currently unused build configuration
 * **Build product:**
 
 
-Release
-^^^^^^^
+#### Release
 
 * **Description:**
 	Currently unused build configuration
