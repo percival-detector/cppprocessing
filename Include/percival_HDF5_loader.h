@@ -16,6 +16,7 @@
 #include <string>
 #include <typeinfo>
 #include <iostream>
+#include <sstream>
 
 class file_exception : public std::exception{
 private:
@@ -50,7 +51,9 @@ public:
 		else
 			sign_string = "unsigned";
 
-		size_string = std::to_string((long long int)(size * 8 ));
+        std::ostringstream str_convert;
+        str_convert << (long long int)(size * 8 );
+		size_string = str_convert.str();
 
 		return_message = err_msg
 				+ "\nActual input datatype: "

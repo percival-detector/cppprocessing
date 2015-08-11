@@ -4,6 +4,7 @@
  *  Created on: 31 Jul 2015
  *      Author: pqm78245
  */
+#include <cstdlib>
 
 #include <percival_global_params.h>
 #include <percival_processing.h>
@@ -49,7 +50,7 @@ void percival_global_params::initialisation(const std::string & master_param_fil
 bool percival_global_params::load_master_param_file(const std::string & master_param_file){
 	std::string line;
 
-	std::ifstream myfile (master_param_file);
+	std::ifstream myfile (master_param_file.c_str());
 
 	//std::cout<<"I am in here!" <<std::endl;
 
@@ -63,23 +64,23 @@ bool percival_global_params::load_master_param_file(const std::string & master_p
 			std::string::size_type colon_position = line.find(":");
 			if(colon_position!=std::string::npos && (line.find_first_not_of(" ", colon_position+1)!=std::string::npos)){
 				if(line.find("total_number_of_frames") != std::string::npos){
-					percival_global_params::total_number_of_frames = std::stoi(line.substr(colon_position + 1));
+					percival_global_params::total_number_of_frames = static_cast<unsigned int>(std::atoi(line.substr(colon_position + 1).c_str()));
 					is_initialised_every_member[0] = true;
 				}
 				if(line.find("frame_height") != std::string::npos){
-					percival_global_params::frame_height = std::stoi(line.substr(colon_position + 1));
+					percival_global_params::frame_height = static_cast<unsigned int>(std::atoi(line.substr(colon_position + 1).c_str()));
 					is_initialised_every_member[1] = true;
 				}
 				if(line.find("frame_width") != std::string::npos){
-					percival_global_params::frame_width = std::stoi(line.substr(colon_position + 1));
+					percival_global_params::frame_width = static_cast<unsigned int>(std::atoi(line.substr(colon_position + 1).c_str()));
 					is_initialised_every_member[2] = true;
 				}
 				if(line.find("calib_params_height") != std::string::npos){
-					percival_global_params::calib_params_height = std::stoi(line.substr(colon_position + 1));
+					percival_global_params::calib_params_height = static_cast<unsigned int>(std::atoi(line.substr(colon_position + 1).c_str()));
 					is_initialised_every_member[3] = true;
 				}
 				if(line.find("calib_params_width") != std::string::npos){
-					percival_global_params::calib_params_width = std::stoi(line.substr(colon_position + 1));
+					percival_global_params::calib_params_width = static_cast<unsigned int>(std::atoi(line.substr(colon_position + 1).c_str()));
 					is_initialised_every_member[4] = true;
 				}
 
