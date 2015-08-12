@@ -181,8 +181,8 @@ bool percival_global_params::check_initialisation(){
 //default_location_Of
 //is_initialised_every_member[11] = true;
 
-	if((percival_global_params::is_initialised_every_member[6] == false) ||
-			(percival_global_params::is_initialised_every_member[7] == false) ||
+	if((//percival_global_params::is_initialised_every_member[6] == false) ||
+			//(percival_global_params::is_initialised_every_member[7] == false) ||			//not necessary as the dataset name and path name will be supplied through main.
 				(percival_global_params::is_initialised_every_member[8] == false) ||
 					(percival_global_params::is_initialised_every_member[9] == false) ||
 						(percival_global_params::is_initialised_every_member[10] == false) ||
