@@ -50,11 +50,9 @@ class percival_global_params{
 
 
 		void initialisation(const std::string & master_param_file);
+		bool initialised();
 		bool load_master_param_file(const std::string & master_param_file);
 		bool check_initialisation();
-
-		char* get_current_sample_frame();
-		char* get_current_reset_frame();
 };
 
 

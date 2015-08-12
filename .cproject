@@ -24,12 +24,12 @@
 								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.1009879536" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.821708728" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1152963285" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.dialect.std.1109019478" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.c++11" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.dialect.std.1109019478" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.gprof.490638293" name="Generate gprof information (-pg)" superClass="gnu.cpp.compiler.option.debugging.gprof" value="false" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1992284254" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -40,7 +40,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.dialect.std.1894738193" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1115015460" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
@@ -62,12 +62,31 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1106876948" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
 								<option id="gnu.both.asm.option.include.paths.1163990604" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
+									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.2104861333" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.1306835761.665100954" name="/" resourcePath="H5_src">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.267264726" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.debug" unusedChildren="">
+							<targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.debug" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
+							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1175268717" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.196938692"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.499367732" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.2118945785">
+								<option id="gnu.cpp.compiler.option.dialect.std.580109046" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.472951699" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1816526841" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.929831720">
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1416208664" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1858681859" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug.844015284"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.230554465" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.906894709"/>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.236104281" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug.1106876948">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.977255109" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 						</toolChain>
 					</folderInfo>
@@ -101,12 +120,12 @@
 								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.1458196312" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.1675122014" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1298004098" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.dialect.std.66675400" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.c++11" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.dialect.std.66675400" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.gprof.1587761410" name="Generate gprof information (-pg)" superClass="gnu.cpp.compiler.option.debugging.gprof" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1829444056" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -117,7 +136,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.dialect.std.993747927" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.2076109938" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
@@ -142,6 +161,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.712647477" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
@@ -158,6 +178,24 @@
 							<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.2047484231" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 						</tool>
 					</fileInfo>
+					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.1306835761.2038365748.1083168501" name="/" resourcePath="H5_src">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.600022520" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.debug" unusedChildren="">
+							<targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.debug" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
+							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1446791082" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.1975522263"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.620290643" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.909810796">
+								<option id="gnu.cpp.compiler.option.dialect.std.924846794" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.759717328" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.285237206" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.408515977">
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1354180741" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.434000343" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug.2141269932"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.772635941" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.903933067"/>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.61751319" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug.803514894">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.427810245" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
 					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.1306835761.2038365748.998982379" name="ADC_decoding_output_generator.py" rcbsApplicability="disable" resourcePath="tools/ADC_decoding_output_generator.py" toolsToInvoke=""/>
 					<sourceEntries>
 						<entry excluding="annotated|test_data_generation|tools|h5cpp_examples|profile|tools/ADC_decoding_output_generator.py" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
@@ -189,8 +227,8 @@
 								<option id="gnu.cpp.compiler.exe.release.option.optimization.level.48189484" name="Optimization Level" superClass="gnu.cpp.compiler.exe.release.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.exe.release.option.debugging.level.1455325681" name="Debug Level" superClass="gnu.cpp.compiler.exe.release.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1191996786" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 								</option>
@@ -205,7 +243,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.dialect.std.676689325" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1694096846" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
@@ -227,10 +265,11 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.release.1867527379" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.release">
 								<option id="gnu.both.asm.option.include.paths.1710336647" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
+									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.821610824" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -266,12 +305,13 @@
 								<option id="gnu.cpp.compiler.exe.release.option.optimization.level.456034995" name="Optimization Level" superClass="gnu.cpp.compiler.exe.release.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.exe.release.option.debugging.level.1378233528" name="Debug Level" superClass="gnu.cpp.compiler.exe.release.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.390560221" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.debugging.gprof.875074951" name="Generate gprof information (-pg)" superClass="gnu.cpp.compiler.option.debugging.gprof" value="true" valueType="boolean"/>
+								<option id="gnu.cpp.compiler.option.dialect.std.674439595" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.2066205603" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.release.147063137" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.release">
@@ -281,7 +321,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.dialect.std.1592161129" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.865266178" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
@@ -306,6 +346,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
+									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1268882203" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -320,6 +362,24 @@
 							<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.228265735" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 						</tool>
 					</fileInfo>
+					<folderInfo id="cdt.managedbuild.config.gnu.exe.release.187111379.1107269508.1920119832" name="/" resourcePath="H5_src">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.release.290856341" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.release" unusedChildren="">
+							<targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.release" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.release"/>
+							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1367704825" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.336207000"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.930876514" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.1508319173">
+								<option id="gnu.cpp.compiler.option.dialect.std.2024262022" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1600596893" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.release.773141232" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.release.147063137">
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.235841160" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.release.1335849434" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.release.347617365"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.1412264967" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.725057607"/>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.release.1087106137" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.release.60961898">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.437837680" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
 						<entry excluding="H5_src|annotated|test|src|profile|h5cpp_examples" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
@@ -337,6 +397,9 @@
 			<resource resourceType="PROJECT" workspacePath="/cppProcessing2.0"/>
 		</configuration>
 		<configuration configurationName="test_data_generation">
+			<resource resourceType="PROJECT" workspacePath="/cppProcessing2.0"/>
+		</configuration>
+		<configuration configurationName="Multiple configurations">
 			<resource resourceType="PROJECT" workspacePath="/cppProcessing2.0"/>
 		</configuration>
 		<configuration configurationName="BOOST_test_ADC_decode">

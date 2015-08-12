@@ -26,6 +26,7 @@ class dataspace_exception;
 #include "percival_ADU_to_electron_correction.h"
 #include "percival_HDF5_loader.h"
 #include "percival_HDF5_writer.h"
+#include "percival_load_calib_params.h"
 //STL libraries
 
 

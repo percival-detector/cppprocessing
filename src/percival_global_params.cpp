@@ -206,3 +206,7 @@ bool percival_global_params::check_initialisation(){
 	percival_global_params::is_initialised = true;
 	return 1;
 }
+
+bool percival_global_params::initialised(){
+	return percival_global_params::is_initialised;
+}
