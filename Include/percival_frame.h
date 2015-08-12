@@ -9,6 +9,7 @@
 #define PERCIVAL_FRAME_H_
 
 #include "percival_processing.h"
+#include "percival_exceptions.h"
 #include <vector>
 template<typename T>
 class percival_frame{

@@ -10,10 +10,6 @@
 //todo:find a better way for forward declaration
 class percival_global_params;
 struct percival_calib_params;
-class file_exception;
-class datatype_exception;
-class dataspace_exception;
-
 
 //data classes
 #include "percival_frame.h"
