@@ -6,6 +6,7 @@
  */
 
 #include "percival_processing.h"
+#include "percival_load_calib_params.h"
 
 #include <boost/test/included/unit_test.hpp>
 
@@ -34,12 +35,10 @@ public:
 BOOST_FIXTURE_TEST_SUITE (percival_ADC_decode_test,fixture_frame)
 
 //RANGE TESTS
-	BOOST_AUTO_TEST_CASE (should_set_size_of_the_destination_image_to_be_the_same_as_src){
+	BOOST_AUTO_TEST_CASE (should_throw_exception_when_output_and_input_dimensions_mismatch){
 		percival_frame<float> wrong_size_frame;
 		wrong_size_frame.set_frame_size(10,10);
-		percival_ADC_decode(src_frame,wrong_size_frame, calib_params);
-		BOOST_REQUIRE_EQUAL(src_frame.width, wrong_size_frame.width);
-		BOOST_REQUIRE_EQUAL(src_frame.height, wrong_size_frame.height);
+		BOOST_REQUIRE_THROW(percival_ADC_decode(src_frame,wrong_size_frame, calib_params), dataspace_exception);
 	}
 
 

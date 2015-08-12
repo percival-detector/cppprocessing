@@ -6,6 +6,8 @@
  */
 
 #include "percival_processing.h"
+#include "percival_HDF5_loader.h"
+#include "percival_HDF5_writer.h"
 
 #include <boost/test/unit_test.hpp>
 #include <string>

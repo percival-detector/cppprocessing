@@ -5,9 +5,7 @@
  *      Author: pqm78245
  */
 #include <cstdlib>
-
-#include <percival_global_params.h>
-#include <percival_processing.h>
+#include "percival_processing.h"
 
 //image height, image width, total frame number, default file locations, calibration height, calibration width, rotated?
 

@@ -36,14 +36,13 @@ BOOST_AUTO_TEST_CASE ( should_throw_exception_if_sample_and_reset_dimension_mism
 	BOOST_REQUIRE_THROW(percival_CDS_correction(sample_frame, reset_frame, output_frame), dataspace_exception);
 }
 
-BOOST_AUTO_TEST_CASE ( output_frame_dimension_should_be_the_same_as_input ){
+BOOST_AUTO_TEST_CASE ( should_throw_exception_when_output_and_input_dimensions_mismatch ){
 	int frame_width = 10;
 	int frame_height = 5;
 	sample_frame.set_frame_size(frame_height, frame_width);
 	reset_frame.set_frame_size(frame_height, frame_width);
-	BOOST_REQUIRE_NO_THROW(percival_CDS_correction(sample_frame, reset_frame, output_frame));
-	BOOST_REQUIRE_EQUAL(output_frame.width, frame_width);
-	BOOST_REQUIRE_EQUAL(output_frame.height, frame_height);
+	output_frame.set_frame_size(3,2);
+	BOOST_REQUIRE_THROW(percival_CDS_correction(sample_frame, reset_frame, output_frame), dataspace_exception);
 }
 
 BOOST_AUTO_TEST_CASE ( should_give_sensible_result ){
