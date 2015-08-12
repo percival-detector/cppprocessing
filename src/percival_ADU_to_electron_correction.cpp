@@ -16,7 +16,7 @@ void percival_ADU_to_electron_correction(percival_frame<float> &CDS_Img, perciva
 //			throw dataspace_exception{"In percival_ADU_to_electron_correction(): CDS_Img dimension and ADU_per_el dimension mismatch."};
 
 		if((output.width != CDS_Img.width) || (output.height != CDS_Img.height))		//todo:change this to a inline function
-			output.set_frame_size(CDS_Img.height, CDS_Img.width);
+			throw dataspace_exception("In percival_ADU_to_electron_correction: calibration array height and sample array height mismatch.");
 
 		//can also put this as operator overloading
 		//exclude points in the list

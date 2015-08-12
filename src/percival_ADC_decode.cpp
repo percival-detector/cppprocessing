@@ -10,12 +10,10 @@
 void percival_ADC_decode(const percival_frame<short int> & src_frame, percival_frame<float> & des_frame, const percival_calib_params & calib_params, bool store_gain){
 	//initialize destination matrix
 	if(src_frame.width != des_frame.width || src_frame.height != des_frame.height){
-		des_frame.set_frame_size(src_frame.height, src_frame.width);
+		throw dataspace_exception("percival_ADC_decode: output and input dimension mismatch.");
 	}//Saving time for memory allocation
 
 	if(calib_params.Gc.height != src_frame.height){
-		std::cout << calib_params.Gc.height << std::endl;
-		std::cout << src_frame.height << std::endl;
 		throw dataspace_exception("percival_ADC_decode: calibration array height and sample array height mismatch.");
 	}
 
