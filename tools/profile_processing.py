@@ -2,6 +2,7 @@
 import re
 import subprocess
 import socket
+import calibration_data_generator as cdg
 
 class oprofile_events:
     event_name = ''
@@ -46,7 +47,7 @@ def get_bytes(bytes):
     return str(int(bytes)) + ' ' + suffix
           
 
-def run_the_function(print_result, width, repeat):
+def run_the_function(print_result, width, repeat, text_file_name):
     path_name= "./data/KnifeQuadBPos1_2_21_int16.h5"
     top_level_data_set_name= "KnifeQuadBPos1/"
     host_name = socket.gethostname()
@@ -54,7 +55,7 @@ def run_the_function(print_result, width, repeat):
     debug_version = './Debug/cppProcessing2.0 '
     profile_version = './Profiling/cppProcessing2.0 '
 
-    cmdl_arg = '1 ' + str(width) + ' ' + str(repeat)    
+    cmdl_arg = '1 ' + str(height) + ' ' + str(width) + ' ' + str(repeat) + ' ' + text_file_name    
     program_to_execute = debug_version + cmdl_arg
 
     #events to monitor
@@ -161,11 +162,15 @@ def run_the_function(print_result, width, repeat):
 
 
 
-
 repeat = 1
-width_arr = [2000, 5000, 10000, 20000, 50000, 100000, 500000]
-for width in width_arr:
-    run_the_function(True, width, repeat)
+# width_arr = [2000, 5000, 10000, 20000, 50000, 100000, 500000]
+height = 100
+width = 130
+text_file_name = 'test_param_file.txt'
+cdg.generate_calib_files(height, width, text_file_name)
+
+# for width in width_arr:
+run_the_function(True, width, repeat, text_file_name)
 
 
 # width = 50000
