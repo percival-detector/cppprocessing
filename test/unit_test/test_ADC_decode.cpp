@@ -13,7 +13,7 @@ const int TEST_FRAME_HEIGHT 	= 	160;		//cannot be 10
 const int TEST_FRAME_WIDTH		=	210;		//cannot be 10
 
 percival_global_params global_params;
-percival_calib_params calib_params(global_params);
+percival_calib_params calib_params;
 
 class fixture_frame{
 public:
@@ -26,7 +26,7 @@ public:
 		src_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
 		des_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
 		output_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-
+		percival_load_calib_params(calib_params, global_params);
 		BOOST_REQUIRE_NO_THROW(percival_ADC_decode(src_frame, des_frame, calib_params));
 	}
 };

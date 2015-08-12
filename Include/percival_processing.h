@@ -9,7 +9,7 @@
 #define INCLUDE_PERCIVAL_PROCESSING_H_
 //todo:find a better way for forward declaration
 class percival_global_params;
-class percival_calib_params;
+struct percival_calib_params;
 class file_exception;
 class datatype_exception;
 class dataspace_exception;

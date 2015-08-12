@@ -73,7 +73,7 @@ int main(int argn, char* argv[]){
 	}
 
 	percival_global_params global_params(config_file);
-	percival_calib_params calib_params(global_params);
+	percival_calib_params calib_params;
 	percival_load_calib_params(calib_params, global_params);
 
 	if(use_meaningless_image){
