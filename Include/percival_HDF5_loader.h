@@ -12,7 +12,6 @@
 #include "percival_exceptions.h"
 
 #include "hdf5.h"
-#include <stdexcept>
 #include <exception>
 #include <typeinfo>
 

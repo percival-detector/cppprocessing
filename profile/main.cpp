@@ -5,6 +5,8 @@
  *      Author: pqm78245
  */
 #include "percival_processing.h"
+#include "percival_load_calib_params.h"
+#include "percival_HDF5_loader.h"
 
 #include<string>
 #include<cstdio>

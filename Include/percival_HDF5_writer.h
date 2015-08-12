@@ -9,7 +9,7 @@
 #define INCLUDE_PERCIVAL_HDF5_WRITER_H_
 
 #include "percival_processing.h"
-
+#include "percival_exceptions.h"
 #include "hdf5.h"
 #include <typeinfo>
 #include <iostream>

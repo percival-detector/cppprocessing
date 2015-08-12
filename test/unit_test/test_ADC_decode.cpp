@@ -6,6 +6,7 @@
  */
 
 #include "percival_processing.h"
+#include "percival_load_calib_params.h"
 
 #include <boost/test/included/unit_test.hpp>
 

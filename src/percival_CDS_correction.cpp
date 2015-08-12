@@ -5,7 +5,7 @@
  *      Author: pqm78245
  */
 
-#include "percival_CDS_correction.h"
+#include "percival_processing.h"
 
 void percival_CDS_correction(percival_frame<float> &sample, const percival_frame<float> &reset, percival_frame<float> &output){
 	//dimension checks

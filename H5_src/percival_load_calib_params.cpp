@@ -6,6 +6,7 @@
  */
 
 #include "percival_load_calib_params.h"
+#include "percival_HDF5_loader.h"
 #include <stdexcept>
 //include hdf5 specific header files here later during refactoring
 

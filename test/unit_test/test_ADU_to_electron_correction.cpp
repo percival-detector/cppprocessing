@@ -6,6 +6,8 @@
  */
 
 #include "percival_processing.h"
+#include "percival_load_calib_params.h"
+
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 
@@ -20,6 +22,8 @@ class fixture_test_percival_ADU_to_electron_correction{
 		fixture_test_percival_ADU_to_electron_correction(){
 			src_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
 			output_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
+			percival_global_params global_params("./data/test_param_file.txt");
+			percival_load_calib_params(calib, global_params);
 		}
 };
 
