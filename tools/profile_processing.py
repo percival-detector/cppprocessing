@@ -35,13 +35,30 @@ def get_llc_misses(list_of_functions, attributes, list_of_events_recorded):
         llc_misses_per_instruction.append(llc_misses/inst_retired)
     return llc_misses_per_instruction
 
+def get_CPI(list_of_functions, attributes, list_of_events_recorded):
+    CPI = []
+    for event in list_of_events_recorded:
+        if event.event_name == 'CPU_CLK_UNHALTED':
+            index_cycle = list_of_events_recorded.index(event)
+        elif  event.event_name == 'INST_RETIRED':
+            index_inst_retired = list_of_events_recorded.index(event)
+    for function in list_of_functions:
+        cycle = attributes[function][index_cycle] * list_of_events_recorded[index_cycle].sample_rate  
+        inst_retired = attributes[function][index_inst_retired] * list_of_events_recorded[index_inst_retired].sample_rate
+        CPI.append(cycle/inst_retired)
+    return CPI
+
 def get_bytes(bytes):
     suffix = 'Bytes'
     if bytes > 1024:
         bytes = bytes/1024
         if bytes > 1024:
             bytes = bytes/1024
-            suffix = 'MB'
+            if bytes>1024:
+                bytes = bytes/1024
+                suffix = 'GB'
+            else:
+                suffix = 'MB'
         else:
             suffix = 'kB'
     return str(int(bytes)) + ' ' + suffix
@@ -56,12 +73,12 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
     profile_version = './Profiling/cppProcessing2.0 '
 
     cmdl_arg = '1 '  + str(width) + ' '+ str(height) + ' ' + str(repeat) + ' ' + text_file_name    
-    program_to_execute = debug_version + cmdl_arg
+    program_to_execute = profile_version + cmdl_arg
 
     #events to monitor
     #instructions
-    event1 = oprofile_events('CPU_CLK_UNHALTED','0x00',100000)
-    event2 = oprofile_events('INST_RETIRED','0x00',6000)
+    event1 = oprofile_events('CPU_CLK_UNHALTED','0x00',1000000)
+    event2 = oprofile_events('INST_RETIRED','0x00',60000)
     #cache misses
     event3 = oprofile_events('LLC_MISSES','0x41',6000)
     event4 = oprofile_events('mem_load_uops_llc_hit_retired','0x02',100000)
@@ -96,6 +113,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
     f = open(report_destination, 'r')
     s = f.readline()
     total_time = 0
+    dict_of_function_perc_time = {}
     while s != '':
 	if 'Counted' in s:
 	    for event in list_of_events:
@@ -125,25 +143,27 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
                 delimited = s.split(' ')
                 parsed = [item for item in delimited if item != '']
                 attributes = []
-                attributes.append(float(parsed[1]))
-                for index in range(1,len(list_of_events_recorded)):  # manually add the percentage clock cycles
+                dict_of_function_perc_time[function_name] = float(parsed[1])
+                for index in range(len(list_of_events_recorded)):  # manually add the percentage clock cycles
                     attributes.append(float(parsed[index * 2])) 
                 dict_of_attributes[function_name] = attributes
         s = f.readline()
         
-    function_time_ADC_decode = float(total_time * dict_of_attributes['percival_ADC_decode'][0] /100 /repeat)
-    function_time_CDS_subtraction = float(total_time * dict_of_attributes['percival_CDS_correction'][0] /100 /repeat)
-    function_time_ADU_to_electron = float(total_time * dict_of_attributes['percival_ADU_to_electron_correction'][0] /100 /repeat)
+    function_time_ADC_decode = float(total_time * dict_of_function_perc_time['percival_ADC_decode'] /100 /repeat)
+    function_time_CDS_subtraction = float(total_time * dict_of_function_perc_time['percival_CDS_correction'] /100 /repeat)
+    function_time_ADU_to_electron = float(total_time * dict_of_function_perc_time['percival_ADU_to_electron_correction'] /100 /repeat)
     total_processing_time = float(function_time_ADC_decode + function_time_ADU_to_electron + function_time_CDS_subtraction)
     
     llc_misses_per_instruction = get_llc_misses(list_of_functions, dict_of_attributes, list_of_events_recorded)
-    image_size = width * 160 * 2    #memory size
+    CPI = get_CPI(list_of_functions, dict_of_attributes, list_of_events_recorded)
+    image_size = width * height * 2    #memory size
+    
     if print_result == True:
         print '=' * 100
         print 'operf ' + '-d ' + sample_data_destination + ' ' + operf_events + ' '+ program_to_execute
         print 'The program took {0:.4} ms per sample/reset pair.'.format(total_time/repeat)
         print 'Of which the processing functions took in total {0:.4} ms to run.'.format(total_processing_time)
-        print 'Image size {0:d} (160 * {1:d}) pixels.'.format(width * 160, width), 
+        print 'Image size {0:d} ({1:d} * {2:d}) pixels.'.format(width * height, height, width), 
         print get_bytes(image_size)
         print 'Statistics collected for '+str(repeat)+' iterations'
         
@@ -157,17 +177,21 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
         for function in list_of_functions:
             index = list_of_functions.index(function)
             print '\t' +  function +':' + '{0:.2%}'.format(llc_misses_per_instruction[index]) 
-        
+            
+        print 'Cycle per instruction (CPI):'
+        for function in list_of_functions:
+            index = list_of_functions.index(function)
+            print '\t' +  function +':' + '{0}'.format(int(CPI[index])) 
         print '=' * 100
 
 
 
-repeat = 1
+repeat = 10
 # width_arr = [2000, 5000, 10000, 20000, 50000, 100000, 500000]
-height = 1000
-width = 1300
+height = 3717
+width = 3528
 text_file_name = 'test_param_file.txt'
-cdg.generate_calib_files(height, width, text_file_name)
+# cdg.generate_calib_files(height, width, text_file_name)
 
 # for width in width_arr:
 run_the_function(True, height, width, repeat, text_file_name)

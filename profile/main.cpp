@@ -103,7 +103,6 @@ int main(int argn, char* argv[]){
 
 			sample_frame.set_frame_size(height, width);
 			reset_frame.set_frame_size(height, width);
-			reset_frame.set_frame_size(height, width);
 			ADC_decoded_sample_frame.set_frame_size(height, width);
 			ADC_decoded_reset_frame.set_frame_size(height, width);
 			CDS_frame.set_frame_size(height, width);
