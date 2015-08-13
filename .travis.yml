@@ -1,0 +1,25 @@
+language: cpp
+compiler: gcc
+sudo: false
+    
+cache:
+  directories:
+  - $HOME/epics
+  - $HOME/synapps
+  
+addons:
+  apt:
+    packages:
+    - libhdf5-serial-dev
+    - libboost-test-dev
+    - gdb
+  
+before_install:
+  - mkdir build && cd build
+  - cmake ..
+
+install: 
+  - pwd
+  - make VERBOSE=1
+
+
