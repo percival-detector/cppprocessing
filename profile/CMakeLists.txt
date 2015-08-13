@@ -1,8 +1,6 @@
 
 set(CMAKE_INCLUDE_CURRENT_DIR on)
 
-include_directories(${HDF5_INCLUDE_DIRS})
-
 # Build list of test source files from current dir
 file(GLOB PCVL_PROFILING_SOURCE *.cpp)
 
@@ -23,8 +21,10 @@ message (STATUS "CMAKE_CXX_FLAGS:        " ${CMAKE_CXX_FLAGS})
 message (STATUS "CMAKE_EXE_LINKER_FLAGS: " ${CMAKE_EXE_LINKER_FLAGS})
 
 # Add application source files to executable
-add_executable(pcvl-profiling ${PCVL_PROFILING_SOURCE} ${PCVL_ALGORITHM_SOURCE})
+add_executable(pcvl-profiling 
+               ${PCVL_PROFILING_SOURCE}
+               ${PCVL_ALGORITHM_SOURCE})
 
 # Define libraries to link against
-target_link_libraries(pcvl-profiling ${HDF5_LIBRARIES})
+target_link_libraries(pcvl-profiling pcvl-h5loader)
 

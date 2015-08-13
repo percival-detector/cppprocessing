@@ -30,6 +30,7 @@ find_package( HDF5 1.8.9
 	          REQUIRED C )
 if(HDF5_FOUND)
   message(STATUS "  HDF5 include dirs: ${HDF5_INCLUDE_DIRS}")
+  message(STATUS "  HDF5 definitions:  ${HDF5_DEFINITIONS}")
 endif()
 
 # Add include directory to include path
@@ -37,6 +38,9 @@ include_directories(Include)
 
 # Add the source subdirectory
 add_subdirectory(src)
+
+# Add the HDF5 loader subdirectory
+add_subdirectory(H5_src)
 
 # Add the test subdirectory
 add_subdirectory(test)
