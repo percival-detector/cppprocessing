@@ -23,6 +23,10 @@ void percival_load_calib_params(percival_calib_params & calib_params, percival_g
 	const char* default_path_name_Of	= (global_params.default_location_Of).c_str();
 	const char* default_data_set_name	= (global_params.default_calib_params_dataset_name).c_str();
 	const char* default_path_name_ADU_to_electrons_conversion = (global_params.default_location_ADU_to_electrons_conversion).c_str();
+	const char* default_path_name_Gain_lookup_table1	= (global_params.default_location_Gain_lookup_table1).c_str();
+	const char* default_path_name_Gain_lookup_table2	= (global_params.default_location_Gain_lookup_table2).c_str();
+	const char* default_path_name_Gain_lookup_table3	= (global_params.default_location_Gain_lookup_table3).c_str();
+	const char* default_path_name_Gain_lookup_table4	= (global_params.default_location_Gain_lookup_table4).c_str();
 
 	bool transposed = global_params.is_transposed_calib_params;
 
@@ -31,6 +35,11 @@ void percival_load_calib_params(percival_calib_params & calib_params, percival_g
 	percival_HDF5_loader(default_path_name_Gf, default_data_set_name, percival_calib_params::Gf, transposed);
 	percival_HDF5_loader(default_path_name_Of, default_data_set_name, percival_calib_params::Of, transposed);
 	percival_HDF5_loader(default_path_name_ADU_to_electrons_conversion, default_data_set_name, percival_calib_params::ADU_to_electrons_conversion, transposed);
+
+	percival_HDF5_loader(default_path_name_Gain_lookup_table1, default_data_set_name, percival_calib_params::Gain_lookup_table1, transposed);
+	percival_HDF5_loader(default_path_name_Gain_lookup_table2, default_data_set_name, percival_calib_params::Gain_lookup_table2, transposed);
+	percival_HDF5_loader(default_path_name_Gain_lookup_table3, default_data_set_name, percival_calib_params::Gain_lookup_table3, transposed);
+	percival_HDF5_loader(default_path_name_Gain_lookup_table4, default_data_set_name, percival_calib_params::Gain_lookup_table4, transposed);
 
 }
 

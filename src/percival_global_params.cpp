@@ -24,7 +24,12 @@ std::string percival_global_params::default_location_Gf;
 std::string percival_global_params::default_location_Oc;
 std::string percival_global_params::default_location_Of;
 std::string percival_global_params::default_location_ADU_to_electrons_conversion;
-std::string percival_global_params::default_location_Gain_lookup_table;
+
+std::string percival_global_params::default_location_Gain_lookup_table1;
+std::string percival_global_params::default_location_Gain_lookup_table2;
+std::string percival_global_params::default_location_Gain_lookup_table3;
+std::string percival_global_params::default_location_Gain_lookup_table4;
+
 std::string percival_global_params::default_calib_params_dataset_name;
 
 
@@ -125,9 +130,21 @@ bool percival_global_params::load_master_param_file(const std::string & master_p
 						percival_global_params::default_location_ADU_to_electrons_conversion = line.substr(quotation_begin,quotation_end-quotation_begin);
 						is_initialised_every_member[13] = true;
 					}
-					if(line.find("default_location_Gain_lookup_table") != std::string::npos){
-						percival_global_params::default_location_Gain_lookup_table = line.substr(quotation_begin,quotation_end-quotation_begin);
+					if(line.find("default_location_Gain_lookup_table1") != std::string::npos){
+						percival_global_params::default_location_Gain_lookup_table1 = line.substr(quotation_begin,quotation_end-quotation_begin);
 						is_initialised_every_member[14] = true;
+					}
+					if(line.find("default_location_Gain_lookup_table2") != std::string::npos){
+						percival_global_params::default_location_Gain_lookup_table2 = line.substr(quotation_begin,quotation_end-quotation_begin);
+						is_initialised_every_member[15] = true;
+					}
+					if(line.find("default_location_Gain_lookup_table3") != std::string::npos){
+						percival_global_params::default_location_Gain_lookup_table3 = line.substr(quotation_begin,quotation_end-quotation_begin);
+						is_initialised_every_member[16] = true;
+					}
+					if(line.find("default_location_Gain_lookup_table4") != std::string::npos){
+						percival_global_params::default_location_Gain_lookup_table4 = line.substr(quotation_begin,quotation_end-quotation_begin);
+						is_initialised_every_member[17] = true;
 					}
 
 				}

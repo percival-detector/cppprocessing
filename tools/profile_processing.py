@@ -81,12 +81,12 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
     event2 = oprofile_events('INST_RETIRED','0x00',60000)
     #cache misses
     event3 = oprofile_events('LLC_MISSES','0x41',6000)
-    event4 = oprofile_events('mem_load_uops_llc_hit_retired','0x02',100000)
-    event5 = oprofile_events('mem_load_uops_llc_hit_retired','0x04',100000)
-    event6 = oprofile_events('mem_load_uops_retired','0x04',2000000)
-    event7 = oprofile_events('UNHALTED_REFERENCE_CYCLES','0x01',100000)
+#     event4 = oprofile_events('mem_load_uops_llc_hit_retired','0x02',100000)
+#     event5 = oprofile_events('mem_load_uops_llc_hit_retired','0x04',100000)
+#     event6 = oprofile_events('mem_load_uops_retired','0x04',2000000)
+    event4 = oprofile_events('UNHALTED_REFERENCE_CYCLES','0x01',100000)
     
-    list_of_events = [event1, event2, event3, event4, event5, event6, event7]
+    list_of_events = [event1, event2, event3, event4]#, event5, event6, event7]
     
     dict_of_attributes = {}
     list_of_functions = ['percival_ADC_decode', 'percival_CDS_correction','percival_ADU_to_electron_correction']
@@ -95,14 +95,12 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
     operf_events = get_operf_option(list_of_events)
     
     
-    result_directory = './oprof_reports/'
-    report_destination = './oprof_reports/' + host_name + '_profile_report.txt'
-    sample_data_destination = './oprof_reports/' + host_name + "_oprof_data/"
+    result_directory = './oprof_reports/'+ host_name + '/'
+    report_destination = result_directory + 'profile_report.txt'
+    sample_data_destination = result_directory + 'oprof_data/'
     print 'operf ' + '-d ' + sample_data_destination + ' ' + operf_events + ' '+ program_to_execute
     
-    subprocess.call('rm -rf ' + result_directory, shell=True)
-    subprocess.call('mkdir ' + result_directory, shell=True)
-    subprocess.call('mkdir ' + sample_data_destination, shell=True)
+    subprocess.call('mkdir -p ' + sample_data_destination, shell=True)
     subprocess.call('(/usr/bin/time -v ' + program_to_execute + ') &> ' + report_destination, shell=True)
     subprocess.call("echo $'\n' >> " + report_destination, shell=True)
     subprocess.call('operf ' + '-d ' + sample_data_destination + ' ' + operf_events + ' '+ program_to_execute, shell=True)
@@ -145,7 +143,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
                 attributes = []
                 dict_of_function_perc_time[function_name] = float(parsed[1])
                 for index in range(len(list_of_events_recorded)):  # manually add the percentage clock cycles
-                    attributes.append(float(parsed[index * 2])) 
+                    attributes.append(float(parsed[index * 2]))
                 dict_of_attributes[function_name] = attributes
         s = f.readline()
         
@@ -161,7 +159,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
     if print_result == True:
         print '=' * 100
         print 'operf ' + '-d ' + sample_data_destination + ' ' + operf_events + ' '+ program_to_execute
-        print 'The program took {0:.4} ms per sample/reset pair.'.format(total_time/repeat)
+        print 'The program took {0:.4} ms in total. {1:.4} ms per sample/reset pair.'.format(total_time, total_time/repeat)
         print 'Of which the processing functions took in total {0:.4} ms to run.'.format(total_processing_time)
         print 'Image size {0:d} ({1:d} * {2:d}) pixels.'.format(width * height, height, width), 
         print get_bytes(image_size)
@@ -186,12 +184,22 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
 
 
 
-repeat = 10
+repeat = 1
 # width_arr = [2000, 5000, 10000, 20000, 50000, 100000, 500000]
+
 height = 3717
 width = 3528
-text_file_name = 'test_param_file.txt'
-# cdg.generate_calib_files(height, width, text_file_name)
+
+host_name = socket.gethostname()
+calib_directory = './calibration_data/'
+path_name = calib_directory + host_name + '/'
+text_file_name =  path_name + 'test_param_file.txt'
+
+subprocess.call('mkdir -p ' + path_name, shell=True)
+
+
+
+#cdg.generate_calib_files(height, width, text_file_name, path_name)
 
 # for width in width_arr:
 run_the_function(True, height, width, repeat, text_file_name)

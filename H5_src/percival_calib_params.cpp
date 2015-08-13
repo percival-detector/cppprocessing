@@ -13,3 +13,7 @@ percival_frame<float> percival_calib_params::Oc;
 percival_frame<float> percival_calib_params::Gf;
 percival_frame<float> percival_calib_params::Of;
 percival_frame<float> percival_calib_params::ADU_to_electrons_conversion;		//32 bit floating point
+percival_frame<float> percival_calib_params::Gain_lookup_table1;
+percival_frame<float> percival_calib_params::Gain_lookup_table2;
+percival_frame<float> percival_calib_params::Gain_lookup_table3;
+percival_frame<float> percival_calib_params::Gain_lookup_table4;

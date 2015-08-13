@@ -58,6 +58,11 @@ struct percival_calib_params{
 		static percival_frame<float> Gf;
 		static percival_frame<float> Of;
 		static percival_frame<float> ADU_to_electrons_conversion;
+		static percival_frame<float> Gain_lookup_table1;
+		static percival_frame<float> Gain_lookup_table2;
+		static percival_frame<float> Gain_lookup_table3;
+		static percival_frame<float> Gain_lookup_table4;
+
 };
 
 class percival_global_params{
@@ -89,7 +94,10 @@ class percival_global_params{
 		static std::string default_location_Oc;
 		static std::string default_location_Of;
 		static std::string default_location_ADU_to_electrons_conversion;
-		static std::string default_location_Gain_lookup_table;
+		static std::string default_location_Gain_lookup_table1;
+		static std::string default_location_Gain_lookup_table2;
+		static std::string default_location_Gain_lookup_table3;
+		static std::string default_location_Gain_lookup_table4;
 
 		static std::string default_calib_params_dataset_name;
 
@@ -107,8 +115,8 @@ void percival_ADC_decode(const percival_frame<short int> &, percival_frame<float
 void percival_ADU_to_electron_correction(percival_frame<float> &CDS_Img, percival_frame<float> &output, const percival_calib_params &);
 void percival_CDS_correction(percival_frame<float> &sample, const percival_frame<float> &reset, percival_frame<float>& output);
 
-
-
+void percival_unit_gain_multiplication(const percival_frame<float> &, percival_frame<float> &, const percival_calib_params & calib_params);
+void percival_unit_ADC_decode(const percival_frame<short int> &, percival_frame<short int> & Coarse, percival_frame<short int> & Fine, percival_frame<short int> & Gain);
 
 
 #endif /* INCLUDE_PERCIVAL_PROCESSING_H_ */
