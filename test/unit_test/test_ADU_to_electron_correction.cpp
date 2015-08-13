@@ -6,6 +6,8 @@
  */
 
 #include "percival_processing.h"
+#include "percival_load_calib_params.h"
+
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 
@@ -20,28 +22,29 @@ class fixture_test_percival_ADU_to_electron_correction{
 		fixture_test_percival_ADU_to_electron_correction(){
 			src_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
 			output_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
+			percival_global_params global_params("./data/test_param_file.txt");
+			percival_load_calib_params(calib, global_params);
 		}
 };
 
 BOOST_FIXTURE_TEST_SUITE(percival_ADU_to_electron_correctionn_test, fixture_test_percival_ADU_to_electron_correction)
 
-BOOST_AUTO_TEST_CASE ( output_frame_dimension_should_be_the_same_as_input ){
+BOOST_AUTO_TEST_CASE ( should_throw_exception_when_output_and_input_dimensions_mismatch ){
 	int frame_width = 10;
 	int frame_height = 5;
 	src_frame.set_frame_size(frame_height, frame_width);
-	calib.ADU_to_electrons_conversion.set_frame_size(frame_height, frame_width);
-	BOOST_REQUIRE_NO_THROW(percival_ADU_to_electron_correction(src_frame, output_frame, calib));
-	BOOST_REQUIRE_EQUAL(output_frame.width, frame_width);
-	BOOST_REQUIRE_EQUAL(output_frame.height, frame_height);
+	output_frame.set_frame_size(frame_height + 1, frame_width + 1);
+	BOOST_REQUIRE_THROW(percival_ADU_to_electron_correction(src_frame, output_frame, calib), dataspace_exception);
 }
 
 BOOST_AUTO_TEST_CASE ( should_throw_if_calibration_data_and_input_data_dimension_mismatch ){
 	int frame_width = 10;
 	int frame_height = 5;
 	src_frame.set_frame_size(frame_height, frame_width);
+	output_frame.set_frame_size(frame_height, frame_width);
 	BOOST_REQUIRE_NO_THROW(percival_ADU_to_electron_correction(src_frame, output_frame, calib));
-	BOOST_REQUIRE_EQUAL(output_frame.width, frame_width);
-	BOOST_REQUIRE_EQUAL(output_frame.height, frame_height);
+	calib.ADU_to_electrons_conversion.set_frame_size(21,34);
+	BOOST_REQUIRE_THROW(percival_ADU_to_electron_correction(src_frame, output_frame, calib), dataspace_exception);
 }
 
 BOOST_AUTO_TEST_CASE ( should_give_sensible_result ){

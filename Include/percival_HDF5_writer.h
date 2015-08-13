@@ -9,7 +9,7 @@
 #define INCLUDE_PERCIVAL_HDF5_WRITER_H_
 
 #include "percival_processing.h"
-
+#include "percival_exceptions.h"
 #include "hdf5.h"
 #include <typeinfo>
 #include <iostream>
@@ -46,7 +46,7 @@ void percival_HDF5_writer(
 		file_id = H5Fopen(path_name, H5F_ACC_RDWR, H5P_DEFAULT);
 		if(file_id < 0){
 			H5close();
-			throw file_exception{"Unable to write to ", path_name};
+			throw file_exception("Unable to write to ", path_name);
 		}
 	}
 	/* Create the data space for the dataset. */
@@ -83,7 +83,7 @@ void percival_HDF5_writer(
 			memtype_id = H5T_NATIVE_DOUBLE;
 
 	else{
-			throw datatype_exception{"Invalid input datatype or wrong destination datatype."};
+			throw datatype_exception("Invalid input datatype or wrong destination datatype.");
 			H5close();
 	}
 
@@ -93,7 +93,7 @@ void percival_HDF5_writer(
 	if(dataset_id<0 && overwrite_existing == 1){
 		dataset_id = H5Dopen(file_id, data_set_name, H5P_DEFAULT);
 		if(dataset_id<0)
-		throw file_exception{"Failed to create dataset: ", data_set_name};
+		throw file_exception("Failed to create dataset: ", data_set_name);
 	}
     status = H5Dwrite(dataset_id, memtype_id, H5S_ALL, H5S_ALL, H5P_DEFAULT, src_frame.data);
 

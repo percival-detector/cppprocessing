@@ -5,13 +5,11 @@
  *      Author: pqm78245
  */
 #include <cstdlib>
-
-#include <percival_global_params.h>
-#include <percival_processing.h>
+#include "percival_processing.h"
 
 //image height, image width, total frame number, default file locations, calibration height, calibration width, rotated?
 
-bool percival_global_params::is_initialised = false;
+bool percival_global_params::is_initialised = true;
 bool percival_global_params::is_initialised_every_member[255] = {};
 unsigned int percival_global_params::total_number_of_frames;
 unsigned int percival_global_params::frame_height;
@@ -26,6 +24,12 @@ std::string percival_global_params::default_location_Gf;
 std::string percival_global_params::default_location_Oc;
 std::string percival_global_params::default_location_Of;
 std::string percival_global_params::default_location_ADU_to_electrons_conversion;
+
+std::string percival_global_params::default_location_Gain_lookup_table1;
+std::string percival_global_params::default_location_Gain_lookup_table2;
+std::string percival_global_params::default_location_Gain_lookup_table3;
+std::string percival_global_params::default_location_Gain_lookup_table4;
+
 std::string percival_global_params::default_calib_params_dataset_name;
 
 
@@ -35,7 +39,7 @@ percival_global_params::percival_global_params(const std::string & master_param_
 
 percival_global_params::percival_global_params(){
 	if(!percival_global_params::is_initialised){
-	std::string default_master_param_file = "./test_param_file.txt";
+	std::string default_master_param_file = "./data/test_param_file.txt";
 	percival_global_params::initialisation(default_master_param_file);
 	}
 }
@@ -126,6 +130,22 @@ bool percival_global_params::load_master_param_file(const std::string & master_p
 						percival_global_params::default_location_ADU_to_electrons_conversion = line.substr(quotation_begin,quotation_end-quotation_begin);
 						is_initialised_every_member[13] = true;
 					}
+					if(line.find("default_location_Gain_lookup_table1") != std::string::npos){
+						percival_global_params::default_location_Gain_lookup_table1 = line.substr(quotation_begin,quotation_end-quotation_begin);
+						is_initialised_every_member[14] = true;
+					}
+					if(line.find("default_location_Gain_lookup_table2") != std::string::npos){
+						percival_global_params::default_location_Gain_lookup_table2 = line.substr(quotation_begin,quotation_end-quotation_begin);
+						is_initialised_every_member[15] = true;
+					}
+					if(line.find("default_location_Gain_lookup_table3") != std::string::npos){
+						percival_global_params::default_location_Gain_lookup_table3 = line.substr(quotation_begin,quotation_end-quotation_begin);
+						is_initialised_every_member[16] = true;
+					}
+					if(line.find("default_location_Gain_lookup_table4") != std::string::npos){
+						percival_global_params::default_location_Gain_lookup_table4 = line.substr(quotation_begin,quotation_end-quotation_begin);
+						is_initialised_every_member[17] = true;
+					}
 
 				}
 			}
@@ -183,8 +203,8 @@ bool percival_global_params::check_initialisation(){
 //default_location_Of
 //is_initialised_every_member[11] = true;
 
-	if((percival_global_params::is_initialised_every_member[6] == false) ||
-			(percival_global_params::is_initialised_every_member[7] == false) ||
+	if(//(percival_global_params::is_initialised_every_member[6] == false) ||
+			//(percival_global_params::is_initialised_every_member[7] == false) ||			//not necessary as the dataset name and path name will be supplied through main.
 				(percival_global_params::is_initialised_every_member[8] == false) ||
 					(percival_global_params::is_initialised_every_member[9] == false) ||
 						(percival_global_params::is_initialised_every_member[10] == false) ||
@@ -205,4 +225,8 @@ bool percival_global_params::check_initialisation(){
 //	}
 	percival_global_params::is_initialised = true;
 	return 1;
+}
+
+bool percival_global_params::initialised(){
+	return percival_global_params::is_initialised;
 }

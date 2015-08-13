@@ -5,7 +5,9 @@
  *      Author: pqm78245
  */
 #include "percival_processing.h"
-
+#include "percival_load_calib_params.h"
+#include "percival_HDF5_loader.h"
+#include "percival_HDF5_writer.h"
 #include<string>
 #include<cstdio>
 #include<iostream>
@@ -20,13 +22,13 @@ int main(int argn, char* argv[]){
 	 * Commandline parameters:
 	 *
 	 * main use_meaningless_image_no, path_name, dataset_name, repeat
-	 * main use_meaningless_image_yes, width repeat
+	 * main use_meaningless_image_yes, width height repeat test_params_file
 	 * main no commandline input, use default test image.
 	 *
 	 */
 
-	percival_frame<short> sample_frame;
-	percival_frame<short> reset_frame;
+	percival_frame<unsigned short int> sample_frame;
+	percival_frame<unsigned short int> reset_frame;
 	percival_frame<float> ADC_decoded_sample_frame;
 	percival_frame<float> ADC_decoded_reset_frame;
 	percival_frame<float> CDS_frame;
@@ -55,8 +57,14 @@ int main(int argn, char* argv[]){
 		sscanf(argv[1], "%d", &use_meaningless_image);
 		if(use_meaningless_image){
 			sscanf(argv[2], "%d", &width);
-			if(argn == 4)
-				sscanf(argv[3], "%d", &repeat);
+			if(argn >= 4)
+				sscanf(argv[3], "%d", &height);
+			if(argn == 6){
+				sscanf(argv[4], "%d", &repeat);
+				char tmp3[255];
+				sscanf(argv[5], "%s", tmp3);
+				config_file = tmp3;
+			}
 		}//using computer generated data
 		else{
 			if(argn >= 3){
@@ -66,24 +74,52 @@ int main(int argn, char* argv[]){
 				sscanf(argv[3], "%s", tmp2);
 				path_name = tmp1;
 				top_level_data_set_name = tmp2;
-				if(argn == 5)
+				if(argn >= 5)
 					sscanf(argv[4], "%d", &repeat);
 			}
 		}// using meaningful data to test
 	}
 
 	percival_global_params global_params(config_file);
-	percival_calib_params calib_params(global_params);
+	percival_calib_params calib_params;
+	percival_load_calib_params(calib_params, global_params);
 
 	if(use_meaningless_image){
-		sample_frame.set_frame_size(height, width);
-		reset_frame.set_frame_size(height, width);
-		for(int i = 0; i < width * height; i++  ){
-			*(sample_frame.data + i) = i % 32767;
-			*(reset_frame.data + i) = i % 32766;
+		percival_frame<unsigned short int>* sample_frame_stack= new percival_frame<unsigned short int>[repeat];
+		percival_frame<unsigned short int>* reset_frame_stack= new percival_frame<unsigned short int>[repeat];
+		percival_frame<float>* ADC_decoded_sample_frame_stack= new percival_frame<float>[repeat];
+		percival_frame<float>* ADC_decoded_reset_frame_stack= new percival_frame<float>[repeat];
+		percival_frame<float>* CDS_frame_stack= new percival_frame<float>[repeat];
+		percival_frame<float>* electron_corrected_frame_stack= new percival_frame<float>[repeat];
+
+
+		for(int j = 0; j < repeat; j ++){
+			sample_frame = *(sample_frame_stack + j);
+			reset_frame = *(reset_frame_stack + j);
+			ADC_decoded_sample_frame =*( ADC_decoded_sample_frame_stack + j);
+			ADC_decoded_reset_frame =*( ADC_decoded_reset_frame_stack + j);
+			CDS_frame = *(CDS_frame_stack + j);
+			electron_corrected_frame = *(electron_corrected_frame_stack + j);
+
+			sample_frame.set_frame_size(height, width);
+			reset_frame.set_frame_size(height, width);
+			ADC_decoded_sample_frame.set_frame_size(height, width);
+			ADC_decoded_reset_frame.set_frame_size(height, width);
+			CDS_frame.set_frame_size(height, width);
+			electron_corrected_frame.set_frame_size(height, width);
+
+			for(int i = 0; i < width * height; i++  ){
+				*(sample_frame.data + i) = i * (j * 3) % 32767;
+				*(reset_frame.data + i) = i * (j * 5) % 32767;
+			}
+
+			percival_ADC_decode(sample_frame, ADC_decoded_sample_frame, calib_params);
+			percival_ADC_decode(reset_frame, ADC_decoded_reset_frame, calib_params);
+
+			percival_CDS_correction(ADC_decoded_sample_frame, ADC_decoded_reset_frame, CDS_frame);
+			percival_ADU_to_electron_correction(CDS_frame, electron_corrected_frame, calib_params);
 		}
 	}else{
-
 		try{
 			percival_HDF5_loader(path_name.c_str(), (top_level_data_set_name + "10/Sample").c_str(), sample_frame);
 			percival_HDF5_loader(path_name.c_str(), (top_level_data_set_name + "9/Reset").c_str(), reset_frame);
@@ -91,33 +127,38 @@ int main(int argn, char* argv[]){
 		catch(file_exception & e){
 			std::cerr << e.what() << std::endl;
 		}
+
+		width = sample_frame.width;
+		height = sample_frame.height;
+
+		reset_frame.set_frame_size(height, width);
+		ADC_decoded_sample_frame.set_frame_size(height, width);
+		ADC_decoded_reset_frame.set_frame_size(height, width);
+		CDS_frame.set_frame_size(height, width);
+		electron_corrected_frame.set_frame_size(height, width);
+
+		for(int i = 0; i < repeat; i++){
+			percival_ADC_decode(sample_frame, ADC_decoded_sample_frame, calib_params);
+			percival_ADC_decode(reset_frame, ADC_decoded_reset_frame, calib_params);
+
+			percival_CDS_correction(ADC_decoded_sample_frame, ADC_decoded_reset_frame, CDS_frame);
+			percival_ADU_to_electron_correction(CDS_frame, electron_corrected_frame, calib_params);
+		}
+	////used for writing output
+	//	percival_HDF5_writer(ADC_decoded_sample_frame,  "./12-08-2015 output.h5", "ADC_decoded_sample_frame");
+	//	percival_HDF5_writer(ADC_decoded_reset_frame,  "./12-08-2015 output.h5", "ADC_decoded_reset_frame");
+	//	percival_HDF5_writer(CDS_frame, "./12-08-2015 output.h5", "CDS_frame");
+	//	percival_HDF5_writer(electron_corrected_frame,  "./12-08-2015 output.h5", "electron_corrected_frame");
+	//
+	////	std::cout << *(calib_params.ADU_to_electrons_conversion.data + 2) << std::endl;
+	//	percival_HDF5_writer(calib_params.Gc,  "./12-08-2015 output.h5", "calib_params_Gc");
+	//	percival_HDF5_writer(calib_params.Gf,  "./12-08-2015 output.h5", "calib_params_Gf");
+	//	percival_HDF5_writer(calib_params.Oc,  "./12-08-2015 output.h5", "calib_params_Oc");
+	//	percival_HDF5_writer(calib_params.Of,  "./12-08-2015 output.h5", "calib_params_Of");
+	//	percival_HDF5_writer(calib_params.ADU_to_electrons_conversion,  "./12-08-2015 output.h5", "ADU_to_electrons_conversion");
+
 	}
-
-
-	for(int i = 0; i < repeat; i++){
-		percival_ADC_decode(sample_frame, ADC_decoded_sample_frame, calib_params);
-		percival_ADC_decode(reset_frame, ADC_decoded_reset_frame, calib_params);
-
-		percival_CDS_correction(ADC_decoded_sample_frame, ADC_decoded_reset_frame, CDS_frame);
-		percival_ADU_to_electron_correction(CDS_frame, electron_corrected_frame, calib_params);
-
-//		std::cout << i << std::endl;
-	}
-
-	std::cout << "done!" << std::endl;
-//used for writing output
-	percival_HDF5_writer(ADC_decoded_sample_frame,  "./10-08-2015 output.h5", "ADC_decoded_sample_frame");
-	percival_HDF5_writer(ADC_decoded_reset_frame,  "./10-08-2015 output.h5", "ADC_decoded_reset_frame");
-	percival_HDF5_writer(CDS_frame, "./10-08-2015 output.h5", "CDS_frame");
-	percival_HDF5_writer(electron_corrected_frame,  "./10-08-2015 output.h5", "electron_corrected_frame");
-
-//	std::cout << *(calib_params.ADU_to_electrons_conversion.data + 2) << std::endl;
-	percival_HDF5_writer(calib_params.Gc,  "./10-08-2015 output.h5", "calib_params_Gc");
-	percival_HDF5_writer(calib_params.Gf,  "./10-08-2015 output.h5", "calib_params_Gf");
-	percival_HDF5_writer(calib_params.Oc,  "./10-08-2015 output.h5", "calib_params_Oc");
-	percival_HDF5_writer(calib_params.Of,  "./10-08-2015 output.h5", "calib_params_Of");
-	percival_HDF5_writer(calib_params.ADU_to_electrons_conversion,  "./10-08-2015 output.h5", "ADU_to_electrons_conversion");
-
+	std::cout << "Done!" << std::endl;
 	return 0;
 }
 

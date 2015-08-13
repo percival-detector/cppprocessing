@@ -9,74 +9,11 @@
 #define INCLUDE_PERCIVAL_HDF5_LOADER_H_
 
 #include "percival_processing.h"
+#include "percival_exceptions.h"
 
 #include "hdf5.h"
-#include <stdexcept>
 #include <exception>
-#include <string>
 #include <typeinfo>
-#include <iostream>
-#include <sstream>
-
-class file_exception : public std::exception{
-private:
-	std::string err_msg;
-	std::string file_name;
-public:
-	file_exception(const char *file_name, const char *msg) : file_name(file_name), err_msg(msg) {};
-	~file_exception() throw() {};
-	const char *what() const throw() { std::string message = "\"" + file_name + "\"" + err_msg; return message.c_str(); };
-};
-
-class datatype_exception : public std::exception{
-private:
-	std::string err_msg;
-	std::string type;
-	std::string sign_string;
-	std::string return_message;
-	std::string size_string;
-	int size;
-	bool sign;
-
-
-public:
-	datatype_exception(const int size, const char* type, const bool sign, const char *msg) :
-		size(size),
-		type(type),
-		sign(sign),
-		err_msg(msg)
-{
-		if(sign == true)
-			sign_string = "signed";
-		else
-			sign_string = "unsigned";
-
-        std::ostringstream str_convert;
-        str_convert << (long long int)(size * 8 );
-		size_string = str_convert.str();
-
-		return_message = err_msg
-				+ "\nActual input datatype: "
-				+  size_string + " bits " + sign_string + " "+ type + ".\n"
-				+ "Datatypes permitted are:\n"
-				+ "H5T_STD_U16LE\nH5T_STD_U32LE\nH5T_IEEE_F32LE\nH5T_IEEE_F64LE\n";
-};
-
-	datatype_exception(const char *msg) : return_message(msg){};
-
-	~datatype_exception() throw() {};
-	const char *what() const throw() {return return_message.c_str();};
-};
-
-class dataspace_exception : public std::exception{
-private:
-	std::string err_msg;
-
-public:
-	dataspace_exception(const char *msg) : err_msg(msg) {};
-	~dataspace_exception() throw() {};
-	const char *what() const throw() {return err_msg.c_str();};
-};
 
 template<typename T>
 void transpose_percival_frame(percival_frame<T> & original_frame){
@@ -127,19 +64,19 @@ void percival_HDF5_loader(
 	file_id = H5Fopen(path_name,H5F_ACC_RDONLY, H5P_DEFAULT);
 	if(file_id<0){
 		H5close();
-		throw file_exception{path_name, " does not exist or is not an HDF5 file. Failed to open."};
+		throw file_exception(path_name, " does not exist or is not an HDF5 file. Failed to open.");
 	}
 	//should_throw_exception_if_dataset_does_not_exist
 	dataset_id = H5Dopen2(file_id, data_set_name, H5P_DEFAULT);
 	if(dataset_id<0){
 		H5close();
-		throw file_exception{data_set_name, " dataset does not exist. Failed to open."};
+		throw file_exception(data_set_name, " dataset does not exist. Failed to open.");
 	}
 
 	dataspace_id = H5Dget_space(dataset_id);
 	if(dataspace_id<0){
 		H5close();
-		throw file_exception{path_name, " Fail to get dataspace."};
+		throw file_exception(path_name, " Fail to get dataspace.");
 	}
 	/*
 	 *
@@ -151,7 +88,7 @@ void percival_HDF5_loader(
 	rank = H5Sget_simple_extent_ndims(dataspace_id);
 	if(rank != 2){
 		H5close();
-		throw dataspace_exception{"Dimension != 2."};
+		throw dataspace_exception("Dimension != 2.");
 	}
 	hsize_t* current_dims, *maximum_dims;
 
@@ -171,20 +108,12 @@ void percival_HDF5_loader(
 
 	datatype_id = H5Dget_type(dataset_id);
 
-	int size = H5Tget_size(datatype_id);
-	//
-	//	if(size != sizeof(T))
-	//		throw datatype_exception{};
-
 	if(H5Tget_order(datatype_id)==H5T_ORDER_BE){
 		H5close();
-		throw datatype_exception{"Only little endian data is permitted."};
+		throw datatype_exception("Only little endian data is permitted.");
 	}
 
 	hid_t memtype_id;
-	H5T_class_t data_class = H5Tget_class(datatype_id);
-	H5T_sign_t sign = H5Tget_sign(datatype_id);
-
 	hid_t native_type = H5Tget_native_type(datatype_id, H5T_DIR_ASCEND);
 
 	if( H5Tequal( native_type, H5T_NATIVE_INT16) && (typeid(T) == typeid(short int)) )
@@ -208,7 +137,7 @@ void percival_HDF5_loader(
 			memtype_id = H5T_NATIVE_DOUBLE;
 
 	else{
-			throw datatype_exception{"Invalid input datatype or wrong destination datatype."};
+			throw datatype_exception("percival_HDF5_loader: Invalid input datatype or wrong destination datatype.");
 			H5close();
 	}
 
@@ -219,7 +148,7 @@ void percival_HDF5_loader(
 
 	if(status < 0){
 		H5close();
-		throw file_exception{path_name, " cannot be read."};
+		throw file_exception(path_name, " cannot be read.");
 	}
 
 	if(transposed == 1){

@@ -7,20 +7,18 @@
 
 #include "percival_processing.h"
 
-void percival_ADC_decode(const percival_frame<short int> & src_frame, percival_frame<float> & des_frame, const percival_calib_params & calib_params, bool store_gain){
+void percival_ADC_decode(const percival_frame<unsigned short int> & src_frame, percival_frame<float> & des_frame, const percival_calib_params & calib_params, bool store_gain){
 	//initialize destination matrix
 	if(src_frame.width != des_frame.width || src_frame.height != des_frame.height){
-		des_frame.set_frame_size(src_frame.height, src_frame.width);
+		throw dataspace_exception("percival_ADC_decode: output and input dimension mismatch.");
 	}//Saving time for memory allocation
 
 	if(calib_params.Gc.height != src_frame.height){
-		std::cout << calib_params.Gc.height << std::endl;
-		std::cout << src_frame.height << std::endl;
-		throw dataspace_exception{"percival_ADC_decode: calibration array height and sample array height mismatch."};
+		throw dataspace_exception("percival_ADC_decode: calibration array height and sample array height mismatch.");
 	}
 
 	if(calib_params.Gc.width != 7)
-		throw dataspace_exception{"percival_ADC_decode: calibration array width and sample array width mismatch. Expected: width == 7."};
+		throw dataspace_exception("percival_ADC_decode: calibration array width and sample array width mismatch. Expected: width == 7.");
 
 	//calibration parameters
 	const unsigned int calib_data_height = calib_params.Gc.height;
@@ -77,8 +75,25 @@ void percival_ADC_decode(const percival_frame<short int> & src_frame, percival_f
 		//these two values are from February test data from Hazem. should be changed if calibration data changes
 		float FMax = 222;
 		float CMax = 26;
+		float gain_factor = 1;
+				switch(gain){
+					case 0b00:
+						gain_factor = *(calib_params.Gain_lookup_table1.data + i);
+						break;
+					case 0b01:
+						gain_factor = *(calib_params.Gain_lookup_table2.data + i);
+						break;
+					case 0b10:
+						gain_factor = *(calib_params.Gain_lookup_table3.data + i);
+						break;
+					case 0b11:
+						gain_factor = *(calib_params.Gain_lookup_table4.data + i);
+						break;
+					default:
+						throw datatype_exception("Invalid gain bit detected.");
+		}
 
-		*(des_frame.data + i)	= (float)
+		*(des_frame.data + i)	= (float)gain_factor *
 	    		(FMax * CMax *
 				(
 					1.0-
@@ -95,6 +110,12 @@ void percival_ADC_decode(const percival_frame<short int> & src_frame, percival_f
 					)
 				)
 				);
+		/*
+		 *
+		 * Gain multiplication. Each Gain-lookup_table is as large as the sample frame, and corresponds to one gain bit.
+		 *
+		 */
+
 //	double version
 
 //		double VinMax=1.43;
