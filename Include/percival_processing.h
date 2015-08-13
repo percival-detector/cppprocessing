@@ -111,12 +111,12 @@ class percival_global_params{
 		bool check_initialisation();
 };
 
-void percival_ADC_decode(const percival_frame<short int> &, percival_frame<float> &, const percival_calib_params & calib_params, bool store_gain = false);
+void percival_ADC_decode(const percival_frame<unsigned short int> &, percival_frame<float> &, const percival_calib_params & calib_params, bool store_gain = false);
 void percival_ADU_to_electron_correction(percival_frame<float> &CDS_Img, percival_frame<float> &output, const percival_calib_params &);
 void percival_CDS_correction(percival_frame<float> &sample, const percival_frame<float> &reset, percival_frame<float>& output);
 
 void percival_unit_gain_multiplication(const percival_frame<float> &, percival_frame<float> &, const percival_calib_params & calib_params);
-void percival_unit_ADC_decode(const percival_frame<short int> &, percival_frame<short int> & Coarse, percival_frame<short int> & Fine, percival_frame<short int> & Gain);
+void percival_unit_ADC_decode(const percival_frame<unsigned short int> &, percival_frame<unsigned short int> & Coarse, percival_frame<unsigned short int> & Fine, percival_frame<short int> & Gain);
 
 
 #endif /* INCLUDE_PERCIVAL_PROCESSING_H_ */

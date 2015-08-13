@@ -18,7 +18,7 @@ percival_calib_params calib_params;
 
 class fixture_frame{
 public:
-	percival_frame<short int> src_frame;
+	percival_frame<unsigned short int> src_frame;
 	percival_frame<float> des_frame;
 	percival_frame<float> output_frame;
 

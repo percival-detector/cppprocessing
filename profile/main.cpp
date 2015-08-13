@@ -27,8 +27,8 @@ int main(int argn, char* argv[]){
 	 *
 	 */
 
-	percival_frame<short> sample_frame;
-	percival_frame<short> reset_frame;
+	percival_frame<unsigned short int> sample_frame;
+	percival_frame<unsigned short int> reset_frame;
 	percival_frame<float> ADC_decoded_sample_frame;
 	percival_frame<float> ADC_decoded_reset_frame;
 	percival_frame<float> CDS_frame;
@@ -85,8 +85,8 @@ int main(int argn, char* argv[]){
 	percival_load_calib_params(calib_params, global_params);
 
 	if(use_meaningless_image){
-		percival_frame<short>* sample_frame_stack= new percival_frame<short>[repeat];
-		percival_frame<short>* reset_frame_stack= new percival_frame<short>[repeat];
+		percival_frame<unsigned short int>* sample_frame_stack= new percival_frame<unsigned short int>[repeat];
+		percival_frame<unsigned short int>* reset_frame_stack= new percival_frame<unsigned short int>[repeat];
 		percival_frame<float>* ADC_decoded_sample_frame_stack= new percival_frame<float>[repeat];
 		percival_frame<float>* ADC_decoded_reset_frame_stack= new percival_frame<float>[repeat];
 		percival_frame<float>* CDS_frame_stack= new percival_frame<float>[repeat];
