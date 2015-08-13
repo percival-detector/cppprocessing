@@ -47,7 +47,7 @@ def get_bytes(bytes):
     return str(int(bytes)) + ' ' + suffix
           
 
-def run_the_function(print_result, width, repeat, text_file_name):
+def run_the_function(print_result, height, width, repeat, text_file_name):
     path_name= "./data/KnifeQuadBPos1_2_21_int16.h5"
     top_level_data_set_name= "KnifeQuadBPos1/"
     host_name = socket.gethostname()
@@ -55,13 +55,13 @@ def run_the_function(print_result, width, repeat, text_file_name):
     debug_version = './Debug/cppProcessing2.0 '
     profile_version = './Profiling/cppProcessing2.0 '
 
-    cmdl_arg = '1 ' + str(height) + ' ' + str(width) + ' ' + str(repeat) + ' ' + text_file_name    
+    cmdl_arg = '1 '  + str(width) + ' '+ str(height) + ' ' + str(repeat) + ' ' + text_file_name    
     program_to_execute = debug_version + cmdl_arg
 
     #events to monitor
     #instructions
     event1 = oprofile_events('CPU_CLK_UNHALTED','0x00',100000)
-    event2 = oprofile_events('INST_RETIRED','0x00',60000)
+    event2 = oprofile_events('INST_RETIRED','0x00',6000)
     #cache misses
     event3 = oprofile_events('LLC_MISSES','0x41',6000)
     event4 = oprofile_events('mem_load_uops_llc_hit_retired','0x02',100000)
@@ -164,13 +164,13 @@ def run_the_function(print_result, width, repeat, text_file_name):
 
 repeat = 1
 # width_arr = [2000, 5000, 10000, 20000, 50000, 100000, 500000]
-height = 100
-width = 130
+height = 1000
+width = 1300
 text_file_name = 'test_param_file.txt'
 cdg.generate_calib_files(height, width, text_file_name)
 
 # for width in width_arr:
-run_the_function(True, width, repeat, text_file_name)
+run_the_function(True, height, width, repeat, text_file_name)
 
 
 # width = 50000
