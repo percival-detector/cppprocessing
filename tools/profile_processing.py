@@ -184,7 +184,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
 
 
 
-repeat = 1
+repeat = 10000
 # width_arr = [2000, 5000, 10000, 20000, 50000, 100000, 500000]
 
 height = 3717
