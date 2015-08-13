@@ -89,6 +89,8 @@ void percival_ADC_decode(const percival_frame<short int> & src_frame, percival_f
 					case 0b11:
 						gain_factor = *(calib_params.Gain_lookup_table4.data + i);
 						break;
+					default:
+						throw datatype_exception("Invalid gain bit detected.");
 		}
 
 		*(des_frame.data + i)	= (float)gain_factor *

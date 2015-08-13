@@ -73,7 +73,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
     profile_version = './Profiling/cppProcessing2.0 '
 
     cmdl_arg = '1 '  + str(width) + ' '+ str(height) + ' ' + str(repeat) + ' ' + text_file_name    
-    program_to_execute = profile_version + cmdl_arg
+    program_to_execute = debug_version + cmdl_arg
 
     #events to monitor
     #instructions
@@ -101,6 +101,8 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
     print 'operf ' + '-d ' + sample_data_destination + ' ' + operf_events + ' '+ program_to_execute
     
     subprocess.call('mkdir -p ' + sample_data_destination, shell=True)
+    
+    #subprocess.call('export LD_LIBRARY_PATH=/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/lib', shell=True)
     subprocess.call('(/usr/bin/time -v ' + program_to_execute + ') &> ' + report_destination, shell=True)
     subprocess.call("echo $'\n' >> " + report_destination, shell=True)
     subprocess.call('operf ' + '-d ' + sample_data_destination + ' ' + operf_events + ' '+ program_to_execute, shell=True)
@@ -184,7 +186,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
 
 
 
-repeat = 10000
+repeat = 1    #350 is about the maximum
 # width_arr = [2000, 5000, 10000, 20000, 50000, 100000, 500000]
 
 height = 3717
@@ -199,7 +201,7 @@ subprocess.call('mkdir -p ' + path_name, shell=True)
 
 
 
-#cdg.generate_calib_files(height, width, text_file_name, path_name)
+cdg.generate_calib_files(height, width, text_file_name, path_name)
 
 # for width in width_arr:
 run_the_function(True, height, width, repeat, text_file_name)
