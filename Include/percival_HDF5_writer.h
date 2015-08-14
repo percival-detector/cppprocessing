@@ -27,7 +27,7 @@ void percival_HDF5_writer(
 	hsize_t dims[2];
 	if(!print_error)
 	/* Turn off error handling */
-		  H5Eset_auto(H5E_DEFAULT, NULL, NULL);
+		  H5Eset_auto2(H5E_DEFAULT, NULL, NULL);
 
 
 	/*
