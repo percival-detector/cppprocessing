@@ -26,6 +26,6 @@ before_script:
   - pwd
 script:
   - ./build/bin/pcvl-unittest --log_level=all
-  - ./build/bin/pcvl-profiling
+  - ./build/bin/pcvl-profiling 1 210 160 1 data/test_param_file.txt 
 
   
