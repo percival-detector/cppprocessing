@@ -1,6 +1,8 @@
 
 set(CMAKE_INCLUDE_CURRENT_DIR on)
 
+include_directories(${HDF5_INCLUDE_DIRS})
+
 # Build list of test source files from current dir
 file(GLOB PCVL_PROFILING_SOURCE *.cpp)
 
