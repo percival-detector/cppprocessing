@@ -9,7 +9,7 @@
 
 //image height, image width, total frame number, default file locations, calibration height, calibration width, rotated?
 
-bool percival_global_params::is_initialised = true;
+bool percival_global_params::is_initialised = false;
 bool percival_global_params::is_initialised_every_member[255] = {};
 unsigned int percival_global_params::total_number_of_frames;
 unsigned int percival_global_params::frame_height;
