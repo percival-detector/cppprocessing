@@ -13,17 +13,18 @@
 const int TEST_FRAME_HEIGHT 	= 	160;		//cannot be 10
 const int TEST_FRAME_WIDTH		=	210;		//cannot be 10
 
-percival_global_params global_params;
-percival_calib_params calib_params;
+
 
 class fixture_frame{
 public:
 	percival_frame<unsigned short int> src_frame;
 	percival_frame<float> des_frame;
 	percival_frame<float> output_frame;
+	percival_calib_params calib_params;
 
 	fixture_frame(){
 
+		percival_global_params global_params;
 		src_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
 		des_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
 		output_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);

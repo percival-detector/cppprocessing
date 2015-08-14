@@ -9,7 +9,10 @@ default_location_Gf					:	"./data/ADC_tr6_W14_14BSI_TChip-40C_bias10f_2014-02-28
 default_location_Of					:	"./data/ADC_tr6_W14_14BSI_TChip-40C_bias10f_2014-02-28_14-05_FineOffsetArray.h5"	7*160
 default_location_ADU_to_electrons_conversion		:	"./data/trPTC8a_W14_14TS1BSI_TChip-40_bias10f_2014_02_28_21-32_PTC7row_ADU2e.h5"	210*160
 default_calib_params_dataset_name			:	"/data/data"
-
+default_location_Gain_lookup_table1	:"./data/Gain_lookup_table1.h5"
+default_location_Gain_lookup_table2	:"./data/Gain_lookup_table2.h5"
+default_location_Gain_lookup_table3	:"./data/Gain_lookup_table3.h5"
+default_location_Gain_lookup_table4	:"./data/Gain_lookup_table4.h5"
 
 total_number_of_frames					: 	100
 is_transposed_calib_params				:	yes
