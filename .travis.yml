@@ -1,0 +1,31 @@
+language: cpp
+compiler: gcc
+sudo: false
+    
+cache:
+  directories:
+  - $HOME/epics
+  - $HOME/synapps
+  
+addons:
+  apt:
+    packages:
+    - libhdf5-serial-dev
+    - libboost-test-dev
+  
+before_install:
+  - mkdir build && cd build
+  - cmake ..
+
+install:
+  - pwd
+  - make VERBOSE=1
+
+before_script:
+  - cd ..
+  - pwd
+script:
+  - ./build/bin/pcvl-unittest --log_level=all
+  - ./build/bin/pcvl-profiling 1 210 160 1 data/test_param_file.txt 
+
+  

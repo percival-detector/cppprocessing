@@ -49,3 +49,7 @@ gmon.out
 /miscellaneous
 /annotated
 
+# cmake build dir
+/build/
+
+
