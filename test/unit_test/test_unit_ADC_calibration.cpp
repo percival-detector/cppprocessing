@@ -60,6 +60,13 @@ BOOST_FIXTURE_TEST_SUITE (percival_unit_ADC_calibration_test,fixture_unit_ADC_ca
 		*(coarse_frame.data) = 25;
 		*(fine_frame.data) = 156;
 		*(gain_frame.data) = 2;
+		*(coarse_frame.data + 7) = 25;
+		*(fine_frame.data + 7) = 156;
+		*(gain_frame.data + 7) = 2;
+		*(coarse_frame.data + 14) = 25;
+		*(fine_frame.data + 14) = 156;
+		*(gain_frame.data + 14) = 2;
+
 		*(calib_params.Gc.data) = 1.0;
 		*(calib_params.Oc.data) = 2.0;
 		*(calib_params.Gf.data) = 3.0;
