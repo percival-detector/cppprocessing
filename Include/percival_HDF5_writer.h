@@ -87,11 +87,11 @@ void percival_HDF5_writer(
 			H5close();
 	}
 
-	dataset_id = H5Dcreate(file_id, data_set_name, memtype_id, dataspace_id,
+	dataset_id = H5Dcreate2(file_id, data_set_name, memtype_id, dataspace_id,
 			H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
 	if(dataset_id<0 && overwrite_existing == 1){
-		dataset_id = H5Dopen(file_id, data_set_name, H5P_DEFAULT);
+		dataset_id = H5Dopen2(file_id, data_set_name, H5P_DEFAULT);
 		if(dataset_id<0)
 		throw file_exception("Failed to create dataset: ", data_set_name);
 	}
