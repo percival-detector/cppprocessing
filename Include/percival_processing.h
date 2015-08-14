@@ -117,6 +117,6 @@ void percival_CDS_correction(percival_frame<float> &sample, const percival_frame
 
 void percival_unit_gain_multiplication(const percival_frame<float> &, percival_frame<float> &, const percival_calib_params & calib_params);
 void percival_unit_ADC_decode(const percival_frame<unsigned short int> &, percival_frame<unsigned short int> & Coarse, percival_frame<unsigned short int> & Fine, percival_frame<unsigned short int> & Gain);
-void percival_unit_ADC_calibration(const percival_frame<unsigned short int> & Coarse,const  percival_frame<unsigned short int> & Fine,const percival_frame<unsigned short int> & Gain, percival_frame<float>& output, const percival_calib_params &, bool check_dimensions = true);
+void percival_unit_ADC_calibration(const percival_frame<unsigned short int> & Coarse,const  percival_frame<unsigned short int> & Fine, percival_frame<float>& output, const percival_calib_params &, bool check_dimensions = true);
 
 #endif /* INCLUDE_PERCIVAL_PROCESSING_H_ */

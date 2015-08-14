@@ -8,7 +8,6 @@
 void percival_unit_ADC_calibration(
 		const percival_frame<unsigned short int> & Coarse,
 		const  percival_frame<unsigned short int> & Fine,
-		const percival_frame<unsigned short int> & Gain,
 		percival_frame<float>& output,
 		const percival_calib_params & calib,
 		bool check_dimensions)
@@ -18,8 +17,6 @@ void percival_unit_ADC_calibration(
 				throw dataspace_exception("In percival_unit_ADC_calibration: coarse_frame and output frame dimensions mismatch.");
 		if(output.width != Fine.width || output.height != Fine.height)
 				throw dataspace_exception("In percival_unit_ADC_calibration: fine_frame and output frame dimensions mismatch.");
-		if(output.width != Gain.width || output.height != Gain.height)
-				throw dataspace_exception("In percival_unit_ADC_calibration: gain_frame and output frame dimensions mismatch.");
 
 		if(calib.Gc.width != 7)
 			throw dataspace_exception("In percival_unit_ADC_calibration: width of Gc array is not 7.");
