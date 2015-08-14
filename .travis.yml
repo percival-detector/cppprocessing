@@ -22,4 +22,7 @@ install:
   - pwd
   - make VERBOSE=1
 
-
+script:
+  - gdb --args ./bin/pcvl-profiling < ../gdb.cmd
+  - gdb --args ./bin/pcvl-unittest --log_level=all < ../gdb.cmd
+  
