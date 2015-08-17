@@ -48,20 +48,37 @@ def get_CPI(list_of_functions, attributes, list_of_events_recorded):
         CPI.append(cycle/inst_retired)
     return CPI
 
+def get_bandwidth(list_of_functions, attributes, total_time, image_size, repeat):
+    bandwidth = []
+    for function in list_of_functions:
+        time = float(attributes[function]) /100 * total_time /1000/repeat
+        if 'percival_ADC_decode' or 'percival_unit_ADC_decode' or 'percival_unit_ADC_calibration' or 'percival_unit_gain_multiplication' in function:
+            time = time / 2
+        bandwidth.append(image_size/time)
+    return bandwidth
+
+def get_time(list_of_functions, attributes, total_time, repeat):
+    function_time = []
+    for function in list_of_functions:
+        time = float(attributes[function]) /100 * total_time/repeat
+        function_time.append(time)
+    return function_time
+
 def get_bytes(bytes):
     suffix = 'Bytes'
-    if bytes > 1024:
+    bytes = float(bytes)
+    if bytes >= 1024:
         bytes = bytes/1024
-        if bytes > 1024:
+        if bytes >= 1024:
             bytes = bytes/1024
-            if bytes>1024:
+            if bytes >= 1024:
                 bytes = bytes/1024
                 suffix = 'GB'
             else:
                 suffix = 'MB'
         else:
             suffix = 'kB'
-    return str(int(bytes)) + ' ' + suffix
+    return '{:.4}'.format(bytes) + ' ' + suffix
           
 
 def run_the_function(print_result, height, width, repeat, text_file_name):
@@ -89,7 +106,12 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
     list_of_events = [event1, event2, event3, event4]#, event5, event6, event7]
     
     dict_of_attributes = {}
-    list_of_functions = ['percival_ADC_decode', 'percival_CDS_correction','percival_ADU_to_electron_correction']
+    list_of_functions = ['percival_ADC_decode', 
+                         'percival_CDS_correction',
+                         'percival_ADU_to_electron_correction', 
+                         'percival_unit_ADC_decode',
+                         'percival_unit_ADC_calibration',
+                         'percival_unit_gain_multiplication']
     list_of_events_recorded = []
 
     operf_events = get_operf_option(list_of_events)
@@ -154,9 +176,14 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
     function_time_ADU_to_electron = float(total_time * dict_of_function_perc_time['percival_ADU_to_electron_correction'] /100 /repeat)
     total_processing_time = float(function_time_ADC_decode + function_time_ADU_to_electron + function_time_CDS_subtraction)
     
+    
+    image_size = width * height * 2    #memory size
+
     llc_misses_per_instruction = get_llc_misses(list_of_functions, dict_of_attributes, list_of_events_recorded)
     CPI = get_CPI(list_of_functions, dict_of_attributes, list_of_events_recorded)
-    image_size = width * height * 2    #memory size
+    
+    bandwidth = get_bandwidth(list_of_functions, dict_of_function_perc_time, total_time, image_size, repeat)
+    function_time = get_time(list_of_functions, dict_of_function_perc_time, total_time, repeat)
     
     if print_result == True:
         print '=' * 100
@@ -168,10 +195,17 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
         print 'Statistics collected for '+str(repeat)+' iterations'
         
         print 'Bandwidth:'
-        print '\t Total: {0:.4} MB/s'.format(1000 * image_size * 2/total_processing_time /1024/1024)    #2 because of sample and reset
-        print '\t ADC_deocde bandwidth: {0:.4} MB/s'.format(1000 * image_size * 2/function_time_ADC_decode /1024/1024)
-        print '\t CDS_subtraction (two float input):  {0:.4} MB/s'.format(1000 * 2 * 2 * image_size/function_time_CDS_subtraction /1024/1024) #2 for float, 2 for sample and reset
-        print '\t ADU_to_electron (one float input):  {0:.4} MB/s'.format(1000 * 2 * image_size/function_time_ADU_to_electron /1024/1024)
+        print '\t' + 'Total: {0:.4} MB/s'.format(1000 * image_size * 2/total_processing_time /1024/1024)    #2 because of sample and reset
+        for function in list_of_functions:
+            index = list_of_functions.index(function)
+            print '\t' +  function +':' + '{0}'.format(get_bytes((bandwidth[index])))   + '/s'     
+# 
+#         
+#         print 'Bandwidth:'
+#         
+#         print '\t ADC_deocde bandwidth: {0:.4} MB/s'.format(1000 * image_size * 2/function_time_ADC_decode /1024/1024)
+#         print '\t CDS_subtraction (two float input):  {0:.4} MB/s'.format(1000 * 2 * 2 * image_size/function_time_CDS_subtraction /1024/1024) #2 for float, 2 for sample and reset
+#         print '\t ADU_to_electron (one float input):  {0:.4} MB/s'.format(1000 * 2 * image_size/function_time_ADU_to_electron /1024/1024)
         
         print 'LLC misses per instruction:'
         for function in list_of_functions:
@@ -182,6 +216,11 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
         for function in list_of_functions:
             index = list_of_functions.index(function)
             print '\t' +  function +':' + '{0}'.format(int(CPI[index])) 
+            
+        print 'Processing time (ms):'
+        for function in list_of_functions:
+            index = list_of_functions.index(function)
+            print '\t' +  function +':' + '{0}'.format(int(function_time[index]))                
         print '=' * 100
 
 
@@ -201,7 +240,7 @@ subprocess.call('mkdir -p ' + path_name, shell=True)
 
 
 
-cdg.generate_calib_files(height, width, text_file_name, path_name)
+#cdg.generate_calib_files(height, width, text_file_name, path_name)
 
 # for width in width_arr:
 run_the_function(True, height, width, repeat, text_file_name)
