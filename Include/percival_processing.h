@@ -111,6 +111,41 @@ class percival_global_params{
 		bool check_initialisation();
 };
 
+/*the following classes are created for tbb*/
+
+
+struct percival_range_iterator_mock_p{	/*this object mocks the block_range object in tbb so that the syntax of my library can accommodate tbb library*/
+	unsigned int lower;
+	unsigned int upper;
+
+	percival_range_iterator_mock_p(int begin, int size):
+		lower(begin),
+		upper(begin + size + 1)
+	{}
+	unsigned int begin() const {return lower;}
+	unsigned int end() const  {return upper;}
+};
+
+template<typename range_iterator>
+class percival_unit_ADC_decode_p{
+	unsigned short int * input;
+	unsigned short int * Coarse;
+	unsigned short int * Fine;
+	unsigned short int * Gain;
+
+    public:
+    	percival_unit_ADC_decode_p (unsigned short int * a, unsigned short int *  b, unsigned short int *  c,unsigned short int *  d ):
+    		input(a), Coarse(b), Fine(c), Gain(d) {}
+
+        void operator()( const range_iterator & r ) const{
+		   for (unsigned int i=r.begin(); i!=r.end(); ++i ){
+			   *(Gain + i) = *(input + i) % 0x0004;
+			   *(Fine + i) = (*(input + i)  >> 2 ) %0x100;
+			   *(Coarse + i) = (*(input + i) >> 10) %0x20;
+		   }
+		}
+};
+
 void percival_ADC_decode(const percival_frame<unsigned short int> &, percival_frame<float> &, const percival_calib_params & calib_params, bool store_gain = false);
 void percival_ADU_to_electron_correction(percival_frame<float> &CDS_Img, percival_frame<float> &output, const percival_calib_params &);
 void percival_CDS_correction(percival_frame<float> &sample, const percival_frame<float> &reset, percival_frame<float>& output);

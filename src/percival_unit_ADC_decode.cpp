@@ -29,11 +29,8 @@ void percival_unit_ADC_decode(
 		throw datatype_exception("In percival_unit_ADC_decode: Gain and Fine frame pointers are identical.");
 
 	unsigned int NoOfPixels = input.width * input.height;
-
-	for(unsigned int i = 0; i < NoOfPixels; i ++){
-		*(Gain.data + i) = *(input.data + i) % 0x0004;
-		*(Fine.data + i) = (*(input.data + i)  >> 2 ) %0x100;
-		*(Coarse.data + i) = (*(input.data + i) << 1) >> 11;
-	}
+	percival_range_iterator_mock_p iterator(0, NoOfPixels);
+	percival_unit_ADC_decode_p<percival_range_iterator_mock_p> unit_ADC_decode(input.data, Coarse.data, Fine.data, Gain.data);
+	unit_ADC_decode(iterator);
 }
 
