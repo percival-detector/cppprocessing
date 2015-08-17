@@ -130,7 +130,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
     subprocess.call('operf ' + '-d ' + sample_data_destination + ' ' + operf_events + ' '+ program_to_execute, shell=True)
     subprocess.call('opreport --symbols --session-dir=' + sample_data_destination +  ' >> ' + report_destination, shell=True)
     
-    #subprocess.call('opannotate -s --output-dir=annotated ' + program_to_execute, shell=True)
+    subprocess.call('opannotate -s --output-dir=' + result_directory + 'annotated/ ' + program_to_execute, shell=True)
     
     f = open(report_destination, 'r')
     s = f.readline()
