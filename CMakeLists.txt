@@ -48,5 +48,18 @@ add_subdirectory(test)
 # Add the profiling subdirectory
 add_subdirectory(profile)
 
+if (TBB_ROOT)
+  message( "Searching for TBB root: ${TBB_ROOT}")
+endif()
+
+find_package( TBB )
+if (TBB_FOUND)
+  message( "Found TBB!!!")
+  add_subdirectory(percival_parallel)
+else()
+  message( "No TBB package found. Not building percival_parallel/" )
+endif()
+
+
 
 
