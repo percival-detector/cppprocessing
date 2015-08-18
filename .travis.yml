@@ -12,8 +12,14 @@ addons:
     packages:
     - libhdf5-serial-dev
     - libboost-test-dev
+    - libtbb-dev
   
 before_install:
+  - cat /usr/lib/pkgconfig/tbb.pc
+  - pkg-config --libs-only-L tbb
+  - pkg-config --libs-only-l tbb
+  - pkg-config --libs tbb
+  - pkg-config --cflags-only-I tbb
   - mkdir build && cd build
   - cmake ..
 

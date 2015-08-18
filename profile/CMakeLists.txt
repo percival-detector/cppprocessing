@@ -1,7 +1,7 @@
 
 set(CMAKE_INCLUDE_CURRENT_DIR on)
 
-include_directories(${HDF5_INCLUDE_DIRS})
+include_directories(${HDF5_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS} ../percival_parallel/)
 
 # Build list of test source files from current dir
 file(GLOB PCVL_PROFILING_SOURCE *.cpp)
@@ -28,5 +28,5 @@ add_executable(pcvl-profiling
                ${PCVL_ALGORITHM_SOURCE})
 
 # Define libraries to link against
-target_link_libraries(pcvl-profiling pcvl-h5loader)
+target_link_libraries(pcvl-profiling pcvl-h5loader pcvl-tbb-algorithms)
 
