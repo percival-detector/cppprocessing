@@ -38,43 +38,10 @@ void percival_unit_ADC_calibration(
 	}
 
 	unsigned int NoOfPixels = output.width * output.height;
+	percival_range_iterator_mock_p iterator(0, NoOfPixels);
+	percival_unit_ADC_calibration_p <percival_range_iterator_mock_p> unit_ADC_calibration(Coarse, Fine, output, calib );
+	unit_ADC_calibration(iterator);
 
-	for(unsigned int i = 0; i < NoOfPixels; i++){
-
-		unsigned int col = i % output.width;			//0 ~ frame_width - 1
-		unsigned int row = (i - col) / output.width;
-		unsigned int position_in_calib_array = (col % 7) + (row * calib.Gc.width); //7 from 7 ADCs. todo code this in config.
-
-		float Gc_at_this_pixel = *(calib.Gc.data + position_in_calib_array);
-		float Oc_at_this_pixel = *(calib.Oc.data + position_in_calib_array);
-		float Gf_at_this_pixel = *(calib.Gf.data + position_in_calib_array);
-		float Of_at_this_pixel = *(calib.Of.data + position_in_calib_array);
-
-		float VinMax=1.43;
-		//these two values are from February test data from Hazem. should be changed if calibration data changes
-		float FMax = 222;
-		float CMax = 26;
-
-		*(output.data + i)	= (float)
-	    		(FMax * CMax *
-				(
-					1.0-
-					(
-							(1.0/VinMax)*
-							(
-									(
-											(Oc_at_this_pixel - *(Fine.data + i) - 1.0) / Gc_at_this_pixel		//In hazem's code coarseBits == FineArr, fineBits == CoarseArr
-									)
-							+		(
-											(*(Coarse.data + i) - Of_at_this_pixel) / Gf_at_this_pixel
-									)
-							)
-					)
-				)
-				);
-
-
-	}
 
 
 }
