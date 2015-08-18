@@ -21,7 +21,7 @@ before_install:
   - pkg-config --libs tbb
   - pkg-config --cflags-only-I tbb
   - mkdir build && cd build
-  - cmake ..
+  - cmake -DTBB_ROOT=/usr/ ..
 
 install:
   - pwd
@@ -33,5 +33,5 @@ before_script:
 script:
   - ./build/bin/pcvl-unittest --log_level=all
   - ./build/bin/pcvl-profiling 1 210 160 1 data/test_param_file.txt 
-
+  - ./build/bin/pcvl-tbb 1 210 160 1 data/test_param_file.txt 
   

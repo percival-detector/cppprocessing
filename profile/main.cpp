@@ -8,7 +8,6 @@
 #include "percival_load_calib_params.h"
 #include "percival_HDF5_loader.h"
 #include "percival_HDF5_writer.h"
-#include "percival_parallel.h"
 #include<string>
 #include<cstdio>
 #include<iostream>
