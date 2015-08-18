@@ -2,7 +2,7 @@
 set(CMAKE_INCLUDE_CURRENT_DIR on)
 ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK)
 
-include_directories(${Boost_INCLUDE_DIRS} ${HDF5_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS} ../percival_parallel/)
+include_directories(${Boost_INCLUDE_DIRS} ${HDF5_INCLUDE_DIRS} )
 
 # Build list of test source files from current dir
 file(GLOB TEST_SOURCES *.cpp)
@@ -23,6 +23,5 @@ add_executable(pcvl-unittest
 # Define libraries to link against
 target_link_libraries(pcvl-unittest 
                       pcvl-h5loader
-                      pcvl-tbb-algorithms
                       ${Boost_LIBRARIES})
 
