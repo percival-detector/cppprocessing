@@ -21,7 +21,7 @@ before_install:
   - pkg-config --libs tbb
   - pkg-config --cflags-only-I tbb
   - mkdir build && cd build
-  - cmake ..
+  - cmake -DTBB_ROOT=/usr/ ..
 
 install:
   - pwd
