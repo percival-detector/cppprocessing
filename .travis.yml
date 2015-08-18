@@ -12,6 +12,7 @@ addons:
     packages:
     - libhdf5-serial-dev
     - libboost-test-dev
+    - libtbb-dev
   
 before_install:
   - mkdir build && cd build
