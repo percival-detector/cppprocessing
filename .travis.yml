@@ -33,5 +33,5 @@ before_script:
 script:
   - ./build/bin/pcvl-unittest --log_level=all
   - ./build/bin/pcvl-profiling 1 210 160 1 data/test_param_file.txt 
-
+  - ./build/bin/pcvl-tbb 1 210 160 1 data/test_param_file.txt 
   
