@@ -138,7 +138,8 @@ class percival_unit_ADC_decode_p{
     		input(a), Coarse(b), Fine(c), Gain(d) {}
 
         void operator()( const range_iterator & r ) const{
-		   for (unsigned int i=r.begin(); i!=r.end(); ++i ){
+        	unsigned int end = r.end();
+		   for (unsigned int i=r.begin(); i!=end; ++i ){
 			   *(Gain + i) = *(input + i) % 0x0004;
 			   *(Fine + i) = (*(input + i)  >> 2 ) %0x100;
 			   *(Coarse + i) = (*(input + i) >> 10) %0x20;
