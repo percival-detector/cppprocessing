@@ -45,7 +45,7 @@ def get_CPI(list_of_functions, attributes, list_of_events_recorded):
     for function in list_of_functions:
         cycle = attributes[function][index_cycle] * list_of_events_recorded[index_cycle].sample_rate  
         inst_retired = attributes[function][index_inst_retired] * list_of_events_recorded[index_inst_retired].sample_rate
-        CPI.append(cycle/inst_retired)
+        CPI.append(float(cycle/inst_retired))
     return CPI
 
 def get_bandwidth(list_of_functions, attributes, total_time, image_size, repeat):
@@ -79,7 +79,45 @@ def get_bytes(bytes):
         else:
             suffix = 'kB'
     return '{:.4}'.format(bytes) + ' ' + suffix
-          
+
+def get_function_list(file):
+    list_of_functions = ['percival_ADC_decode', 
+                         'percival_CDS_correction',
+                         'percival_ADU_to_electron_correction', 
+                         'percival_unit_ADC_decode_p<tbb::blocked_range<unsigned int> >::operator()',
+                         'percival_unit_ADC_decode_p<percival_range_iterator_mock_p>::operator()',
+                         'percival_unit_ADC_calibration',
+                         'percival_unit_gain_multiplication']
+    s = file.readline()
+    found_functions = []
+    while s != '':
+        for function_name in list_of_functions:
+            if function_name in s:
+                found_functions.append(function_name)
+        s = file.readline()
+    return found_functions
+
+def parse_time(time_string):
+    parsed = time_string.split(' ')
+    time = parsed[len(parsed)-1]
+    time = re.split('\:|\.',time)
+    
+    length = len(time)
+    msc = 0
+    sec = 0
+    min = 0
+    hrs = 0
+    
+    msc = int(time[length-1]) * 10
+    if length > 1:
+        sec = int(time[length-2]) * 1000
+    if length > 2:
+        min = int(time[length-3]) * 60 * 1000
+    if length > 3:
+        hrs = int(time[length-4]) * 60 * 60 * 1000
+    total_time = float(hrs + msc + sec + min)
+    return total_time
+    
 
 def run_the_function(print_result, height, width, repeat, text_file_name):
     path_name= "./data/KnifeQuadBPos1_2_21_int16.h5"
@@ -88,31 +126,32 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
     #Program to execute
     debug_version = './Debug/cppProcessing2.0 '
     profile_version = './Profiling/cppProcessing2.0 '
+    parallel_debug = './parallel_debug/cppProcessing2.0 '
+    parallel_profile = './parallel_profile/cppProcessing2.0 '
 
     cmdl_arg = '1 '  + str(width) + ' '+ str(height) + ' ' + str(repeat) + ' ' + text_file_name    
-    program_to_execute = debug_version + cmdl_arg
+    program_to_execute = parallel_debug + cmdl_arg
 
     #events to monitor
     #instructions
-    event1 = oprofile_events('CPU_CLK_UNHALTED','0x00',1000000)
-    event2 = oprofile_events('INST_RETIRED','0x00',60000)
+    event1 = oprofile_events('CPU_CLK_UNHALTED','0x00',100000000)
+    event2 = oprofile_events('INST_RETIRED','0x00',6000000)
     #cache misses
-    event3 = oprofile_events('LLC_MISSES','0x41',6000)
+    event3 = oprofile_events('LLC_MISSES','0x41',60000)
 #     event4 = oprofile_events('mem_load_uops_llc_hit_retired','0x02',100000)
 #     event5 = oprofile_events('mem_load_uops_llc_hit_retired','0x04',100000)
 #     event6 = oprofile_events('mem_load_uops_retired','0x04',2000000)
-    event4 = oprofile_events('UNHALTED_REFERENCE_CYCLES','0x01',100000)
+    event4 = oprofile_events('UNHALTED_REFERENCE_CYCLES','0x01',1000000)
     
     list_of_events = [event1, event2, event3, event4]#, event5, event6, event7]
-    
+    #variable initialisation
     dict_of_attributes = {}
-    list_of_functions = ['percival_ADC_decode', 
-                         'percival_CDS_correction',
-                         'percival_ADU_to_electron_correction', 
-                         'percival_unit_ADC_decode',
-                         'percival_unit_ADC_calibration',
-                         'percival_unit_gain_multiplication']
+    total_time = 0
+    dict_of_function_perc_time = {}
     list_of_events_recorded = []
+    image_size = width * height * 2    #memory size
+    total_processing_time = 0
+
 
     operf_events = get_operf_option(list_of_events)
     
@@ -120,46 +159,34 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
     result_directory = './oprof_reports/'+ host_name + '/'
     report_destination = result_directory + 'profile_report.txt'
     sample_data_destination = result_directory + 'oprof_data/'
-    print 'operf ' + '-d ' + sample_data_destination + ' ' + operf_events + ' '+ program_to_execute
     
-    subprocess.call('mkdir -p ' + sample_data_destination, shell=True)
+    #commandline options
+    cmd_time = '(/usr/bin/time -v ' + program_to_execute + ') &> ' + report_destination
+    cmd_operf = 'operf ' + '-d ' + sample_data_destination + ' ' + operf_events + ' '+ program_to_execute
+    cmd_opreport = 'opreport --symbols --session-dir=' + sample_data_destination +  ' >> ' + report_destination
+    cmd_mkdir = 'mkdir -p ' + sample_data_destination
     
+    subprocess.call(cmd_mkdir, shell=True)
     #subprocess.call('export LD_LIBRARY_PATH=/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/lib', shell=True)
-    subprocess.call('(/usr/bin/time -v ' + program_to_execute + ') &> ' + report_destination, shell=True)
-    subprocess.call("echo $'\n' >> " + report_destination, shell=True)
-    subprocess.call('operf ' + '-d ' + sample_data_destination + ' ' + operf_events + ' '+ program_to_execute, shell=True)
-    subprocess.call('opreport --symbols --session-dir=' + sample_data_destination +  ' >> ' + report_destination, shell=True)
+    subprocess.call(cmd_time, shell=True)
+    subprocess.call(cmd_operf, shell=True)
+    subprocess.call(cmd_opreport, shell=True)
     
-    subprocess.call('opannotate -s --output-dir=' + result_directory + 'annotated/ ' + program_to_execute, shell=True)
+#     subprocess.call('opannotate -s --output-dir=' + result_directory + 'annotated/ ' + program_to_execute, shell=True)
+    
+    f = open(report_destination, 'r')
+    list_of_functions = get_function_list(f)
+    f.close()
     
     f = open(report_destination, 'r')
     s = f.readline()
-    total_time = 0
-    dict_of_function_perc_time = {}
     while s != '':
 	if 'Counted' in s:
 	    for event in list_of_events:
 		if event.event_name in s:
   		    list_of_events_recorded.append(event)
         if 'Elapsed (wall clock) time ' in s:
-            parsed = s.split(' ')
-            time = parsed[len(parsed)-1]
-            time = re.split('\:|\.',time)
-            
-            length = len(time)
-            msc = 0
-            sec = 0
-            min = 0
-            hrs = 0
-            
-            msc = int(time[length-1]) * 10
-            if length > 1:
-                sec = int(time[length-2]) * 1000
-            if length > 2:
-                min = int(time[length-3]) * 60 * 1000
-            if length > 3:
-                hrs = int(time[length-4]) * 60 * 60 * 1000
-            total_time = float(hrs + msc + sec + min)
+            total_time = parse_time(s)
         for function_name in list_of_functions:
             if function_name in s:
                 delimited = s.split(' ')
@@ -170,22 +197,24 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
                     attributes.append(float(parsed[index * 2]))
                 dict_of_attributes[function_name] = attributes
         s = f.readline()
-        
-    function_time_ADC_decode = float(total_time * dict_of_function_perc_time['percival_ADC_decode'] /100 /repeat)
-    function_time_CDS_subtraction = float(total_time * dict_of_function_perc_time['percival_CDS_correction'] /100 /repeat)
-    function_time_ADU_to_electron = float(total_time * dict_of_function_perc_time['percival_ADU_to_electron_correction'] /100 /repeat)
-    total_processing_time = float(function_time_ADC_decode + function_time_ADU_to_electron + function_time_CDS_subtraction)
-    
-    
-    image_size = width * height * 2    #memory size
-
+         
     llc_misses_per_instruction = get_llc_misses(list_of_functions, dict_of_attributes, list_of_events_recorded)
     CPI = get_CPI(list_of_functions, dict_of_attributes, list_of_events_recorded)
-    
     bandwidth = get_bandwidth(list_of_functions, dict_of_function_perc_time, total_time, image_size, repeat)
     function_time = get_time(list_of_functions, dict_of_function_perc_time, total_time, repeat)
     
+    for time in function_time:
+        total_processing_time = total_processing_time + time
+    
+    #printing reports
     if print_result == True:
+        print
+        print 'Report:'
+        print cmd_time
+        print cmd_operf
+        print cmd_opreport
+        print 'oprofile sample directory: ' + sample_data_destination
+
         print '=' * 100
         print 'operf ' + '-d ' + sample_data_destination + ' ' + operf_events + ' '+ program_to_execute
         print 'The program took {0:.4} ms in total. {1:.4} ms per sample/reset pair.'.format(total_time, total_time/repeat)
@@ -198,15 +227,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
         print '\t' + 'Total: {0:.4} MB/s'.format(1000 * image_size * 2/total_processing_time /1024/1024)    #2 because of sample and reset
         for function in list_of_functions:
             index = list_of_functions.index(function)
-            print '\t' +  function +':' + '{0}'.format(get_bytes((bandwidth[index])))   + '/s'     
-# 
-#         
-#         print 'Bandwidth:'
-#         
-#         print '\t ADC_deocde bandwidth: {0:.4} MB/s'.format(1000 * image_size * 2/function_time_ADC_decode /1024/1024)
-#         print '\t CDS_subtraction (two float input):  {0:.4} MB/s'.format(1000 * 2 * 2 * image_size/function_time_CDS_subtraction /1024/1024) #2 for float, 2 for sample and reset
-#         print '\t ADU_to_electron (one float input):  {0:.4} MB/s'.format(1000 * 2 * image_size/function_time_ADU_to_electron /1024/1024)
-        
+            print '\t' +  function +':' + '{0}'.format(get_bytes((bandwidth[index])))   + '/s'             
         print 'LLC misses per instruction:'
         for function in list_of_functions:
             index = list_of_functions.index(function)
@@ -215,7 +236,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
         print 'Cycle per instruction (CPI):'
         for function in list_of_functions:
             index = list_of_functions.index(function)
-            print '\t' +  function +':' + '{0}'.format(int(CPI[index])) 
+            print '\t' +  function +':' + '{0:.2}'.format(CPI[index]) 
             
         print 'Processing time (ms):'
         for function in list_of_functions:
@@ -225,7 +246,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
 
 
 
-repeat = 1    #350 is about the maximum
+repeat = 5    #350 is about the maximum
 # width_arr = [2000, 5000, 10000, 20000, 50000, 100000, 500000]
 
 height = 3717
