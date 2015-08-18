@@ -8,6 +8,7 @@
 #include "percival_load_calib_params.h"
 #include "percival_HDF5_loader.h"
 #include "percival_HDF5_writer.h"
+#include "percival_parallel.h"
 #include<string>
 #include<cstdio>
 #include<iostream>
@@ -170,6 +171,8 @@ int main(int argn, char* argv[]){
 			/*unit functions*/
 			percival_unit_ADC_decode(sample_frame, sample_coarse_frame, sample_fine_frame,sample_gain_frame);
 			percival_unit_ADC_calibration(sample_coarse_frame, sample_fine_frame, calibrated_sample_frame, calib_params);
+			percival_unit_ADC_decode_pf(sample_frame, sample_coarse_frame, sample_fine_frame,sample_gain_frame);
+
 			percival_unit_gain_multiplication(sample_frame, calibrated_sample_frame, ADC_decoded_sample_frame,calib_params);
 
 			percival_unit_ADC_decode(reset_frame, reset_coarse_frame, reset_fine_frame,reset_gain_frame);

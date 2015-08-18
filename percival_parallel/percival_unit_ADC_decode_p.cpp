@@ -29,9 +29,8 @@ void percival_unit_ADC_decode_pf(
 		throw datatype_exception("In percival_unit_ADC_decode: Gain and Fine frame pointers are identical.");
 
 	unsigned int NoOfPixels = input.width * input.height;
-	typedef tbb::blocked_range<unsigned int> iterator ;
-	percival_unit_ADC_decode_p< iterator > unit_ADC_decode_p(input.data, Coarse.data, Fine.data, Gain.data);
-	unit_ADC_decode_p(tbb::blocked_range<unsigned int>(0, NoOfPixels));
+	percival_unit_ADC_decode_p< tbb::blocked_range<unsigned int> > unit_ADC_decode_p(input.data, Coarse.data, Fine.data, Gain.data);
+	tbb::parallel_for( tbb::blocked_range<unsigned int>(0, NoOfPixels), unit_ADC_decode_p);
 }
 
 

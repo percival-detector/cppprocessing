@@ -28,6 +28,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/percival_parallel}&quot;"/>
+									<listOptionValue builtIn="false" value="/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.1109019478" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.gprof.490638293" name="Generate gprof information (-pg)" superClass="gnu.cpp.compiler.option.debugging.gprof" value="false" valueType="boolean"/>
@@ -41,6 +43,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/percival_parallel}&quot;"/>
+									<listOptionValue builtIn="false" value="/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include"/>
 								</option>
 								<option id="gnu.c.compiler.option.dialect.std.1894738193" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1115015460" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
@@ -49,11 +53,13 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.906894709" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
 								<option id="gnu.cpp.link.option.libs.1965815004" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="hdf5"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="tbb"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.846081929" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/lib"/>
+									<listOptionValue builtIn="false" value="/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/lib/"/>
 								</option>
-								<option id="gnu.cpp.link.option.flags.1620544846" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.1620544846" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-Wl,-rpath=/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/lib/" valueType="string"/>
 								<option id="gnu.cpp.link.option.debugging.gprof.18624870" name="Generate gprof information (-pg)" superClass="gnu.cpp.link.option.debugging.gprof" value="false" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1607113814" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -67,6 +73,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/percival_parallel}&quot;"/>
+									<listOptionValue builtIn="false" value="/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.2104861333" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -91,7 +99,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="annotated|test|test_data_generation|tools|h5cpp_examples" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="oprof_reports|annotated|test|test_data_generation|tools|h5cpp_examples" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -124,6 +132,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/percival_parallel}&quot;"/>
+									<listOptionValue builtIn="false" value="/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.66675400" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.gprof.1587761410" name="Generate gprof information (-pg)" superClass="gnu.cpp.compiler.option.debugging.gprof" value="true" valueType="boolean"/>
@@ -137,6 +147,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/percival_parallel}&quot;"/>
+									<listOptionValue builtIn="false" value="/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include"/>
 								</option>
 								<option id="gnu.c.compiler.option.dialect.std.993747927" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.2076109938" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
@@ -145,9 +157,11 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.903933067" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
 								<option id="gnu.cpp.link.option.libs.1777647427" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="hdf5"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="tbb"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.8111832" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/lib"/>
+									<listOptionValue builtIn="false" value="/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/lib/"/>
 								</option>
 								<option id="gnu.cpp.link.option.debugging.gprof.1168387260" name="Generate gprof information (-pg)" superClass="gnu.cpp.link.option.debugging.gprof" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.flags.1291350182" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
@@ -163,6 +177,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/percival_parallel}&quot;"/>
+									<listOptionValue builtIn="false" value="/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.712647477" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -198,7 +214,7 @@
 					</folderInfo>
 					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.1306835761.2038365748.998982379" name="ADC_decoding_output_generator.py" rcbsApplicability="disable" resourcePath="tools/ADC_decoding_output_generator.py" toolsToInvoke=""/>
 					<sourceEntries>
-						<entry excluding="annotated|test_data_generation|tools|h5cpp_examples|profile|tools/ADC_decoding_output_generator.py" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="oprof_reports|annotated|test_data_generation|tools|h5cpp_examples|profile|tools/ADC_decoding_output_generator.py" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -231,6 +247,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/percival_parallel}&quot;"/>
+									<listOptionValue builtIn="false" value="/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.debugging.gprof.623349241" name="Generate gprof information (-pg)" superClass="gnu.cpp.compiler.option.debugging.gprof" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.dialect.std.1731832066" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
@@ -244,6 +262,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/percival_parallel}&quot;"/>
+									<listOptionValue builtIn="false" value="/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include"/>
 								</option>
 								<option id="gnu.c.compiler.option.dialect.std.676689325" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1694096846" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
@@ -252,9 +272,11 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.1559770485" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release">
 								<option id="gnu.cpp.link.option.paths.184105604" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/lib"/>
+									<listOptionValue builtIn="false" value="/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/lib/"/>
 								</option>
 								<option id="gnu.cpp.link.option.libs.1185457034" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="hdf5"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="tbb"/>
 								</option>
 								<option id="gnu.cpp.link.option.debugging.gprof.815858847" name="Generate gprof information (-pg)" superClass="gnu.cpp.link.option.debugging.gprof" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.flags.1513457015" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
@@ -270,13 +292,15 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/percival_parallel}&quot;"/>
+									<listOptionValue builtIn="false" value="/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.821610824" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="annotated|test|test_data_generation|tools|h5cpp_examples" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="oprof_reports|annotated|test|test_data_generation|tools|h5cpp_examples" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -309,6 +333,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/src}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/percival_parallel}&quot;"/>
+									<listOptionValue builtIn="false" value="/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.debugging.gprof.875074951" name="Generate gprof information (-pg)" superClass="gnu.cpp.compiler.option.debugging.gprof" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.dialect.std.674439595" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
@@ -322,6 +348,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Include}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/percival_parallel}&quot;"/>
+									<listOptionValue builtIn="false" value="/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include"/>
 								</option>
 								<option id="gnu.c.compiler.option.dialect.std.1592161129" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.865266178" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
@@ -330,9 +358,11 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.725057607" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release">
 								<option id="gnu.cpp.link.option.libs.175552457" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="hdf5"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="tbb"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.797284269" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/lib"/>
+									<listOptionValue builtIn="false" value="/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/lib/"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.1502350714" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
 								<option id="gnu.cpp.link.option.debugging.gprof.663031082" name="Generate gprof information (-pg)" superClass="gnu.cpp.link.option.debugging.gprof" value="true" valueType="boolean"/>
@@ -348,6 +378,8 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/H5_src}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/percival_parallel}&quot;"/>
+									<listOptionValue builtIn="false" value="/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1268882203" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -381,7 +413,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="H5_src|annotated|test|src|profile|h5cpp_examples" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="percival_parallel|oprof_reports|H5_src|annotated|test|src|profile|h5cpp_examples" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

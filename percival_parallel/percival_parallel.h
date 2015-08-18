@@ -10,6 +10,7 @@
 
 #include "tbb/tbb.h"
 #include "tbb/blocked_range.h"
+#include "tbb/parallel_for.h"
 #include "percival_processing.h"
 
 void percival_unit_ADC_decode_pf(

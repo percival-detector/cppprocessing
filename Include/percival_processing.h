@@ -128,10 +128,10 @@ struct percival_range_iterator_mock_p{	/*this object mocks the block_range objec
 
 template<typename range_iterator>
 class percival_unit_ADC_decode_p{
-	unsigned short int * input;
-	unsigned short int * Coarse;
-	unsigned short int * Fine;
-	unsigned short int * Gain;
+	unsigned short int * const input;
+	unsigned short int * const Coarse;
+	unsigned short int * const Fine;
+	unsigned short int * const Gain;
 
     public:
     	percival_unit_ADC_decode_p (unsigned short int * a, unsigned short int *  b, unsigned short int *  c,unsigned short int *  d ):
