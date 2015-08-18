@@ -46,6 +46,13 @@ BOOST_FIXTURE_TEST_SUITE (percival_unit_ADC_decode_test,fixture_test_unit_ADC_de
 		BOOST_REQUIRE_EQUAL(*coarse_frame.data, 0b11111);
 		BOOST_REQUIRE_EQUAL(*fine_frame.data, 0b11111111);
 		BOOST_REQUIRE_EQUAL(*gain_frame.data, 0b11);
+
+		unsigned int end = TEST_FRAME_HEIGHT*TEST_FRAME_WIDTH - 1;
+		*(src_frame.data + end) = 0b0111111111111111; //0b011111 11111111 11
+		BOOST_REQUIRE_NO_THROW(percival_unit_ADC_decode(src_frame, coarse_frame, fine_frame, gain_frame));
+		BOOST_REQUIRE_EQUAL(*(coarse_frame.data + end), 0b11111);
+		BOOST_REQUIRE_EQUAL(*(fine_frame.data + end), 0b11111111);
+		BOOST_REQUIRE_EQUAL(*(gain_frame.data + end), 0b11);
 	}
 
 	BOOST_AUTO_TEST_CASE (should_throw_if_any_two_of_the_output_buffers_are_equal){
