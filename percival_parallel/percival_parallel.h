@@ -19,4 +19,10 @@ void percival_unit_ADC_decode_pf(
 		percival_frame<unsigned short int> & Fine,
 		percival_frame<unsigned short int> & Gain);
 
+void percival_unit_ADC_calibration_pf(const percival_frame<unsigned short int> & Coarse,
+		const  percival_frame<unsigned short int> & Fine,
+		percival_frame<float>& output,
+		const percival_calib_params &,
+		bool check_dimensions = true);
+
 #endif /* PERCIVAL_PARALLEL_PERCIVAL_PARALLEL_H_ */
