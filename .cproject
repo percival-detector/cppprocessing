@@ -164,7 +164,7 @@
 									<listOptionValue builtIn="false" value="/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/lib/"/>
 								</option>
 								<option id="gnu.cpp.link.option.debugging.gprof.1168387260" name="Generate gprof information (-pg)" superClass="gnu.cpp.link.option.debugging.gprof" value="true" valueType="boolean"/>
-								<option id="gnu.cpp.link.option.flags.1291350182" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.1291350182" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-Wl,-rpath=/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/lib/" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.907313574" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -279,7 +279,7 @@
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="tbb"/>
 								</option>
 								<option id="gnu.cpp.link.option.debugging.gprof.815858847" name="Generate gprof information (-pg)" superClass="gnu.cpp.link.option.debugging.gprof" value="true" valueType="boolean"/>
-								<option id="gnu.cpp.link.option.flags.1513457015" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.1513457015" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-Wl,-rpath=/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/lib/" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1859474346" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -364,7 +364,7 @@
 									<listOptionValue builtIn="false" value="/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/lib"/>
 									<listOptionValue builtIn="false" value="/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/lib/"/>
 								</option>
-								<option id="gnu.cpp.link.option.flags.1502350714" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.1502350714" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-Wl,-rpath=/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/lib/" valueType="string"/>
 								<option id="gnu.cpp.link.option.debugging.gprof.663031082" name="Generate gprof information (-pg)" superClass="gnu.cpp.link.option.debugging.gprof" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.2091617099" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -449,7 +449,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/cppProcessing2.0/percival_parallel}&quot;"/>
 									<listOptionValue builtIn="false" value="/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.debugging.gprof.1679295269" name="Generate gprof information (-pg)" superClass="gnu.cpp.compiler.option.debugging.gprof" value="true" valueType="boolean"/>
+								<option id="gnu.cpp.compiler.option.debugging.gprof.1679295269" name="Generate gprof information (-pg)" superClass="gnu.cpp.compiler.option.debugging.gprof" value="false" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.dialect.std.1660158496" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1602247335" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -478,7 +478,7 @@
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="tbb"/>
 								</option>
 								<option id="gnu.cpp.link.option.debugging.gprof.1037264857" name="Generate gprof information (-pg)" superClass="gnu.cpp.link.option.debugging.gprof" value="true" valueType="boolean"/>
-								<option id="gnu.cpp.link.option.flags.855101444" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.855101444" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-Wl,-rpath=/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/lib/" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1416438451" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -615,6 +615,9 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="parallel_profile">
+			<resource resourceType="PROJECT" workspacePath="/cppProcessing2.0"/>
+		</configuration>
 		<configuration configurationName="Profiling">
 			<resource resourceType="PROJECT" workspacePath="/cppProcessing2.0"/>
 		</configuration>
@@ -625,6 +628,9 @@
 			<resource resourceType="PROJECT" workspacePath="/cppProcessing2.0"/>
 		</configuration>
 		<configuration configurationName="BOOST_test_ADC_decode">
+			<resource resourceType="PROJECT" workspacePath="/cppProcessing2.0"/>
+		</configuration>
+		<configuration configurationName="parallel_debug">
 			<resource resourceType="PROJECT" workspacePath="/cppProcessing2.0"/>
 		</configuration>
 		<configuration configurationName="Debug">

@@ -30,7 +30,7 @@ void percival_unit_ADC_decode_pf(
 
 	unsigned int NoOfPixels = input.width * input.height;
 	percival_unit_ADC_decode_p< tbb::blocked_range<unsigned int> > unit_ADC_decode_p(input.data, Coarse.data, Fine.data, Gain.data);
-	tbb::parallel_for( tbb::blocked_range<unsigned int>(0, NoOfPixels, 10000), unit_ADC_decode_p);
+	tbb::parallel_for( tbb::blocked_range<unsigned int>(0, NoOfPixels, 20000), unit_ADC_decode_p);
 }
 
 
