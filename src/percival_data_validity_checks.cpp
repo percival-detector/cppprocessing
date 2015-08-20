@@ -1,14 +1,13 @@
 /*
- * percival_unit_ADC_decode_p.cpp
+ * percival_data_validity_checks.cpp
  *
- *  Created on: 18 Aug 2015
+ *  Created on: 20 Aug 2015
  *      Author: pqm78245
  */
 
-#include "percival_parallel.h"
-#include "percival_exceptions.h"
-#include "tbb/task_scheduler_init.h"
-void percival_unit_ADC_decode_pf(
+#include "percival_data_validity_checks.h"
+
+void percival_unit_ADC_decode_check(
 		const percival_frame<unsigned short int> & input,
 		percival_frame<unsigned short int> & Coarse,
 		percival_frame<unsigned short int> & Fine,
@@ -27,12 +26,4 @@ void percival_unit_ADC_decode_pf(
 		throw datatype_exception("In percival_unit_ADC_decode: Coarse and Gain frame pointers are identical.");
 	if(Gain.data == Fine.data)
 		throw datatype_exception("In percival_unit_ADC_decode: Gain and Fine frame pointers are identical.");
-
-	unsigned int NoOfPixels = input.width * input.height;
-
-
-	percival_unit_ADC_decode_p< tbb::blocked_range<unsigned int> > unit_ADC_decode_p(input.data, Coarse.data, Fine.data, Gain.data);
-	tbb::parallel_for( tbb::blocked_range<unsigned int>(0, NoOfPixels, 5000), unit_ADC_decode_p);
 }
-
-

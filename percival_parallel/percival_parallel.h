@@ -12,6 +12,7 @@
 #include "tbb/blocked_range.h"
 #include "tbb/parallel_for.h"
 #include "percival_processing.h"
+#include "percival_functors.h"
 
 void percival_unit_ADC_decode_pf(
 		const percival_frame<unsigned short int> & input,

@@ -5,6 +5,8 @@
  *      Author: pqm78245
  */
 #include "percival_processing.h"
+#include "percival_functors.h"
+
 void percival_unit_ADC_calibration(
 		const percival_frame<unsigned short int> & Coarse,
 		const  percival_frame<unsigned short int> & Fine,
