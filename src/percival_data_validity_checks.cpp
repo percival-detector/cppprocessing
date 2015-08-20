@@ -14,16 +14,95 @@ void percival_unit_ADC_decode_check(
 		percival_frame<unsigned short int> & Gain)
 {
 	if(input.width != Coarse.width || input.height != Coarse.height)
-		throw dataspace_exception("In percival_unit_ADC_decode: coarse_frame and input frame dimensions mismatch.");
+		throw dataspace_exception("In percival_unit_ADC_decode(_pf): coarse_frame and input frame dimensions mismatch.");
 	if(input.width != Fine.width || input.height != Fine.height)
-		throw dataspace_exception("In percival_unit_ADC_decode: fain_frame and input frame dimensions mismatch.");
+		throw dataspace_exception("In percival_unit_ADC_decode(_pf): fain_frame and input frame dimensions mismatch.");
 	if(input.width != Gain.width || input.height != Gain.height)
-		throw dataspace_exception("In percival_unit_ADC_decode: gain_frame and input frame dimensions mismatch.");
+		throw dataspace_exception("In percival_unit_ADC_decode(_pf): gain_frame and input frame dimensions mismatch.");
 
 	if(Coarse.data == Fine.data)
-		throw datatype_exception("In percival_unit_ADC_decode: Coarse and Fine frame pointers are identical.");
+		throw datatype_exception("In percival_unit_ADC_decode(_pf): Coarse and Fine frame pointers are identical.");
 	if(Coarse.data == Gain.data)
-		throw datatype_exception("In percival_unit_ADC_decode: Coarse and Gain frame pointers are identical.");
+		throw datatype_exception("In percival_unit_ADC_decode(_pf): Coarse and Gain frame pointers are identical.");
 	if(Gain.data == Fine.data)
-		throw datatype_exception("In percival_unit_ADC_decode: Gain and Fine frame pointers are identical.");
+		throw datatype_exception("In percival_unit_ADC_decode(_pf): Gain and Fine frame pointers are identical.");
 }
+
+void percival_unit_ADC_calibration_check(const percival_frame<unsigned short int> & Coarse,
+		const  percival_frame<unsigned short int> & Fine,
+		percival_frame<float>& output,
+		const percival_calib_params & calib)
+{
+	if(output.width != Coarse.width || output.height != Coarse.height)
+		throw dataspace_exception("In percival_unit_ADC_calibration(_pf): coarse_frame and output frame dimensions mismatch.");
+	if(output.width != Fine.width || output.height != Fine.height)
+		throw dataspace_exception("In percival_unit_ADC_calibration(_pf): fine_frame and output frame dimensions mismatch.");
+
+	if(calib.Gc.width != 7)
+		throw dataspace_exception("In percival_unit_ADC_calibration(_pf): width of Gc array is not 7.");
+	if(calib.Gf.width != 7)
+		throw dataspace_exception("In percival_unit_ADC_calibration(_pf): width of Gf array is not 7.");
+	if(calib.Oc.width != 7)
+		throw dataspace_exception("In percival_unit_ADC_calibration(_pf): width of Oc array is not 7.");
+	if(calib.Of.width != 7)
+		throw dataspace_exception("In percival_unit_ADC_calibration(_pf): width of Of array is not 7.");
+
+	if(calib.Gc.height != output.height)
+		throw dataspace_exception("In percival_unit_ADC_calibration(_pf): height of Gc array and height of output are unequal.");
+	if(calib.Gf.height != output.height)
+		throw dataspace_exception("In percival_unit_ADC_calibration(_pf): height of Gf array and height of output are unequal.");
+	if(calib.Oc.height != output.height)
+		throw dataspace_exception("In percival_unit_ADC_calibration(_pf): height of Oc array and height of output are unequal.");
+	if(calib.Of.height != output.height)
+		throw dataspace_exception("In percival_unit_ADC_calibration(_pf): height of Of array and height of output are unequal.");
+}
+
+
+void percival_unit_gain_multiplication_check(
+		const percival_frame<unsigned short int> & src_frame,
+		const percival_frame<float> & calibrated,
+		percival_frame<float> & output,
+		const percival_calib_params & calib_params)
+{
+	if(src_frame.width != calibrated.width || src_frame.height != calibrated.height)
+		throw dataspace_exception("In percival_unit_gain_multiplication: calibrated array and src array dimensions mismatch.");
+	if(src_frame.width != output.width || src_frame.height != output.height)
+		throw dataspace_exception("In percival_unit_gain_multiplication: output array and src array dimensions mismatch.");
+
+	if(src_frame.width != calib_params.Gain_lookup_table1.width || src_frame.height != calib_params.Gain_lookup_table1.height)
+		throw dataspace_exception("In percival_unit_gain_multiplication: gain_lookup_table1 and input array dimensions mismatch.");
+	if(src_frame.width != calib_params.Gain_lookup_table2.width || src_frame.height != calib_params.Gain_lookup_table2.height)
+		throw dataspace_exception("In percival_unit_gain_multiplication: gain_lookup_table2 and input array dimensions mismatch.");
+	if(src_frame.width != calib_params.Gain_lookup_table3.width || src_frame.height != calib_params.Gain_lookup_table3.height)
+		throw dataspace_exception("In percival_unit_gain_multiplication: gain_lookup_table3 and input array dimensions mismatch.");
+	if(src_frame.width != calib_params.Gain_lookup_table4.width || src_frame.height != calib_params.Gain_lookup_table4.height)
+		throw dataspace_exception("In percival_unit_gain_multiplication: gain_lookup_table4 and input array dimensions mismatch.");
+}
+
+void percival_CDS_correction_check(
+		percival_frame<float> &sample,
+		const percival_frame<float> &reset,
+		percival_frame<float> &output)
+{
+	//dimension checks
+	if((sample.width != reset.width) || (sample.height != reset.height))
+		throw dataspace_exception("In percival_CDS_correction(): sample dimension and reset dimension mismatch.");
+
+	if((output.width != sample.width) || (output.height != sample.height))
+		throw dataspace_exception("In percival_CDS_correction: calibration array height and sample array height mismatch.");
+}
+
+void percival_ADU_to_electron_correction_check(
+		percival_frame<float> &CDS_Img,
+		percival_frame<float> &output,
+		const percival_calib_params & calib)
+{
+	if((CDS_Img.width != calib.ADU_to_electrons_conversion.width) || (CDS_Img.height != calib.ADU_to_electrons_conversion.height))
+		throw dataspace_exception("In percival_ADU_to_electron_correction(): CDS_Img dimension and ADU_per_el dimension mismatch.");
+
+	if((output.width != CDS_Img.width) || (output.height != CDS_Img.height))		//todo:change this to a inline function
+		throw dataspace_exception("In percival_ADU_to_electron_correction: calibration array height and sample array height mismatch.");
+
+}
+
+

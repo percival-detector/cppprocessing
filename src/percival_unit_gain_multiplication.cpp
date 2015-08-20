@@ -6,6 +6,7 @@
  */
 
 #include "percival_processing.h"
+#include "percival_data_validity_checks.h"
 
 void percival_unit_gain_multiplication(
 		const percival_frame<unsigned short int> & src_frame,
@@ -14,21 +15,8 @@ void percival_unit_gain_multiplication(
 		const percival_calib_params & calib_params,
 		bool check_dimensions)
 {
-	if(check_dimensions){
-		if(src_frame.width != calibrated.width || src_frame.height != calibrated.height)
-			throw dataspace_exception("In percival_unit_gain_multiplication: calibrated array and src array dimensions mismatch.");
-		if(src_frame.width != output.width || src_frame.height != output.height)
-			throw dataspace_exception("In percival_unit_gain_multiplication: output array and src array dimensions mismatch.");
-
-		if(src_frame.width != calib_params.Gain_lookup_table1.width || src_frame.height != calib_params.Gain_lookup_table1.height)
-			throw dataspace_exception("In percival_unit_gain_multiplication: gain_lookup_table1 and input array dimensions mismatch.");
-		if(src_frame.width != calib_params.Gain_lookup_table2.width || src_frame.height != calib_params.Gain_lookup_table2.height)
-			throw dataspace_exception("In percival_unit_gain_multiplication: gain_lookup_table2 and input array dimensions mismatch.");
-		if(src_frame.width != calib_params.Gain_lookup_table3.width || src_frame.height != calib_params.Gain_lookup_table3.height)
-			throw dataspace_exception("In percival_unit_gain_multiplication: gain_lookup_table3 and input array dimensions mismatch.");
-		if(src_frame.width != calib_params.Gain_lookup_table4.width || src_frame.height != calib_params.Gain_lookup_table4.height)
-			throw dataspace_exception("In percival_unit_gain_multiplication: gain_lookup_table4 and input array dimensions mismatch.");
-	}
+	if(check_dimensions)
+		percival_unit_gain_multiplication_check(src_frame,calibrated,output,calib_params);
 
 	unsigned int NoOfPixels = src_frame.width * src_frame.height;
 	unsigned short int gain;
@@ -58,5 +46,3 @@ void percival_unit_gain_multiplication(
 
 	}
 }
-
-
