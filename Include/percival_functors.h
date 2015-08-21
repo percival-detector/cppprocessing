@@ -230,12 +230,12 @@ public:
 		//calibration parameters
 		const unsigned int calib_data_height = calib_params.Gc.height;
 		const unsigned int calib_data_width = calib_params.Gc.width;
-//		float VinMax=1.43;
+		const float VinMax=1.43;
 		//these two values are from February test data from Hazem. should be changed if calibration data changes
 //		const float FMax = 222;
 //		const float CMax = 26;
-		const float factor = 5772;// 222 * 26;
-		const float inverseVinMax = 0.6993007; //1/1.43
+//		const float factor = 5772;// 222 * 26;
+//		const float inverseVinMax = 0.6993007; //1/1.43
 		float gain_factor = 1;
 
 		/*Allocate memory for reusable variables*/
@@ -245,6 +245,8 @@ public:
 
 		short unsigned int pixel;
 		unsigned int width, height;
+
+		width = src_frame.width; height = src_frame.height;
 
 		float* Gc = calib_params.Gc.data;
 		float* Oc = calib_params.Oc.data;
@@ -302,11 +304,11 @@ public:
 			}
 
 			*(output + i)	= (float)gain_factor *
-		    		(factor *		/*this factor can be absorbed into gain and needs not be here.*/
+		    		(		/*this factor can be absorbed into gain and needs not be here.*/
 					(
-						1.0-
+						VinMax -
 						(
-								(inverseVinMax)* /*this can be done permanently to the calibration parameter and needs not be here*/
+								 /*this can be done permanently to the calibration parameter and needs not be here*/
 								(
 										(
 												(Oc_at_this_pixel - (fineBits - (unsigned short int)1)) / Gc_at_this_pixel		//In hazem's code coarseBits == FineArr, fineBits == CoarseArr
