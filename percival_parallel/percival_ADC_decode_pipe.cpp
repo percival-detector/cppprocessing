@@ -34,7 +34,7 @@ void percival_ADC_decode_pipe(
 }
 
 
-void percival_ADC_decode_pf(const percival_frame<unsigned short int> & src_frame, percival_frame<float> & des_frame, const percival_calib_params & calib_params, bool store_gain){
+void percival_ADC_decode_pf(const percival_frame<unsigned short int> & src_frame, percival_frame<float> & des_frame, const percival_calib_params & calib_params, size_t grain_size, bool store_gain){
 	//initialize destination matrix
 	if(src_frame.width != des_frame.width || src_frame.height != des_frame.height){
 		throw dataspace_exception("percival_ADC_decode: output and input dimension mismatch.");
@@ -49,7 +49,7 @@ void percival_ADC_decode_pf(const percival_frame<unsigned short int> & src_frame
 
 	unsigned int NoOfPixels = src_frame.width * src_frame.height;
 	percival_ADC_decode_p< tbb::blocked_range<unsigned int> > ADC_decode_p (src_frame, des_frame, calib_params);
-	tbb::parallel_for( tbb::blocked_range<unsigned int>(0, NoOfPixels), ADC_decode_p, tbb::auto_partitioner());
+	tbb::parallel_for( tbb::blocked_range<unsigned int>(0, NoOfPixels, grain_size), ADC_decode_p);
 
 }
 

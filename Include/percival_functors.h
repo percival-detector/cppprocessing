@@ -258,8 +258,8 @@ public:
 
 		float* output = des_frame.data;
 		//algorithm
-
-		for(unsigned int i = r.begin(); i < r.end(); ++i){	//int i is sufficient
+		unsigned int end = r.end();
+		for(unsigned int i = r.begin(); i < end; ++i){	//int i is sufficient
 			/*
 			 * minimising access */
 			pixel = *(src_frame.data + i);

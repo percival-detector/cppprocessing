@@ -47,6 +47,7 @@ void percival_ADC_decode_pf(
 		const percival_frame<unsigned short int> & src_frame,
 		percival_frame<float> & des_frame,
 		const percival_calib_params & calib_params,
+		size_t grain_size,
 		bool store_gain = false);
 
 

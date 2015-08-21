@@ -110,7 +110,7 @@ int main(int argn, char* argv[]){
 	/*settin the number of threads to use*/
 //	tbb::task_scheduler_init init(1);
 
-
+	size_t grain_size = 25000;
 	if(use_meaningless_image){
 		/*14 images per iteration*/
 		percival_frame<unsigned short int>* sample_frame_stack= new percival_frame<unsigned short int>[repeat];
@@ -192,8 +192,8 @@ int main(int argn, char* argv[]){
 //			percival_ADC_decode(sample_frame, ADC_decoded_sample_frame ,calib_params);
 //			percival_ADC_decode(reset_frame, ADC_decoded_reset_frame ,calib_params);
 
-			percival_ADC_decode_pf(sample_frame, ADC_decoded_sample_frame ,calib_params);
-			percival_ADC_decode_pf(reset_frame, ADC_decoded_reset_frame ,calib_params);
+			percival_ADC_decode_pf(sample_frame, ADC_decoded_sample_frame ,calib_params, grain_size);
+			percival_ADC_decode_pf(reset_frame, ADC_decoded_reset_frame ,calib_params, grain_size);
 
 		}
 	}else{
