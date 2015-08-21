@@ -1,6 +1,7 @@
 
 import re
 import socket
+import subprocess
 
 class oprofile_events:
     event_name = ''
@@ -50,15 +51,15 @@ def get_bandwidth(list_of_functions, attributes, total_time, image_size, repeat)
     bandwidth = []
     for function in list_of_functions:
         time = float(attributes[function]) /100 * total_time /1000/repeat
-        if 'percival_ADC_decode' or 'percival_unit_ADC_decode' or 'percival_unit_ADC_calibration' or 'percival_unit_gain_multiplication' in function:
-            time = time / 2
-        bandwidth.append(image_size/time)
+        bandwidth.append(2 * image_size/time)
     return bandwidth
 
 def get_time(list_of_functions, attributes, total_time, repeat):
     function_time = []
     for function in list_of_functions:
         time = float(attributes[function]) /100 * total_time/repeat
+        if 'ADC' or 'gain' in function:
+            time = time / 2
         function_time.append(time)
     return function_time
 
@@ -79,13 +80,18 @@ def get_bytes(bytes):
     return '{:.4}'.format(bytes) + ' ' + suffix
 
 def get_function_list(file):
-    list_of_functions = ['percival_ADC_decode', 
+    list_of_functions = ['percival_ADC_decode(',
+                         'percival_ADC_decode_p<tbb::blocked_range<unsigned int> >::operator()',
                          'percival_CDS_correction',
                          'percival_ADU_to_electron_correction', 
+                         'percival_unit_ADC_decode(',
                          'percival_unit_ADC_decode_p<tbb::blocked_range<unsigned int> >::operator()',
                          'percival_unit_ADC_decode_p<percival_range_iterator_mock_p>::operator()',
-                         'percival_unit_ADC_calibration',
-                         'percival_unit_gain_multiplication']
+                         'percival_unit_ADC_calibration(',
+                         'percival_unit_ADC_calibration_p<tbb::blocked_range<unsigned int> >::operator()',
+                         'percival_unit_ADC_calibration_p<percival_range_iterator_mock_p>::operator()',
+                         'percival_unit_gain_multiplication(',
+                         'percival_unit_gain_multiplication_p<tbb::blocked_range<unsigned int> >::operator()']
     s = file.readline()
     found_functions = []
     while s != '':
@@ -114,4 +120,8 @@ def parse_time(time_string):
     if length > 3:
         hrs = int(time[length-4]) * 60 * 60 * 1000
     total_time = float(hrs + msc + sec + min)
-    return total_time
+    return total_time   #return total time in miliseconds
+
+def cmd_call(cmdline):
+    subprocess.call(cmdline, shell=True)
+    

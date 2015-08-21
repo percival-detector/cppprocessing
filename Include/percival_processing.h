@@ -31,6 +31,7 @@ public:
 	T* data;
 	//add an offset if splitting up the image is needed
 	std::vector<int> CDS_subtraction_indices;		//stores pixel indices requiring CDS_substraction
+	unsigned int refcount;
 
 	void set_frame_size(unsigned int h, unsigned int w)
 	{
@@ -46,9 +47,20 @@ public:
 		}
 	}
 
-	percival_frame(){data = new T[1]; set_frame_size(1,1);}
+	percival_frame(){data = new T[1]; set_frame_size(1,1); refcount = 1;}
 	percival_frame(unsigned int x, int y){data = new T[1]; set_frame_size(x,y);}
-	~percival_frame(){delete [] data;}
+	percival_frame(const percival_frame &obj):
+		width(obj.width),
+		height(obj.height),
+		data(obj.data),
+		refcount(obj.refcount + 1)
+	{}
+
+	~percival_frame(){
+		if(refcount > 1)
+			(--refcount);
+		else
+			(delete [] data);}
 };
 
 struct percival_calib_params{
@@ -62,7 +74,6 @@ public:
 	static percival_frame<float> Gain_lookup_table2;
 	static percival_frame<float> Gain_lookup_table3;
 	static percival_frame<float> Gain_lookup_table4;
-
 };
 
 class percival_global_params{

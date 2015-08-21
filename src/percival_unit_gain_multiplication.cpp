@@ -7,6 +7,7 @@
 
 #include "percival_processing.h"
 #include "percival_data_validity_checks.h"
+#include "percival_functors.h"
 
 void percival_unit_gain_multiplication(
 		const percival_frame<unsigned short int> & src_frame,
@@ -19,30 +20,7 @@ void percival_unit_gain_multiplication(
 		percival_unit_gain_multiplication_check(src_frame,calibrated,output,calib_params);
 
 	unsigned int NoOfPixels = src_frame.width * src_frame.height;
-	unsigned short int gain;
-	float gain_factor;
 
-	for(unsigned int i = 0; i < NoOfPixels; i ++){
-
-		gain =  *(src_frame.data + i) % 0b100;
-
-		switch(gain){
-		case 0b00:
-			gain_factor = *(calib_params.Gain_lookup_table1.data + i);
-			break;
-		case 0b01:
-			gain_factor = *(calib_params.Gain_lookup_table2.data + i);
-			break;
-		case 0b10:
-			gain_factor = *(calib_params.Gain_lookup_table3.data + i);
-			break;
-		case 0b11:
-			gain_factor = *(calib_params.Gain_lookup_table4.data + i);
-			break;
-		default:
-			throw datatype_exception("Invalid gain bit detected.");
-		}
-		*(output.data + i) = *(calibrated.data + i) * gain_factor;
-
-	}
+	percival_unit_gain_multiplication_p<percival_range_iterator_mock_p> unit_gain_multiplication(src_frame,calibrated,output,calib_params);
+	unit_gain_multiplication(percival_range_iterator_mock_p(0,NoOfPixels));
 }

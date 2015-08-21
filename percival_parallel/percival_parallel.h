@@ -26,4 +26,28 @@ void percival_unit_ADC_calibration_pf(const percival_frame<unsigned short int> &
 		const percival_calib_params &,
 		bool check_dimensions = true);
 
+void percival_unit_gain_multiplication_pf(
+		const percival_frame<unsigned short int> & src_frame,
+		const percival_frame<float> & calibrated,
+		percival_frame<float> & output,
+		const percival_calib_params & calib_params,
+		bool check_dimensions = true);
+
+void percival_ADC_decode_pipe(
+		const percival_frame<unsigned short int> & input,
+		percival_frame<float> & output,
+		const percival_calib_params & calib_params,
+		percival_frame<unsigned short int> gain,
+		percival_frame<unsigned short int> fine,
+		percival_frame<unsigned short int> coarse,
+		percival_frame<float> calibrated,
+		bool store_gain = false);
+
+void percival_ADC_decode_pf(
+		const percival_frame<unsigned short int> & src_frame,
+		percival_frame<float> & des_frame,
+		const percival_calib_params & calib_params,
+		bool store_gain = false);
+
+
 #endif /* PERCIVAL_PARALLEL_PERCIVAL_PARALLEL_H_ */

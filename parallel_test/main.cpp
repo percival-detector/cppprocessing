@@ -16,6 +16,8 @@
 #include "percival_HDF5_writer.h"
 #include "percival_parallel.h"
 
+#include "tbb/task_scheduler_init.h"
+
 #include<string>
 #include<cstdio>
 #include<iostream>
@@ -105,6 +107,10 @@ int main(int argn, char* argv[]){
 	percival_calib_params calib_params;
 	percival_load_calib_params(calib_params, global_params);
 
+	/*settin the number of threads to use*/
+//	tbb::task_scheduler_init init(1);
+
+
 	if(use_meaningless_image){
 		/*14 images per iteration*/
 		percival_frame<unsigned short int>* sample_frame_stack= new percival_frame<unsigned short int>[repeat];
@@ -125,7 +131,6 @@ int main(int argn, char* argv[]){
 
 		percival_frame<float>* calibrated_sample_frame_stack= new percival_frame<float>[repeat];
 		percival_frame<float>* calibrated_reset_frame_stack= new percival_frame<float>[repeat];
-
 
 
 		for(int j = 0; j < repeat; j ++){
@@ -172,8 +177,18 @@ int main(int argn, char* argv[]){
 				*(reset_frame.data + i) = i * (j * 5) % 32767;
 			}
 			/*unit functions*/
-			percival_unit_ADC_decode_pf(sample_frame, sample_coarse_frame, sample_fine_frame,sample_gain_frame);
-			percival_unit_ADC_decode_pf(reset_frame, reset_coarse_frame, reset_fine_frame,reset_gain_frame);
+			percival_unit_ADC_decode(sample_frame, sample_coarse_frame, sample_fine_frame,sample_gain_frame);
+			percival_unit_ADC_calibration(sample_coarse_frame, sample_fine_frame, calibrated_sample_frame, calib_params);
+			percival_unit_ADC_decode(reset_frame, reset_coarse_frame, reset_fine_frame,reset_gain_frame);
+			percival_unit_ADC_calibration(reset_coarse_frame, reset_fine_frame, calibrated_reset_frame, calib_params);
+
+			percival_ADC_decode_pipe(sample_frame, ADC_decoded_sample_frame ,calib_params, sample_gain_frame, sample_fine_frame, sample_coarse_frame, calibrated_sample_frame);
+			percival_ADC_decode(sample_frame, ADC_decoded_sample_frame ,calib_params);
+			percival_ADC_decode(reset_frame, ADC_decoded_reset_frame ,calib_params);
+			percival_ADC_decode_pf(sample_frame, ADC_decoded_sample_frame ,calib_params);
+			percival_ADC_decode_pipe(reset_frame, ADC_decoded_reset_frame ,calib_params, reset_gain_frame, reset_fine_frame, reset_coarse_frame, calibrated_reset_frame);
+			percival_ADC_decode_pf(reset_frame, ADC_decoded_reset_frame ,calib_params);
+
 		}
 	}else{
 		try{
