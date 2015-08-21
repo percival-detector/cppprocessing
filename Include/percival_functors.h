@@ -228,7 +228,6 @@ public:
 	void operator()( const range_iterator & r ) const
 	{
 		//calibration parameters
-		const unsigned int calib_data_height = calib_params.Gc.height;
 		const unsigned int calib_data_width = calib_params.Gc.width;
 		const float VinMax=1.43;
 		//these two values are from February test data from Hazem. should be changed if calibration data changes
@@ -241,12 +240,11 @@ public:
 		/*Allocate memory for reusable variables*/
 		short unsigned int gain, fineBits, coarseBits;
 		short unsigned int col, row, position_in_calib_array;
-		float Gc_at_this_pixel, Oc_at_this_pixel, Gf_at_this_pixel, Of_at_this_pixel;
 
 		short unsigned int pixel;
-		unsigned int width, height;
+		unsigned int width;
 
-		width = src_frame.width; height = src_frame.height;
+		width = src_frame.width;
 
 		float* Gc = calib_params.Gc.data;
 		float* Oc = calib_params.Oc.data;
@@ -266,11 +264,6 @@ public:
 			 * minimising access */
 			pixel = *(src_frame.data + i);
 
-			//use unsigned datatypes
-//			 gain = pixel % 4;
-//			 fineBits = (pixel >> 2) % 256; // the next 8 digits
-//			 coarseBits = (pixel >> 10) % 32; // the next 5 bits
-
 			 /*Use binary masks instead*/
 			 gain = pixel & 0x0003;
 			 fineBits = (pixel & 0x07fc) >> 2;
@@ -280,15 +273,6 @@ public:
 			col = i % width;			//0 ~ frame_width - 1
 			row = (i - col) / width;
 			position_in_calib_array = (col % 7) + (row * calib_data_width); //7 from 7 ADCs. todo code this in config.
-			/*
-			 * The following can be used to reduce number of accesses.
-			 */
-
-			 Gc_at_this_pixel = *(Gc + position_in_calib_array);
-			 Oc_at_this_pixel = *(Oc + position_in_calib_array);
-			 Gf_at_this_pixel = *(Gf + position_in_calib_array);
-			 Of_at_this_pixel = *(Of + position_in_calib_array);
-
 			//TODO:Note that the precision of these numbers is not great. noticeable to 0.0001
 
 					switch(gain){
@@ -316,10 +300,10 @@ public:
 								 /*this can be done permanently to the calibration parameter and needs not be here*/
 								(
 										(
-												(Oc_at_this_pixel - (fineBits - (unsigned short int)1)) / Gc_at_this_pixel		//In hazem's code coarseBits == FineArr, fineBits == CoarseArr
+												(*(Oc + position_in_calib_array) - (fineBits - (unsigned short int)1)) / *(Gc + position_in_calib_array)		//In hazem's code coarseBits == FineArr, fineBits == CoarseArr
 										)
 								+		(
-												(coarseBits - Of_at_this_pixel) / Gf_at_this_pixel
+												(coarseBits - *(Of + position_in_calib_array)) / *(Gf + position_in_calib_array)
 										)
 								)
 						)
