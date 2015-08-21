@@ -20,7 +20,7 @@ void percival_unit_ADC_calibration_pf(const percival_frame<unsigned short int> &
 
 	unsigned int NoOfPixels = output.width * output.height;
 	percival_unit_ADC_calibration_p< tbb::blocked_range<unsigned int> > unit_ADC_calibration_p(Coarse,Fine,output,calib);
-	tbb::parallel_for( tbb::blocked_range<unsigned int>(0, NoOfPixels, 25000), unit_ADC_calibration_p);
+	tbb::parallel_for( tbb::blocked_range<unsigned int>(0, NoOfPixels), unit_ADC_calibration_p, tbb::auto_partitioner());
 
 }
 

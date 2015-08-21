@@ -230,73 +230,86 @@ public:
 		//calibration parameters
 		const unsigned int calib_data_height = calib_params.Gc.height;
 		const unsigned int calib_data_width = calib_params.Gc.width;
+//		float VinMax=1.43;
+		//these two values are from February test data from Hazem. should be changed if calibration data changes
+//		const float FMax = 222;
+//		const float CMax = 26;
+		const float factor = 5772;// 222 * 26;
+		const float inverseVinMax = 0.6993007; //1/1.43
+		float gain_factor = 1;
 
+		/*Allocate memory for reusable variables*/
+		short unsigned int gain, fineBits, coarseBits;
+		short unsigned int col, row, position_in_calib_array;
+		float Gc_at_this_pixel, Oc_at_this_pixel, Gf_at_this_pixel, Of_at_this_pixel;
+
+		short unsigned int pixel;
+		unsigned int width, height;
+
+		float* Gc = calib_params.Gc.data;
+		float* Oc = calib_params.Oc.data;
+		float* Gf = calib_params.Gf.data;
+		float* Of = calib_params.Of.data;
+
+		float* G1 = calib_params.Gain_lookup_table1.data;
+		float* G2 = calib_params.Gain_lookup_table2.data;
+		float* G3 = calib_params.Gain_lookup_table3.data;
+		float* G4 = calib_params.Gain_lookup_table4.data;
+
+		float* output = des_frame.data;
 		//algorithm
 
 		for(unsigned int i = r.begin(); i < r.end(); ++i){	//int i is sufficient
 			/*
-			 * minimising access
-			short int pixel = *(src_frame.data + i);
-			*/
-	//use unsigned datatypes
-			short unsigned int gain = *(src_frame.data + i) % 4;
-			short unsigned int fineBits = (*(src_frame.data + i) >> 2) % 256; // the next 8 digits
-			short unsigned int coarseBits = (*(src_frame.data + i) >> 10) % 32; // the next 5 bits
+			 * minimising access */
+			pixel = *(src_frame.data + i);
 
-	//This bit of code was used when the calibration arrays were all transposed.
+			//use unsigned datatypes
+			 gain = pixel % 4;
+			 fineBits = (pixel >> 2) % 256; // the next 8 digits
+			 coarseBits = (pixel >> 10) % 32; // the next 5 bits
+
 	//		//converting from linear representation to 2D representation. To speed up take modulo no of calibration pixels.
-			unsigned int col = i % src_frame.width;			//0 ~ frame_width - 1
-			unsigned int row = (i - col) / src_frame.width;
-	//		int position_in_calib_array = (col % calib_data_height) * calib_data_width + row;
-
-
-	//this bit is used when the arrays are property transposed.
-			unsigned int position_in_calib_array = (col % 7) + (row * calib_data_width); //7 from 7 ADCs. todo code this in config.
+			col = i % width;			//0 ~ frame_width - 1
+			row = (i - col) / width;
+			position_in_calib_array = (col % 7) + (row * calib_data_width); //7 from 7 ADCs. todo code this in config.
 			/*
 			 * The following can be used to reduce number of accesses.
-				float* Gc = calib_params.Gc.data;
-				float* Oc = calib_params.Oc.data;
-				float* Gf = calib_params.Gf.data;
-				float* Of = calib_params.Of.data;
-				*/
+			 */
 
-			float Gc_at_this_pixel = *(calib_params.Gc.data + position_in_calib_array);
-			float Oc_at_this_pixel = *(calib_params.Oc.data + position_in_calib_array);
-			float Gf_at_this_pixel = *(calib_params.Gf.data + position_in_calib_array);
-			float Of_at_this_pixel = *(calib_params.Of.data + position_in_calib_array);
+			 Gc_at_this_pixel = *(Gc + position_in_calib_array);
+			 Oc_at_this_pixel = *(Oc + position_in_calib_array);
+			 Gf_at_this_pixel = *(Gf + position_in_calib_array);
+			 Of_at_this_pixel = *(Of + position_in_calib_array);
 
 			//TODO:Note that the precision of these numbers is not great. noticeable to 0.0001
-			float VinMax=1.43;
-			//these two values are from February test data from Hazem. should be changed if calibration data changes
-			float FMax = 222;
-			float CMax = 26;
-			float gain_factor = 1;
+
 					switch(gain){
 						case 0b00:
-							gain_factor = *(calib_params.Gain_lookup_table1.data + i);
+							gain_factor = *(G1 + i);
 							break;
 						case 0b01:
-							gain_factor = *(calib_params.Gain_lookup_table2.data + i);
+							gain_factor = *(G2 + i);
 							break;
 						case 0b10:
-							gain_factor = *(calib_params.Gain_lookup_table3.data + i);
+							gain_factor = *(G3 + i);
 							break;
 						case 0b11:
-							gain_factor = *(calib_params.Gain_lookup_table4.data + i);
+							gain_factor = *(G4 + i);
 							break;
 						default:
 							throw datatype_exception("Invalid gain bit detected.");
 			}
 
-			*(des_frame.data + i)	= (float)gain_factor *
-		    		(FMax * CMax *
+			*(output + i)	= (float)gain_factor *
+		    		(factor *		/*this factor can be absorbed into gain and needs not be here.*/
 					(
 						1.0-
 						(
-								(1.0/VinMax)*
+								(inverseVinMax)* /*this can be done permanently to the calibration parameter and needs not be here*/
 								(
 										(
-												(Oc_at_this_pixel - fineBits - 1.0) / Gc_at_this_pixel		//In hazem's code coarseBits == FineArr, fineBits == CoarseArr
+												(Oc_at_this_pixel - (fineBits - (unsigned short int)1)) / Gc_at_this_pixel		//In hazem's code coarseBits == FineArr, fineBits == CoarseArr
 										)
 								+		(
 												(coarseBits - Of_at_this_pixel) / Gf_at_this_pixel

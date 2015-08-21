@@ -23,7 +23,7 @@ void percival_unit_gain_multiplication_pf(
 	unsigned int NoOfPixels = src_frame.width * src_frame.height;
 
 	percival_unit_gain_multiplication_p< tbb::blocked_range<unsigned int> > unit_gain_multiplication_p(src_frame,calibrated,output,calib_params);
-	tbb::parallel_for( tbb::blocked_range<unsigned int>(0, NoOfPixels, 5000), unit_gain_multiplication_p);
+	tbb::parallel_for( tbb::blocked_range<unsigned int>(0, NoOfPixels), unit_gain_multiplication_p, tbb::auto_partitioner());
 }
 
 

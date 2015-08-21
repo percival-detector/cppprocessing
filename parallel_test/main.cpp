@@ -177,16 +177,22 @@ int main(int argn, char* argv[]){
 				*(reset_frame.data + i) = i * (j * 5) % 32767;
 			}
 			/*unit functions*/
-			percival_unit_ADC_decode(sample_frame, sample_coarse_frame, sample_fine_frame,sample_gain_frame);
-			percival_unit_ADC_calibration(sample_coarse_frame, sample_fine_frame, calibrated_sample_frame, calib_params);
-			percival_unit_ADC_decode(reset_frame, reset_coarse_frame, reset_fine_frame,reset_gain_frame);
-			percival_unit_ADC_calibration(reset_coarse_frame, reset_fine_frame, calibrated_reset_frame, calib_params);
+//			percival_unit_ADC_decode(sample_frame, sample_coarse_frame, sample_fine_frame,sample_gain_frame);
+//			percival_unit_ADC_decode(reset_frame, reset_coarse_frame, reset_fine_frame,reset_gain_frame);
+//
+//			percival_unit_ADC_calibration(sample_coarse_frame, sample_fine_frame, calibrated_sample_frame, calib_params);
+//			percival_unit_ADC_calibration(reset_coarse_frame, reset_fine_frame, calibrated_reset_frame, calib_params);
+//
+//			percival_unit_gain_multiplication(sample_frame, calibrated_sample_frame, ADC_decoded_sample_frame, calib_params);
+//			percival_unit_gain_multiplication(reset_frame, calibrated_reset_frame, ADC_decoded_reset_frame, calib_params);
+//
+//			percival_ADC_decode_pipe(sample_frame, ADC_decoded_sample_frame ,calib_params, sample_gain_frame, sample_fine_frame, sample_coarse_frame, calibrated_sample_frame);
+//			percival_ADC_decode_pipe(reset_frame, ADC_decoded_reset_frame ,calib_params, reset_gain_frame, reset_fine_frame, reset_coarse_frame, calibrated_reset_frame);
+//
+//			percival_ADC_decode(sample_frame, ADC_decoded_sample_frame ,calib_params);
+//			percival_ADC_decode(reset_frame, ADC_decoded_reset_frame ,calib_params);
 
-			percival_ADC_decode_pipe(sample_frame, ADC_decoded_sample_frame ,calib_params, sample_gain_frame, sample_fine_frame, sample_coarse_frame, calibrated_sample_frame);
-			percival_ADC_decode(sample_frame, ADC_decoded_sample_frame ,calib_params);
-			percival_ADC_decode(reset_frame, ADC_decoded_reset_frame ,calib_params);
 			percival_ADC_decode_pf(sample_frame, ADC_decoded_sample_frame ,calib_params);
-			percival_ADC_decode_pipe(reset_frame, ADC_decoded_reset_frame ,calib_params, reset_gain_frame, reset_fine_frame, reset_coarse_frame, calibrated_reset_frame);
 			percival_ADC_decode_pf(reset_frame, ADC_decoded_reset_frame ,calib_params);
 
 		}
