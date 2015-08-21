@@ -267,9 +267,14 @@ public:
 			pixel = *(src_frame.data + i);
 
 			//use unsigned datatypes
-			 gain = pixel % 4;
-			 fineBits = (pixel >> 2) % 256; // the next 8 digits
-			 coarseBits = (pixel >> 10) % 32; // the next 5 bits
+//			 gain = pixel % 4;
+//			 fineBits = (pixel >> 2) % 256; // the next 8 digits
+//			 coarseBits = (pixel >> 10) % 32; // the next 5 bits
+
+			 /*Use binary masks instead*/
+			 gain = pixel && 0x0003;
+			 fineBits = (pixel && 0x07fc) >> 2;
+			 fineBits = (pixel && 0x7c00) >> 10;
 
 	//		//converting from linear representation to 2D representation. To speed up take modulo no of calibration pixels.
 			col = i % width;			//0 ~ frame_width - 1
