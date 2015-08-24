@@ -16,7 +16,7 @@
 
 
 template<typename T>
-class percival_frame{
+class percival_frame_mem{
 public:
 	/*
 	 * typically width, height ~= 10,000, use signed short is sufficient. width * height ~= 100,000,000, 27 bit unsigned int, int is sufficient.
@@ -30,8 +30,7 @@ public:
 	unsigned int width, height;			//
 	T* data;
 	//add an offset if splitting up the image is needed
-	std::vector<int> CDS_subtraction_indices;		//stores pixel indices requiring CDS_substraction
-	unsigned int refcount;
+	bool automatic_empty;
 
 	void set_frame_size(unsigned int h, unsigned int w)
 	{
@@ -47,21 +46,63 @@ public:
 		}
 	}
 
-	percival_frame(){data = new T[1]; set_frame_size(1,1); refcount = 1;}
-	percival_frame(unsigned int x, int y){data = new T[1]; set_frame_size(x,y);}
+	percival_frame_mem(){data = new T[1]; set_frame_size(1,1); automatic_empty = true;}
+	percival_frame_mem(unsigned int x, int y){data = new T[1]; set_frame_size(x,y); automatic_empty = true;}
+	~percival_frame_mem(){
+		if(automatic_empty)
+			delete [] data;
+	}
+};
+
+template <typename T>
+class percival_frame{
+public:
+	unsigned int width, height;
+	T * data;
+	std::vector<int> CDS_subtraction_indices;		//stores pixel indices requiring CDS_substraction
+
+	percival_frame():
+		width(1),
+		height(1),
+		data(NULL){}
+
+	percival_frame(const percival_frame_mem<T> &obj):
+		width(obj.width),
+		height(obj.height),
+		data(obj.data)
+	{}
+
 	percival_frame(const percival_frame &obj):
 		width(obj.width),
 		height(obj.height),
-		data(obj.data),
-		refcount(obj.refcount + 1)
+		data(obj.data)
 	{}
 
-	~percival_frame(){
-		if(refcount > 1)
-			(--refcount);
-		else
-			(delete [] data);}
+	void set_frame_size(unsigned int h, unsigned int w)
+	{
+		if((unsigned int)(h * w) > 0x7fffffff ){			//separated into two ifs to make code more readable
+			throw datatype_exception("Image size overflows. Should be less than 32768 pixels in each dimension.");
+		}else if(h < 0 || w < 0 || h * w < 0){
+			throw datatype_exception("Image size overflows. Should be greater than or equal to 0 and less than 32768 pixels in each dimension.");
+		}else{
+			width = w;
+			height = h;
+		}
+	}
+
+	void operator=(const percival_frame &obj){
+		width = obj.width;
+		height = obj.height;
+		data = obj.data;
+	}
+
+	void operator=(const percival_frame_mem<T> &obj){
+		width = obj.width;
+		height = obj.height;
+		data = obj.data;
+	}
 };
+
 
 struct percival_calib_params{
 public:

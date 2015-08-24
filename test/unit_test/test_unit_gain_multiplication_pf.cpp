@@ -15,26 +15,42 @@ const int TEST_FRAME_WIDTH		=	37;		//cannot be 10
 
 class fixture_test_unit_gain_multiplication_pf{
 public:
+	percival_frame_mem<unsigned short int> tmp1;
+	percival_frame_mem<float> tmp2;
+	percival_frame_mem<float> tmp3;
+	percival_frame_mem<float> tmp4;
+	percival_frame_mem<float> tmp5;
+	percival_frame_mem<float> tmp6;
+	percival_frame_mem<float> tmp7;
+
+
 	percival_frame<unsigned short int> src_frame;
 	percival_frame<float> des_frame;
 	percival_frame<float> calibrated;
 	percival_calib_params calib_params;
 
-	fixture_test_unit_gain_multiplication_pf(){
-		(calib_params.Gain_lookup_table1).set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-		(calib_params.Gain_lookup_table2).set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-		(calib_params.Gain_lookup_table3).set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-		(calib_params.Gain_lookup_table4).set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-
-		src_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-		des_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-		calibrated.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
+	fixture_test_unit_gain_multiplication_pf():
+		tmp1(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+		tmp2(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+		tmp3(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+		tmp4(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+		tmp5(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+		tmp6(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+		tmp7(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+		src_frame(tmp1),
+		des_frame(tmp2),
+		calibrated(tmp3)
+	{
+		(calib_params.Gain_lookup_table1) = tmp4;
+		(calib_params.Gain_lookup_table2) = tmp5;
+		(calib_params.Gain_lookup_table3) = tmp6;
+		(calib_params.Gain_lookup_table4) = tmp7;
 	}
 };
 
 BOOST_FIXTURE_TEST_SUITE (percival_unit_gain_multiplication_pf_pf_test,fixture_test_unit_gain_multiplication_pf)
 
-//void percival_unit_gain_multiplication_pf(const percival_frame<float> &, percival_frame<float> &, const percival_calib_params & calib_params);
+//void percival_unit_gain_multiplication_pf(const percival_frame_mem<float> &, percival_frame_mem<float> &, const percival_calib_params & calib_params);
 
 	BOOST_AUTO_TEST_CASE (should_throw_exception_when_calibration_data_is_of_wrong_dimension){
 		(calib_params.Gain_lookup_table1).set_frame_size(10,10);

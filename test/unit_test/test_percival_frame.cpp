@@ -1,5 +1,5 @@
 /*
- * test_percival_frame.cpp
+ * test_percival_frame_mem.cpp
  *
  *  Created on: 3 Aug 2015
  *      Author: pqm78245
@@ -9,16 +9,16 @@
 
 
 
-class fixture_test_percival_frame{
+class fixture_test_percival_frame_mem{
 public:
-	percival_frame<int> test_frame;
+	percival_frame_mem<int> test_frame;
 
-	fixture_test_percival_frame(){
+	fixture_test_percival_frame_mem(){
 		test_frame.set_frame_size(1,1);
 	}
 };
 
-BOOST_FIXTURE_TEST_SUITE (percival_frame_test,fixture_test_percival_frame)
+BOOST_FIXTURE_TEST_SUITE (percival_frame_mem_test,fixture_test_percival_frame_mem)
 
 BOOST_AUTO_TEST_CASE(should_throw_if_image_size_is_too_large){
 	BOOST_REQUIRE_NO_THROW(test_frame.set_frame_size(327, 100));

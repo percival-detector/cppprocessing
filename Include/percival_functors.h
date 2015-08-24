@@ -271,7 +271,7 @@ public:
 
 	//		//converting from linear representation to 2D representation. To speed up take modulo no of calibration pixels.
 			col = i % width;			//0 ~ frame_width - 1
-			row = (i - col) / width;
+			row = (i - col) / width;	/*todo think of a way to convert this division to a multiplication*/
 			position_in_calib_array = (col % 7) + (row * calib_data_width); //7 from 7 ADCs. todo code this in config.
 			//TODO:Note that the precision of these numbers is not great. noticeable to 0.0001
 

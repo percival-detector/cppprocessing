@@ -14,28 +14,42 @@ const int TEST_FRAME_WIDTH		=	21;		//cannot be 10
 
 class fixture_unit_ADC_calibration_test{
 public:
+	percival_frame_mem<unsigned short int> tmp1;
+	percival_frame_mem<unsigned short int> tmp2;
+	percival_frame_mem<float> tmp3;
+
+	percival_frame_mem<float> tmp4;
+	percival_frame_mem<float> tmp5;
+	percival_frame_mem<float> tmp6;
+	percival_frame_mem<float> tmp7;
+
 	percival_frame<short unsigned int> coarse_frame;
 	percival_frame<short unsigned int> fine_frame;
-
 	percival_frame<float> des_frame;
 	percival_calib_params calib_params;
 
-	fixture_unit_ADC_calibration_test(){
-		(calib_params.Gc).set_frame_size(TEST_FRAME_HEIGHT, 7);
-		(calib_params.Gf).set_frame_size(TEST_FRAME_HEIGHT, 7);
-		(calib_params.Oc).set_frame_size(TEST_FRAME_HEIGHT, 7);
-		(calib_params.Of).set_frame_size(TEST_FRAME_HEIGHT, 7);
-
-		des_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-
-		fine_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-		coarse_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
+	fixture_unit_ADC_calibration_test():
+		tmp1(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+		tmp2(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+		tmp3(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+		tmp4(TEST_FRAME_HEIGHT, 7),
+		tmp5(TEST_FRAME_HEIGHT, 7),
+		tmp6(TEST_FRAME_HEIGHT, 7),
+		tmp7(TEST_FRAME_HEIGHT, 7),
+		coarse_frame(tmp1),
+		fine_frame(tmp2),
+		des_frame(tmp3)
+	{
+		(calib_params.Gc) = tmp4;
+		(calib_params.Gf) = tmp5;
+		(calib_params.Oc) = tmp6;
+		(calib_params.Of) = tmp7;
 	}
 };
 
 BOOST_FIXTURE_TEST_SUITE (percival_unit_ADC_calibration_test,fixture_unit_ADC_calibration_test)
 
-//void percival_unit_ADC_calibration(const percival_frame<unsigned short int> & Coarse,const  percival_frame<unsigned short int> & Fine,const percival_frame<unsigned short int> & Gain, percival_frame<float>& output, const percival_calib_params &);
+//void percival_unit_ADC_calibration(const percival_frame_mem<unsigned short int> & Coarse,const  percival_frame_mem<unsigned short int> & Fine,const percival_frame_mem<unsigned short int> & Gain, percival_frame_mem<float>& output, const percival_calib_params &);
 
 //RANGE TESTS
 	BOOST_AUTO_TEST_CASE (should_throw_exception_when_calibration_data_is_of_wrong_dimension){
@@ -44,7 +58,7 @@ BOOST_FIXTURE_TEST_SUITE (percival_unit_ADC_calibration_test,fixture_unit_ADC_ca
 	}
 
 	BOOST_AUTO_TEST_CASE (should_throw_exception_when_output_and_input_dimensions_mismatch){
-		percival_frame<unsigned short int> wrong_size_frame;
+		percival_frame<unsigned short int> wrong_size_frame;	/*does not need the pointer data to be meaningful*/
 		percival_frame<float> wrong_size_frame_float;
 		wrong_size_frame.set_frame_size(10,10);
 

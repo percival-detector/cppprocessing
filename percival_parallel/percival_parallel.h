@@ -20,7 +20,8 @@ void percival_unit_ADC_decode_pf(
 		percival_frame<unsigned short int> & Fine,
 		percival_frame<unsigned short int> & Gain);
 
-void percival_unit_ADC_calibration_pf(const percival_frame<unsigned short int> & Coarse,
+void percival_unit_ADC_calibration_pf(
+		const percival_frame<unsigned short int> & Coarse,
 		const  percival_frame<unsigned short int> & Fine,
 		percival_frame<float>& output,
 		const percival_calib_params &,
@@ -47,8 +48,13 @@ void percival_ADC_decode_pf(
 		const percival_frame<unsigned short int> & src_frame,
 		percival_frame<float> & des_frame,
 		const percival_calib_params & calib_params,
-		size_t grain_size,
+		unsigned int grain_size = 100000,
 		bool store_gain = false);
 
+template<typename type>
+struct seg_sam_res_pair{
+	percival_frame<type> sample;
+	percival_frame<type> reset;
+};
 
 #endif /* PERCIVAL_PARALLEL_PERCIVAL_PARALLEL_H_ */

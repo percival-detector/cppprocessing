@@ -16,13 +16,22 @@ const int TEST_FRAME_HEIGHT 	= 	49;
 const int TEST_FRAME_WIDTH		=	55;
 class fixture_test_percival_ADU_to_electron_correction{
 	public:
+		percival_frame_mem<float> tmp1;
+		percival_frame_mem<float> tmp2;
+		percival_frame_mem<float> tmp3;
+
+		percival_calib_params calib;
 		percival_frame<float> src_frame;
 		percival_frame<float> output_frame;
-		percival_calib_params calib;
-		fixture_test_percival_ADU_to_electron_correction(){
-			src_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-			output_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-			calib.ADU_to_electrons_conversion.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
+
+		fixture_test_percival_ADU_to_electron_correction():
+			tmp1(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+			tmp2(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+			tmp3(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+			src_frame(tmp1),
+			output_frame(tmp2)
+		{
+				calib.ADU_to_electrons_conversion = tmp3;
 		}
 };
 

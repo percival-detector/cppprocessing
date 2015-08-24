@@ -14,14 +14,22 @@ const int TEST_FRAME_HEIGHT 	= 	32;
 const int TEST_FRAME_WIDTH		=	512;
 class fixture_test_percival_CDS_correction{
 	public:
+		percival_frame_mem<float> tmp1;
+		percival_frame_mem<float> tmp2;
+		percival_frame_mem<float> tmp3;
+
 		percival_frame<float> sample_frame;
 		percival_frame<float> reset_frame;
 		percival_frame<float> output_frame;
-		fixture_test_percival_CDS_correction(){
-			sample_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-			reset_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-			output_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-		}
+
+		fixture_test_percival_CDS_correction():
+			tmp1(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+			tmp2(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+			tmp3(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+			sample_frame(tmp1),
+			reset_frame(tmp2),
+			output_frame(tmp3)
+		{}
 };
 
 BOOST_FIXTURE_TEST_SUITE(percival_CDS_correction_test, fixture_test_percival_CDS_correction)

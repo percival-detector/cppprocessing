@@ -27,8 +27,8 @@ const char* HDF5_BE_DATA_SET_NAME 	= 	"BE_data";
 
 class fixture_HDF5{
 	public:
-		percival_frame<int> int_buffer_frame;
-		percival_frame<double> double_buffer_frame;
+		percival_frame_mem<int> int_buffer_frame;
+		percival_frame_mem<double> double_buffer_frame;
 };
 
 
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE ( should_throw_if_input_file_is_not_2D  ){
 //}
 
 BOOST_AUTO_TEST_CASE ( should_throw_if_buffer_is_of_wrong_type  ){
-	percival_frame<float> float_buffer_frame;
+	percival_frame_mem<float> float_buffer_frame;
 	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME, HDF5_INT_DATA_SET_NAME, float_buffer_frame), datatype_exception);
 }
 
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE ( should_generate_output_of_the_same_size_as_input  ){
 }
 
 BOOST_AUTO_TEST_CASE ( should_throw_if_data_type_is_neither_int_nor_32_bit_float ){
-	percival_frame<char> char_buffer_frame;
+	percival_frame_mem<char> char_buffer_frame;
 	BOOST_REQUIRE_THROW(percival_HDF5_loader(HDF5_FILE_NAME,HDF5_CHAR_DATA_SET_NAME, char_buffer_frame),datatype_exception);	//TODO: write an exception class for this
 
 }
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_SUITE_END()
 //	1. should take in
 //		- path to HDF5 files
 //			throw an exception if path does not exist, use default H5Cpp exceptions
-//		- pointer to a plain percival_frame buffer
+//		- pointer to a plain percival_frame_mem buffer
 //			should throw an exception if type mismatch, can use language facilities
 //		- possibly other options for file.read()
 //
@@ -139,6 +139,6 @@ BOOST_AUTO_TEST_SUITE_END()
 //	4. should close HDF5 file properly
 //		default H5Cpp exceptions
 //
-//	5. should automatically check HDF5 image size and set input percival_frame to be of the same size
+//	5. should automatically check HDF5 image size and set input percival_frame_mem to be of the same size
 //		check input and output size
 //

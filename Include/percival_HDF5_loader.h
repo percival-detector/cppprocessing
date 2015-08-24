@@ -16,10 +16,10 @@
 #include <typeinfo>
 
 template<typename T>
-void transpose_percival_frame(percival_frame<T> & original_frame){
+void transpose_percival_frame(percival_frame_mem<T> & original_frame){
 	//rather expensive operations
 
-	percival_frame<T> temp_frame;
+	percival_frame_mem<T> temp_frame;
 	int original_width = original_frame.width;
 	int original_height = original_frame.height;
 
@@ -45,7 +45,7 @@ template<typename T>
 void percival_HDF5_loader(
 		const char * path_name,
 		const char * data_set_name,
-		percival_frame<T> & buffer_frame,
+		percival_frame_mem<T> & buffer_frame,
 		bool transposed = 0,
 		bool print_error = 0			//default 0
 ){
@@ -164,7 +164,7 @@ void percival_HDF5_loader(
 //Specification
 //	1. should take in
 //		- path to HDF5 files
-//		- pointer to a plain percival_frame buffer
+//		- pointer to a plain percival_frame_mem buffer
 //		- possibly other options for file.read()
 //		- a property struct detailing the metadata of the HDF5 file
 //	2. should write to the plain image buffer
@@ -172,4 +172,4 @@ void percival_HDF5_loader(
 //	3. should write to the property struct
 //		- should preserve data integrity
 //	4. should close HDF5 file properly
-//	5. should automatically check HDF5 image size and set input percival_frame to be of the same size
+//	5. should automatically check HDF5 image size and set input percival_frame_mem to be of the same size
