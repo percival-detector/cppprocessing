@@ -91,7 +91,8 @@ def get_function_list(file):
                          'percival_unit_ADC_calibration_p<tbb::blocked_range<unsigned int> >::operator()',
                          'percival_unit_ADC_calibration_p<percival_range_iterator_mock_p>::operator()',
                          'percival_unit_gain_multiplication(',
-                         'percival_unit_gain_multiplication_p<tbb::blocked_range<unsigned int> >::operator()']
+                         'percival_unit_gain_multiplication_p<tbb::blocked_range<unsigned int> >::operator()',
+                         'percival_unit_gain_multiplication_p<percival_range_iterator_mock_p>::operator()']
     s = file.readline()
     found_functions = []
     while s != '':
@@ -124,4 +125,37 @@ def parse_time(time_string):
 
 def cmd_call(cmdline):
     subprocess.call(cmdline, shell=True)
+    
+class accumulator:
+    count = 0
+    data = []
+    parameter_value = []
+    file_name = ''
+    no_of_samples = 0
+    
+    def __init__(self, file_name, parameter_value, no_of_samples):
+        self.data = []
+	self.parameter_value = parameter_value
+        self.no_of_samples = no_of_samples
+        self.file_name = file_name
+        
+    def add_number(self, number):
+        self.count = self.count + 1
+        self.data.append(number)
+        
+    def average(self):
+        sum = 0
+        for data in self.data:
+            sum = sum + data
+        no_of_samples = len(self.data)
+    
+        avg = sum / no_of_samples
+        f = open(self.file_name, 'a')
+        f.write(str(self.parameter_value) + ':')
+        f.write(get_bytes(avg)+ ' ')
+        for data in self.data:
+            f.write(get_bytes(data) + ' ')
+        f.write('\n')
+        f.close()
+        print self.count
     

@@ -6,7 +6,7 @@ import calibration_data_generator as cdg
 import output_processing as op
 import datetime
 
-def run_the_function(print_result, height, width, repeat, text_file_name):
+def run_the_function(print_result, height, width, repeat, text_file_name, grain_size):
     path_name= "./data/KnifeQuadBPos1_2_21_int16.h5"
     top_level_data_set_name= "KnifeQuadBPos1/"
     host_name = socket.gethostname()
@@ -16,7 +16,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
     parallel_debug = './parallel_debug/cppProcessing2.0 '
     parallel_profile = './parallel_profile/cppProcessing2.0 '
 
-    cmdl_arg = '1 '  + str(width) + ' '+ str(height) + ' ' + str(repeat) + ' ' + text_file_name    
+    cmdl_arg = '1 '  + str(width) + ' '+ str(height) + ' ' + str(repeat) + ' ' + text_file_name + ' ' + str(grain_size)   
     program_to_execute = parallel_debug + cmdl_arg
 
     #events to monitor
@@ -94,10 +94,6 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
                 dict_of_attributes[function_name] = attributes
         s = f.readline()
     
-    print total_time
-    print list_of_functions
-    print attributes
-    
     llc_misses_per_instruction = op.get_llc_misses(list_of_functions, dict_of_attributes, list_of_events_recorded)
     CPI = op.get_CPI(list_of_functions, dict_of_attributes, list_of_events_recorded)
     bandwidth = op.get_bandwidth(list_of_functions, dict_of_function_perc_time, total_time, image_size, repeat)
@@ -105,11 +101,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
 
     for name, perc_time in dict_of_function_perc_time.iteritems():
         total_processing_time = total_processing_time + perc_time * total_time /1000 /100   #in seconds
-        print total_processing_time
-        
-    print function_time
-    print llc_misses_per_instruction
-    print CPI
+
     #printing reports
     if print_result == True:
         print
@@ -150,7 +142,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name):
             index = list_of_functions.index(function)
             print '\t' +  function +':' + '{0}'.format(int(function_time[index]))                
         print '=' * 100
-
+    return bandwidth
 
 
 repeat = 50   #350 is about the maximum
@@ -163,14 +155,30 @@ host_name = socket.gethostname()
 calib_directory = './calibration_data/'
 path_name = calib_directory + host_name + '/'
 text_file_name =  path_name + 'test_param_file.txt'
- 
+grain_size_file_name = './oprof_reports/' + host_name + '/' + 'grain_size_test.txt'
+print grain_size_file_name 
 
 
 # subprocess.call('mkdir -p ' + path_name, shell=True)
 # cdg.generate_calib_files(height, width, text_file_name, path_name)
 
-# for width in width_arr:
-run_the_function(True, height, width, repeat, text_file_name)
+cmd_rm_file = "rm -f " + grain_size_file_name
+cmd_create_file = "touch "+ grain_size_file_name
+op.cmd_call(cmd_rm_file)
+op.cmd_call(cmd_create_file)
+
+grain_size = 10000
+run_the_function(True, height, width, repeat, text_file_name, grain_size)
+ 
+# for grain_size in xrange(10000,1000000,2000):
+#     a = op.accumulator(grain_size_file_name, grain_size, 9)
+#     for repeats in xrange(1,9):
+#         bandwidth = run_the_function(False, height, width, repeat, text_file_name, grain_size)
+#         a.add_number(bandwidth[0])
+#         print grain_size, op.get_bytes(bandwidth[0])
+#     a.average()
+# #     
+
 
 
 # width = 50000
