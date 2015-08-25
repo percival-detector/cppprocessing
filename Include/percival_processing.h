@@ -28,7 +28,8 @@ public:
 	 * Width * height is guaranteed to be less than the range of unsigned int (0x7fffffff)
 	 */
 	unsigned int width, height;			//
-	T* data;
+	T* data;			/*128bits aligned*/
+	T* not_aligned;
 	//add an offset if splitting up the image is needed
 	bool automatic_empty;
 
@@ -39,18 +40,28 @@ public:
 		}else if(h < 0 || w < 0 || h * w < 0){
 			throw datatype_exception("Image size overflows. Should be greater than or equal to 0 and less than 32768 pixels in each dimension.");
 		}else{
-			delete [] data;
+			delete [] not_aligned;
 			width = w;
 			height = h;
-			data = new T[width * height];
+			/*On current 64 bits machine, alignment defaults to 64 bits*/
+			/*allocating memory*/
+			not_aligned = new T[width * height + 15];	/*15Bytes extra space to align*/
+
+			/*align to 128 bits boundary*/
+			std::size_t address = reinterpret_cast<std::size_t>(not_aligned);
+			std::size_t offset = address % 16;
+			data = not_aligned + offset;
 		}
 	}
 
-	percival_frame_mem(){data = new T[1]; set_frame_size(1,1); automatic_empty = true;}
-	percival_frame_mem(unsigned int x, int y){data = new T[1]; set_frame_size(x,y); automatic_empty = true;}
+	percival_frame_mem(){not_aligned = new T[1]; set_frame_size(1,1); automatic_empty = true;}
+	percival_frame_mem(unsigned int x, int y){not_aligned = new T[1]; set_frame_size(x,y); automatic_empty = true;}
 	~percival_frame_mem(){
-		if(automatic_empty)
-			delete [] data;
+		if(automatic_empty){
+			delete [] not_aligned;
+			data = NULL;
+			not_aligned = NULL;
+		}
 	}
 };
 
