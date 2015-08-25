@@ -71,7 +71,7 @@ int main(int argn, char* argv[]){
 
 	int width, height;
 	int repeat=1000;
-
+	unsigned int grain_size = 3528;
 //used for profiling
 	height = 160;		//fixed
 	bool use_meaningless_image = false;
@@ -82,11 +82,14 @@ int main(int argn, char* argv[]){
 			sscanf(argv[2], "%d", &width);
 			if(argn >= 4)
 				sscanf(argv[3], "%d", &height);
-			if(argn == 6){
+			if(argn >= 6){
 				sscanf(argv[4], "%d", &repeat);
 				char tmp3[255];
 				sscanf(argv[5], "%s", tmp3);
 				config_file = tmp3;
+			}
+			if(argn >= 7){
+				sscanf(argv[6], "%d", &grain_size);
 			}
 		}//using computer generated data
 		else{
@@ -108,74 +111,50 @@ int main(int argn, char* argv[]){
 	percival_load_calib_params(calib_params, global_params);
 
 	/*settin the number of threads to use*/
-//	tbb::task_scheduler_init init(1);
+	tbb::task_scheduler_init init(grain_size);
 
-	size_t grain_size = 25000;
 	if(use_meaningless_image){
 		/*14 images per iteration*/
-		percival_frame<unsigned short int>* sample_frame_stack= new percival_frame<unsigned short int>[repeat];
-		percival_frame<unsigned short int>* reset_frame_stack= new percival_frame<unsigned short int>[repeat];
-		percival_frame<float>* ADC_decoded_sample_frame_stack= new percival_frame<float>[repeat];
-		percival_frame<float>* ADC_decoded_reset_frame_stack= new percival_frame<float>[repeat];
-		percival_frame<float>* CDS_frame_stack= new percival_frame<float>[repeat];
-		percival_frame<float>* electron_corrected_frame_stack= new percival_frame<float>[repeat];
+		percival_frame_mem<unsigned short int>* sample_frame_stack= new percival_frame_mem<unsigned short int>[repeat];
+		percival_frame_mem<unsigned short int>* reset_frame_stack= new percival_frame_mem<unsigned short int>[repeat];
+		percival_frame_mem<float>* ADC_decoded_sample_frame_stack= new percival_frame_mem<float>[repeat];
+		percival_frame_mem<float>* ADC_decoded_reset_frame_stack= new percival_frame_mem<float>[repeat];
+		percival_frame_mem<float>* CDS_frame_stack= new percival_frame_mem<float>[repeat];
+		percival_frame_mem<float>* electron_corrected_frame_stack= new percival_frame_mem<float>[repeat];
 
 
-		percival_frame<unsigned short int>* sample_coarse_frame_stack= new percival_frame<unsigned short int>[repeat];
-		percival_frame<unsigned short int>* sample_fine_frame_stack= new percival_frame<unsigned short int>[repeat];
-		percival_frame<unsigned short int>* sample_gain_frame_stack= new percival_frame<unsigned short int>[repeat];
+		percival_frame_mem<unsigned short int>* sample_coarse_frame_stack= new percival_frame_mem<unsigned short int>[repeat];
+		percival_frame_mem<unsigned short int>* sample_fine_frame_stack= new percival_frame_mem<unsigned short int>[repeat];
+		percival_frame_mem<unsigned short int>* sample_gain_frame_stack= new percival_frame_mem<unsigned short int>[repeat];
 
-		percival_frame<unsigned short int>* reset_coarse_frame_stack= new percival_frame<unsigned short int>[repeat];
-		percival_frame<unsigned short int>* reset_fine_frame_stack= new percival_frame<unsigned short int>[repeat];
-		percival_frame<unsigned short int>* reset_gain_frame_stack= new percival_frame<unsigned short int>[repeat];
+		percival_frame_mem<unsigned short int>* reset_coarse_frame_stack= new percival_frame_mem<unsigned short int>[repeat];
+		percival_frame_mem<unsigned short int>* reset_fine_frame_stack= new percival_frame_mem<unsigned short int>[repeat];
+		percival_frame_mem<unsigned short int>* reset_gain_frame_stack= new percival_frame_mem<unsigned short int>[repeat];
 
-		percival_frame<float>* calibrated_sample_frame_stack= new percival_frame<float>[repeat];
-		percival_frame<float>* calibrated_reset_frame_stack= new percival_frame<float>[repeat];
+		percival_frame_mem<float>* calibrated_sample_frame_stack= new percival_frame_mem<float>[repeat];
+		percival_frame_mem<float>* calibrated_reset_frame_stack= new percival_frame_mem<float>[repeat];
 
 
 		for(int j = 0; j < repeat; j ++){
-			sample_frame = *(sample_frame_stack + j);
-			reset_frame = *(reset_frame_stack + j);
-			ADC_decoded_sample_frame =*( ADC_decoded_sample_frame_stack + j);
-			ADC_decoded_reset_frame =*( ADC_decoded_reset_frame_stack + j);
-			CDS_frame = *(CDS_frame_stack + j);
-			electron_corrected_frame = *(electron_corrected_frame_stack + j);
+			 (*(sample_frame_stack + j)).set_frame_size(height, width);
+			 (*(reset_frame_stack + j)).set_frame_size(height, width);
+			 (*(ADC_decoded_sample_frame_stack + j)).set_frame_size(height, width);
+			 (*(ADC_decoded_reset_frame_stack + j)).set_frame_size(height, width);
+			 (*(CDS_frame_stack + j)).set_frame_size(height, width);
+			 (*(	electron_corrected_frame_stack + j)).set_frame_size(height, width);
 
-			sample_coarse_frame = *(sample_coarse_frame_stack + j);
-			sample_fine_frame = *(sample_fine_frame_stack + j);
-			sample_gain_frame = *(sample_gain_frame_stack + j);
+			 (*(	sample_coarse_frame_stack + j)).set_frame_size(height, width);
+			 (*(	sample_fine_frame_stack + j)).set_frame_size(height, width);
+			 (*(	sample_gain_frame_stack + j)).set_frame_size(height, width);
 
-			reset_coarse_frame = *(reset_coarse_frame_stack + j);
-			reset_fine_frame = *( reset_fine_frame_stack+ j);
-			reset_gain_frame = *(reset_gain_frame_stack + j);
+			 (*(	reset_coarse_frame_stack + j)).set_frame_size(height, width);
+			 (*(	reset_fine_frame_stack + j)).set_frame_size(height, width);
+			 (*(	reset_gain_frame_stack + j)).set_frame_size(height, width);
 
-			calibrated_sample_frame = *(calibrated_sample_frame_stack + j);
-			calibrated_reset_frame = *(calibrated_reset_frame_stack + j);
+			 (*(	calibrated_sample_frame_stack + j)).set_frame_size(height, width);
+			 (*(	calibrated_reset_frame_stack + j)).set_frame_size(height, width);
 
 
-
-			sample_frame.set_frame_size(height, width);
-			reset_frame.set_frame_size(height, width);
-			ADC_decoded_sample_frame.set_frame_size(height, width);
-			ADC_decoded_reset_frame.set_frame_size(height, width);
-			CDS_frame.set_frame_size(height, width);
-			electron_corrected_frame.set_frame_size(height, width);
-
-			sample_coarse_frame.set_frame_size(height, width);
-			sample_fine_frame.set_frame_size(height, width);
-			sample_gain_frame.set_frame_size(height, width);
-
-			reset_coarse_frame.set_frame_size(height, width);
-			reset_fine_frame.set_frame_size(height, width);
-			reset_gain_frame.set_frame_size(height, width);
-
-			calibrated_sample_frame.set_frame_size(height, width);
-			calibrated_reset_frame.set_frame_size(height, width);
-
-			for(int i = 0; i < width * height; i++  ){
-				*(sample_frame.data + i) = i * (j * 3) % 32767;
-				*(reset_frame.data + i) = i * (j * 5) % 32767;
-			}
 			/*unit functions*/
 //			percival_unit_ADC_decode(sample_frame, sample_coarse_frame, sample_fine_frame,sample_gain_frame);
 //			percival_unit_ADC_decode(reset_frame, reset_coarse_frame, reset_fine_frame,reset_gain_frame);
@@ -191,15 +170,48 @@ int main(int argn, char* argv[]){
 //
 //			percival_ADC_decode(sample_frame, ADC_decoded_sample_frame ,calib_params);
 //			percival_ADC_decode(reset_frame, ADC_decoded_reset_frame ,calib_params);
-
-			percival_ADC_decode_pf(sample_frame, ADC_decoded_sample_frame ,calib_params, grain_size);
-			percival_ADC_decode_pf(reset_frame, ADC_decoded_reset_frame ,calib_params, grain_size);
-
 		}
+
+		for(unsigned int k = 0; k < 10; ++k){
+			for(int j = 0; j < repeat; j ++){	/*assign values first so that they do not remain in the cache*/
+				sample_frame = *(sample_frame_stack + j);
+				reset_frame = *(reset_frame_stack + j);
+
+				for(int i = 0; i < width * height; i++  ){
+					*(sample_frame.data + i) = i * (j * 3 * k) % 32767;		/*arbitrarily generate source data */
+					*(reset_frame.data + i) = i * (j * 5 * k) % 32767;
+				}
+			}
+			/*then do the computation*/
+			for(int j = 0; j < repeat; j ++){
+				sample_frame = *(sample_frame_stack + j);
+				reset_frame = *(reset_frame_stack + j);
+
+				ADC_decoded_sample_frame =*( ADC_decoded_sample_frame_stack + j);
+				ADC_decoded_reset_frame =*( ADC_decoded_reset_frame_stack + j);
+				CDS_frame = *(CDS_frame_stack + j);
+				electron_corrected_frame = *(electron_corrected_frame_stack + j);
+
+				sample_coarse_frame = *(sample_coarse_frame_stack + j);
+				sample_fine_frame = *(sample_fine_frame_stack + j);
+				sample_gain_frame = *(sample_gain_frame_stack + j);
+
+				reset_coarse_frame = *(reset_coarse_frame_stack + j);
+				reset_fine_frame = *( reset_fine_frame_stack+ j);
+				reset_gain_frame = *(reset_gain_frame_stack + j);
+
+				calibrated_sample_frame = *(calibrated_sample_frame_stack + j);
+				calibrated_reset_frame = *(calibrated_reset_frame_stack + j);
+				/*functions to run*/
+				percival_ADC_decode_pf(sample_frame, ADC_decoded_sample_frame ,calib_params, grain_size);
+				percival_ADC_decode_pf(reset_frame, ADC_decoded_reset_frame ,calib_params, grain_size);
+			}
+		}
+
 	}else{
 		try{
-			percival_HDF5_loader(path_name.c_str(), (top_level_data_set_name + "10/Sample").c_str(), sample_frame);
-			percival_HDF5_loader(path_name.c_str(), (top_level_data_set_name + "9/Reset").c_str(), reset_frame);
+//			percival_HDF5_loader(path_name.c_str(), (top_level_data_set_name + "10/Sample").c_str(), sample_frame);
+//			percival_HDF5_loader(path_name.c_str(), (top_level_data_set_name + "9/Reset").c_str(), reset_frame);
 		}
 		catch(file_exception & e){
 			std::cerr << e.what() << std::endl;
