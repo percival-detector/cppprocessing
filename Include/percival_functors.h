@@ -8,6 +8,13 @@
 #ifndef INCLUDE_PERCIVAL_FUNCTORS_H_
 #define INCLUDE_PERCIVAL_FUNCTORS_H_
 
+/*
+ * This header is for Streaming SIMD Extensions (SSE)
+ * SSE: cacheablity, Single Floating Point (SP, FP) operations
+ *
+ *  */
+#include "emmintrin.h"
+
 /*the following classes are created for tbb*/
 
 
@@ -84,32 +91,32 @@ public:
 		const float FMax = 222;
 		const float CMax = 26;
 		for (unsigned int i=r.begin(); i!=end; ++i ){
-			 col = i % width;			//0 ~ frame_width - 1
-			 row = (i - col) / width;
-			 position_in_calib_array = (col % 7) + (row * calib_width); //7 from 7 ADCs. todo code this in config.
+			col = i % width;			//0 ~ frame_width - 1
+			row = (i - col) / width;
+			position_in_calib_array = (col % 7) + (row * calib_width); //7 from 7 ADCs. todo code this in config.
 
-			 Gc_at_this_pixel = *(Gc + position_in_calib_array);
-			 Oc_at_this_pixel = *(Oc + position_in_calib_array);
-			 Gf_at_this_pixel = *(Gf + position_in_calib_array);
-			 Of_at_this_pixel = *(Of + position_in_calib_array);
+			Gc_at_this_pixel = *(Gc + position_in_calib_array);
+			Oc_at_this_pixel = *(Oc + position_in_calib_array);
+			Gf_at_this_pixel = *(Gf + position_in_calib_array);
+			Of_at_this_pixel = *(Of + position_in_calib_array);
 
 			*(output + i)	= (float)
-							(FMax * CMax *
-									(
-											1.0-
+									(FMax * CMax *
 											(
-													(1.0/VinMax)*
+													1.0-
 													(
+															(1.0/VinMax)*
 															(
-																	(Oc_at_this_pixel - *(fine + i) - 1.0) / Gc_at_this_pixel		//In hazem's code coarseBits == FineArr, fineBits == CoarseArr
-															)
-															+		(
-																	(*(coarse + i) - Of_at_this_pixel) / Gf_at_this_pixel
+																	(
+																			(Oc_at_this_pixel - *(fine + i) - 1.0) / Gc_at_this_pixel		//In hazem's code coarseBits == FineArr, fineBits == CoarseArr
+																	)
+																	+		(
+																			(*(coarse + i) - Of_at_this_pixel) / Gf_at_this_pixel
+																	)
 															)
 													)
 											)
-									)
-							);
+									);
 
 		}
 	}
@@ -199,7 +206,7 @@ public:
 				unit_ADC_decode_p(input.data, coarse.data, fine.data, gain.data),
 				unit_ADC_calibration_p(coarse, fine, output, calib_params),
 				unit_gain_multiplication_p(input,calibrated,output,calib_params)
-				{}
+{}
 
 	void operator()( const range_iterator & r ) const
 	{
@@ -223,7 +230,7 @@ public:
 				src_frame(src_frame),
 				des_frame(des_frame),
 				calib_params(calib_params)
-				{}
+{}
 
 	void operator()( const range_iterator & r ) const
 	{
@@ -231,10 +238,10 @@ public:
 		const unsigned int calib_data_width = calib_params.Gc.width;
 		const float VinMax=1.43;
 		//these two values are from February test data from Hazem. should be changed if calibration data changes
-//		const float FMax = 222;
-//		const float CMax = 26;
-//		const float factor = 5772;// 222 * 26;
-//		const float inverseVinMax = 0.6993007; //1/1.43
+		//		const float FMax = 222;
+		//		const float CMax = 26;
+		//		const float factor = 5772;// 222 * 26;
+		//		const float inverseVinMax = 0.6993007; //1/1.43
 		float gain_factor = 1;
 
 		/*Allocate memory for reusable variables*/
@@ -257,60 +264,79 @@ public:
 		float* G4 = calib_params.Gain_lookup_table4.data;
 
 		float* output = des_frame.data;
+		__m128* vec = new __m128[4];
+		float* output_array = new float[4];
 		//algorithm
-		unsigned int end = r.end();
-		for(unsigned int i = r.begin(); i < end; ++i){	//int i is sufficient
-			/*
-			 * minimising access */
-			pixel = *(src_frame.data + i);
+		unsigned int end = r.end() - r.end() % 16;
+		unsigned int offset = 16 - r.begin() % 16;
+		unsigned int begin =  offset + r.begin();
 
-			 /*Use binary masks instead*/
-			 gain = pixel & 0x0003;
-			 fineBits = (pixel & 0x07fc) >> 2;
-			 coarseBits = (pixel & 0x7c00) >> 10;
+		/*start of for loop*/
+		for(unsigned int i = begin; i < end ; i+=16){	//int i is sufficient
+			for(unsigned int k = 0; k < 16; k +=4){
+				for(unsigned int j = 0; j < 4; ++j){	/*use streaming SIMD to vectorize floating point computation*/
+					/*
+					 * minimising access */
+					pixel = *(src_frame.data + i + j + k);
 
-	//		//converting from linear representation to 2D representation. To speed up take modulo no of calibration pixels.
-			col = i % width;			//0 ~ frame_width - 1
-			row = (i - col) / width;	/*todo think of a way to convert this division to a multiplication*/
-			position_in_calib_array = (col % 7) + (row * calib_data_width); //7 from 7 ADCs. todo code this in config.
-			//TODO:Note that the precision of these numbers is not great. noticeable to 0.0001
+					/*Use binary masks instead*/
+					gain = pixel & 0x0003;
+					fineBits = (pixel & 0x07fc) >> 2;
+					coarseBits = (pixel & 0x7c00) >> 10;
+
+					//		//converting from linear representation to 2D representation. To speed up take modulo no of calibration pixels.
+					col = i % width;			//0 ~ frame_width - 1
+					row = (i - col) / width;	/*todo think of a way to convert this division to a multiplication*/
+					position_in_calib_array = (col % 7) + (row * calib_data_width); //7 from 7 ADCs. todo code this in config.
+					//TODO:Note that the precision of these numbers is not great. noticeable to 0.0001
 
 					switch(gain){
-						case 0b00:
-							gain_factor = *(G1 + i);
-							break;
-						case 0b01:
-							gain_factor = *(G2 + i);
-							break;
-						case 0b10:
-							gain_factor = *(G3 + i);
-							break;
-						case 0b11:
-							gain_factor = *(G4 + i);
-							break;
-						default:
-							throw datatype_exception("Invalid gain bit detected.");
-			}
+					case 0b00:
+						gain_factor = *(G1 + i);
+						break;
+					case 0b01:
+						gain_factor = *(G2 + i);
+						break;
+					case 0b10:
+						gain_factor = *(G3 + i);
+						break;
+					case 0b11:
+						gain_factor = *(G4 + i);
+						break;
+					default:
+						throw datatype_exception("Invalid gain bit detected.");
+					}
 
-			*(output + i)	= (float)gain_factor *
-		    		(		/*this factor can be absorbed into gain and needs not be here.*/
-					(
-						VinMax -
-						(
-								 /*this can be done permanently to the calibration parameter and needs not be here*/
-								(
-										(
-												(*(Oc + position_in_calib_array) - (fineBits - (unsigned short int)1)) / *(Gc + position_in_calib_array)		//In hazem's code coarseBits == FineArr, fineBits == CoarseArr
-										)
-								+		(
-												(coarseBits - *(Of + position_in_calib_array)) / *(Gf + position_in_calib_array)
-										)
-								)
-						)
-					)
-					);
+					*(output_array + j)	= (float)gain_factor *
+							(		/*this factor can be absorbed into gain and needs not be here.*/
+									(
+											VinMax -
+											(
+													/*this can be done permanently to the calibration parameter and needs not be here*/
+													(
+															(
+																	(*(Oc + position_in_calib_array) - (fineBits - (unsigned short int)1)) / *(Gc + position_in_calib_array)		//In hazem's code coarseBits == FineArr, fineBits == CoarseArr
+															)
+															+		(
+																	(coarseBits - *(Of + position_in_calib_array)) / *(Gf + position_in_calib_array)
+															)
+													)
+											)
+									)
+							);
+				}
+
+			/*writing data to memory without polluting the cache*/
+			vec[k/4] = _mm_load_ps(output_array);
 		}
+		/*The bus is capable of transferring 64Bytes each time. Thus accumulate four sets of four data and transfer in one go*/
+		_mm_stream_ps( (output + i), vec[0]);
+		_mm_stream_ps((output+i + 4), vec[1]);
+		_mm_stream_ps((output+i + 8), vec[2]);
+		_mm_stream_ps((output+i + 12), vec[3]);
+
 	}
+}
 };
 
 
