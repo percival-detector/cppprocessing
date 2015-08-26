@@ -13,7 +13,7 @@
  * SSE: cacheablity, Single Floating Point (SP, FP) operations
  *
  *  */
-#include "emmintrin.h"
+//#include "emmintrin.h"
 
 /*the following classes are created for tbb*/
 
@@ -264,25 +264,53 @@ public:
 		float* G4 = calib_params.Gain_lookup_table4.data;
 
 		float* output = des_frame.data;
-		__m128* vec = new __m128[4];
-		float* output_array = new float[4];
+//		__m128* vec = new __m128[4];
+//		float* output_array = new float[4];
 		//algorithm
-		unsigned int end = r.end() - r.end() % 16;
-		unsigned int offset = 16 - r.begin() % 16;
-		unsigned int begin =  offset + r.begin();
+		unsigned int end = r.end();
+		unsigned int begin = r.begin();
+		unsigned int col_counter, row_counter;
+		col_counter = begin%width; row_counter = begin/width;
+		float coarse_calibrated, fine_calibrated;
+
+//		unsigned int end = r.end() - r.end() % 16;
+//		unsigned int offset = 16 - r.begin() % 16;
+//		unsigned int begin =  offset + r.begin();
 
 		/*start of for loop*/
-		for(unsigned int i = begin; i < end ; i+=16){	//int i is sufficient
-			for(unsigned int k = 0; k < 16; k +=4){
-				for(unsigned int j = 0; j < 4; ++j){	/*use streaming SIMD to vectorize floating point computation*/
+		for(unsigned int i = begin; i < end ; ++i){	//int i is sufficient
+//			for(unsigned int k = 0; k < 16; k +=4){
+//				for(unsigned int j = 0; j < 4; ++j){	/*use streaming SIMD to vectorize floating point computation*/
 					/*
 					 * minimising access */
-					pixel = *(src_frame.data + i + j + k);
+					pixel = *(src_frame.data + i);
 
 					/*Use binary masks instead*/
 					gain = pixel & 0x0003;
 					fineBits = (pixel & 0x07fc) >> 2;
 					coarseBits = (pixel & 0x7c00) >> 10;
+
+					/*
+					 * uses two bitwise AND, two negations, two additions, in exchange for
+					 * two modulus, one division,  6 cycles VS 30 cycles
+					 *
+					 */
+
+//					if( !(col_counter&7) )
+//						col_counter++;
+//					else{
+//						col_counter = 0;
+//					}
+//
+//					if( !(row_counter&width) )
+//						row_counter++;
+//					else{
+//						row_counter = 0;
+//						row++;
+//					}
+//
+//					position_in_calib_array = col_counter + row * calib_data_width;
+
 
 					//		//converting from linear representation to 2D representation. To speed up take modulo no of calibration pixels.
 					col = i % width;			//0 ~ frame_width - 1
@@ -307,36 +335,38 @@ public:
 						throw datatype_exception("Invalid gain bit detected.");
 					}
 
-					*(output_array + j)	= (float)gain_factor *
-							(		/*this factor can be absorbed into gain and needs not be here.*/
-									(
-											VinMax -
-											(
-													/*this can be done permanently to the calibration parameter and needs not be here*/
-													(
-															(
-																	(*(Oc + position_in_calib_array) - (fineBits - (unsigned short int)1)) / *(Gc + position_in_calib_array)		//In hazem's code coarseBits == FineArr, fineBits == CoarseArr
-															)
-															+		(
-																	(coarseBits - *(Of + position_in_calib_array)) / *(Gf + position_in_calib_array)
-															)
-													)
-											)
-									)
-							);
+					coarse_calibrated = (*(Oc + position_in_calib_array) - fineBits) * *(Gc + position_in_calib_array);
+					fine_calibrated = (coarseBits - *(Of + position_in_calib_array)) * *(Gf + position_in_calib_array);
+
+					*(output+i) = gain_factor * (coarse_calibrated - fine_calibrated);
+
+//					*(output_array + i)	= (float)gain_factor *
+//							(		/*this factor can be absorbed into gain and needs not be here.*/
+//									(
+//											VinMax -
+//											(
+//													/*this can be done permanently to the calibration parameter and needs not be here*/
+//													(
+//															(
+//																	(*(Oc + position_in_calib_array) - (fineBits - (unsigned short int)1)) / *(Gc + position_in_calib_array)		//In hazem's code coarseBits == FineArr, fineBits == CoarseArr
+//															)
+//															+		(
+//																	(coarseBits - *(Of + position_in_calib_array)) / *(Gf + position_in_calib_array)
+//															)
+//													)
+//											)
+//									)
+//							);
 				}
 
 			/*writing data to memory without polluting the cache*/
-			vec[k/4] = _mm_load_ps(output_array);
+//			vec[k/4] = _mm_load_ps(output_array);
 		}
 		/*The bus is capable of transferring 64Bytes each time. Thus accumulate four sets of four data and transfer in one go*/
-		_mm_stream_ps( (output + i), vec[0]);
-		_mm_stream_ps((output+i + 4), vec[1]);
-		_mm_stream_ps((output+i + 8), vec[2]);
-		_mm_stream_ps((output+i + 12), vec[3]);
-
-	}
-}
+//		_mm_stream_ps( (output + i), vec[0]);
+//		_mm_stream_ps((output+i + 4), vec[1]);
+//		_mm_stream_ps((output+i + 8), vec[2]);
+//		_mm_stream_ps((output+i + 12), vec[3]);
 };
 
 

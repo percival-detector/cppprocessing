@@ -51,10 +51,32 @@ void percival_ADC_decode_pf(
 		unsigned int grain_size = 100000,
 		bool store_gain = false);
 
-template<typename type>
-struct seg_sam_res_pair{
-	percival_frame<type> sample;
-	percival_frame<type> reset;
+void percival_ADC_decode_pf_combined_tbb_pipeline(
+		const percival_frame<unsigned short int> & src_frame,
+		percival_frame<float> & des_frame,
+		const percival_calib_params & calib_params,
+		unsigned int grain_size = 3528,
+		bool store_gain = false);
+
+template<typename type1, typename type2>
+struct pair{
+	unsigned int offset;
+	percival_frame<type1> sample;
+	percival_frame<type2> dest;
 };
+
+
+struct frame_stack{
+	percival_frame<unsigned short int> * sample;
+	percival_frame<float> * output;
+	unsigned int offset;
+};
+
+void percival_ADC_decode_pf_combined_tbb_pipeline_stream(
+		percival_frame<unsigned short int> * src_frame,
+		percival_frame<float> * des_frame,
+		const percival_calib_params & calib_params,
+		unsigned int grain_size,
+		unsigned int array_size);			/*in number of frames*/
 
 #endif /* PERCIVAL_PARALLEL_PERCIVAL_PARALLEL_H_ */
