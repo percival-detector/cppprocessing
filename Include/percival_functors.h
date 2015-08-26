@@ -270,7 +270,7 @@ public:
 		unsigned int end = r.end();
 		unsigned int begin = r.begin();
 		unsigned int col_counter, row_counter;
-		col_counter = begin%width; row_counter = begin/width;
+		col_counter = (begin%width)%7; row_counter = begin/width;
 		float coarse_calibrated, fine_calibrated;
 
 //		unsigned int end = r.end() - r.end() % 16;
@@ -296,20 +296,20 @@ public:
 					 *
 					 */
 
-//					if( !(col_counter&7) )
-//						col_counter++;
-//					else{
-//						col_counter = 0;
-//					}
-//
-//					if( !(row_counter&width) )
-//						row_counter++;
-//					else{
-//						row_counter = 0;
-//						row++;
-//					}
-//
-//					position_in_calib_array = col_counter + row * calib_data_width;
+					if( (col_counter&7) )
+						col_counter = 0;
+					else{
+						col_counter++;
+					}
+
+					if( (row_counter&width) ){
+						row_counter = 0;
+						row++;}
+					else{
+						row_counter++;
+					}
+
+					position_in_calib_array = col_counter + row * calib_data_width;
 
 
 					//		//converting from linear representation to 2D representation. To speed up take modulo no of calibration pixels.
