@@ -107,19 +107,27 @@ class ADC_decode_filter : public tbb::filter{
 private:
 	const unsigned int grain_size;
 	percival_calib_params calib_params;
+	percival_ADC_decode_p< percival_range_iterator_mock_p > ADC_decode_p;
+	percival_range_iterator_mock_p range;
 public:
-	ADC_decode_filter(const percival_calib_params & calib_params,
+	ADC_decode_filter(
+			const percival_frame<unsigned short int> & src_frame,
+			percival_frame<float> & des_frame,
+			const percival_calib_params & calib_params,
 			unsigned int grain_size):
 				tbb::filter(/*is_serial=*/false),
 				calib_params(calib_params),
-				grain_size(grain_size)
+				grain_size(grain_size),
+				ADC_decode_p(src_frame, des_frame, calib_params),
+				range(0,1)
+
 	{}
 
 	void* operator()(void* input){
 		pair< unsigned short, float >* pairs = static_cast< pair<unsigned short, float>* >(input);
 		unsigned int offset = pairs->offset;
-		percival_ADC_decode_p< percival_range_iterator_mock_p > ADC_decode_p (pairs->sample, pairs->dest, calib_params);
-		percival_range_iterator_mock_p range(offset, offset + grain_size);
+		range.lower = offset;
+		range.upper = grain_size + offset;
 		ADC_decode_p(range);
 		return NULL;
 	}
@@ -146,7 +154,7 @@ void percival_ADC_decode_pf_combined_tbb_pipeline(
 	InputFilter Input(&stream, grain_size);
 	pipeline.add_filter( Input );
 
-	ADC_decode_filter ADC_decode(calib_params, grain_size);
+	ADC_decode_filter ADC_decode(src_frame, des_frame, calib_params, grain_size);
 	pipeline.add_filter( ADC_decode );
 
 	pipeline.run( max_tokens );

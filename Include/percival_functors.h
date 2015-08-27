@@ -285,6 +285,12 @@ public:
 					 * minimising access */
 					pixel = *(src_frame.data + i);
 
+					/*
+					 * uses two bitwise AND, two negations, two additions, in exchange for
+					 * two modulus, one division,  6 cycles VS 30 cycles
+					 *
+					 */
+
 					/*Use binary masks instead*/
 					gain = pixel & 0x0003;
 					fineBits = (pixel & 0x07fc) >> 2;
@@ -295,7 +301,6 @@ public:
 					 * two modulus, one division,  6 cycles VS 30 cycles
 					 *
 					 */
-
 					if( (col_counter&7) )
 						col_counter = 0;
 					else{
@@ -310,13 +315,6 @@ public:
 					}
 
 					position_in_calib_array = col_counter + row * calib_data_width;
-
-
-					//		//converting from linear representation to 2D representation. To speed up take modulo no of calibration pixels.
-					col = i % width;			//0 ~ frame_width - 1
-					row = (i - col) / width;	/*todo think of a way to convert this division to a multiplication*/
-					position_in_calib_array = (col % 7) + (row * calib_data_width); //7 from 7 ADCs. todo code this in config.
-					//TODO:Note that the precision of these numbers is not great. noticeable to 0.0001
 
 					switch(gain){
 					case 0b00:
