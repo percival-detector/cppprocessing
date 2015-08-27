@@ -79,4 +79,11 @@ void percival_ADC_decode_pf_combined_tbb_pipeline_stream(
 		unsigned int grain_size,
 		unsigned int array_size);			/*in number of frames*/
 
+void percival_ADC_decode_pf_combined_tbb_pipeline1(
+		const percival_frame<unsigned short int> & src_frame,
+		percival_frame<float> & des_frame,
+		const percival_calib_params & calib_params,
+		unsigned int grain_size = 3528,
+		bool store_gain = false);
+
 #endif /* PERCIVAL_PARALLEL_PERCIVAL_PARALLEL_H_ */
