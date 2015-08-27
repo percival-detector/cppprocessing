@@ -73,14 +73,30 @@ void percival_ADC_decode_pf(
 
 
 }
+/*===============================================================================================================================*/
+/* Pipeline design mark one*/
+/*
+ *
+ *	A few rows as a token.
+ *	the number of rows should be a factor of 3717 = ( 3 * 3 * 7 * 59)
+ *  Possible choices are 1,3,7,9,21,59,63,177,413,531,1239,3717
+ *
+ *
+ */
 
+
+/*
+ *  Generate a stream of data for later stages
+ */
 class InputFilter : public tbb::filter{
 private:
+
 	const unsigned int grain_size;
-	unsigned int offset;
-	const unsigned int size;
+	unsigned int offset;	/*offset within the frame*/
+	const unsigned int size;	/* image size to issue an end of frame */
 	const percival_frame<unsigned short> sample;
-	pair< unsigned short, float >* const input;
+	pair< unsigned short, float >* const input;	/* a pair of input and output frames*/
+
 public:
 	InputFilter(pair< unsigned short, float >* input, unsigned int grain_size):
 				tbb::filter(/*is_serial=*/true),
@@ -101,37 +117,43 @@ public:
 	}
 };
 
-
+/*
+ * ADC_decode stage filter
+ */
 
 class ADC_decode_filter : public tbb::filter{
 private:
-	const unsigned int grain_size;
+
+	const unsigned int grain_size;		/* size of loop */
 	percival_calib_params calib_params;
+
 	percival_ADC_decode_p< percival_range_iterator_mock_p > ADC_decode_p;
 	percival_range_iterator_mock_p range;
+
 public:
 	ADC_decode_filter(
 			const percival_frame<unsigned short int> & src_frame,
 			percival_frame<float> & des_frame,
 			const percival_calib_params & calib_params,
 			unsigned int grain_size):
+
 				tbb::filter(/*is_serial=*/false),
 				calib_params(calib_params),
 				grain_size(grain_size),
 				ADC_decode_p(src_frame, des_frame, calib_params),
 				range(0,1)
-
 	{}
 
 	void* operator()(void* input){
 		pair< unsigned short, float >* pairs = static_cast< pair<unsigned short, float>* >(input);
 		unsigned int offset = pairs->offset;
+		/* range to loop over */
 		range.lower = offset;
-		range.upper = grain_size + offset;
+		range.upper = grain_size + offset - 1;
+		/*running the algorithm*/
 		ADC_decode_p(range);
-		return NULL;
+		return NULL;	/*return to next stage if needed*/
 	}
-
 };
 
 
@@ -142,13 +164,14 @@ void percival_ADC_decode_pf_combined_tbb_pipeline(
 		unsigned int grain_size,
 		bool store_gain)
 {
+	/* Maximum number of tokens in existence at one point in time */
 	unsigned int max_tokens = 600;
-
+	/* generating the input */
 	pair<unsigned short int, float> stream;
 	stream.sample = src_frame;
 	stream.dest = des_frame;
 	stream.offset = 0;
-
+	/* starting a pipeline */
 	tbb::pipeline pipeline;
 
 	InputFilter Input(&stream, grain_size);
@@ -162,6 +185,14 @@ void percival_ADC_decode_pf_combined_tbb_pipeline(
 	pipeline.clear();
 }
 
+
+/*===============================================================================================================================*/
+/* Pipeline design mark two*/
+/*
+ *
+ * A set of frames as a token
+ *
+ */
 
 class InputFilter2 : public tbb::filter{
 private:
@@ -245,9 +276,3 @@ void percival_ADC_decode_pf_combined_tbb_pipeline_stream(
 
 	pipeline.clear();
 }
-
-
-
-
-
-

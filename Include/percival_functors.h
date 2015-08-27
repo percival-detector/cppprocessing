@@ -293,7 +293,7 @@ public:
 
 					/*Use binary masks instead*/
 					gain = pixel & 0x0003;
-					fineBits = (pixel & 0x07fc) >> 2;
+					fineBits = (pixel & 0x3FC) >> 2;
 					coarseBits = (pixel & 0x7c00) >> 10;
 
 					/*
@@ -301,20 +301,25 @@ public:
 					 * two modulus, one division,  6 cycles VS 30 cycles
 					 *
 					 */
-					if( (col_counter&7) )
-						col_counter = 0;
-					else{
-						col_counter++;
-					}
+//					if( (col_counter&7) )
+//						col_counter = 0;
+//					else{
+//						col_counter++;
+//					}
+//
+//					if( (row_counter&width) ){
+//						row_counter = 0;
+//						row++;}
+//					else{
+//						row_counter++;
+//					}
+//
+//					position_in_calib_array = col_counter + row * calib_data_width;
+//
+					col = i % width;			//0 ~ frame_width - 1
+					row = (i - col) / width;
+					position_in_calib_array = (col % 7) + (row * calib_data_width); //7 from 7 ADCs. todo code this in config.
 
-					if( (row_counter&width) ){
-						row_counter = 0;
-						row++;}
-					else{
-						row_counter++;
-					}
-
-					position_in_calib_array = col_counter + row * calib_data_width;
 
 					switch(gain){
 					case 0b00:
@@ -333,12 +338,12 @@ public:
 						throw datatype_exception("Invalid gain bit detected.");
 					}
 
-					coarse_calibrated = (*(Oc + position_in_calib_array) - fineBits) * *(Gc + position_in_calib_array);
-					fine_calibrated = (coarseBits - *(Of + position_in_calib_array)) * *(Gf + position_in_calib_array);
+					coarse_calibrated = (*(Oc + position_in_calib_array) - coarseBits) * *(Gc + position_in_calib_array);
+					fine_calibrated = (fineBits - *(Of + position_in_calib_array)) * *(Gf + position_in_calib_array);
 
 					*(output+i) = gain_factor * (coarse_calibrated - fine_calibrated);
 
-//					*(output_array + i)	= (float)gain_factor *
+//					*(output + i)	= (float)gain_factor *
 //							(		/*this factor can be absorbed into gain and needs not be here.*/
 //									(
 //											VinMax -
