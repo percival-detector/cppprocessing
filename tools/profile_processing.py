@@ -25,11 +25,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
     event2 = op.oprofile_events('INST_RETIRED','0x00',6000000)
     #cache misses
     event3 = op.oprofile_events('LLC_MISSES','0x41',60000)
-#     event4 = oprofile_events('mem_load_uops_llc_hit_retired','0x02',100000)
-#     event5 = oprofile_events('mem_load_uops_llc_hit_retired','0x04',100000)
-#     event6 = oprofile_events('mem_load_uops_retired','0x04',2000000)
-    event4 = op.oprofile_events('UNHALTED_REFERENCE_CYCLES','0x01',1000000)
-    
+    event4 = op.oprofile_events('l2_lines_in','0x07',100000)
     list_of_events = [event1, event2, event3, event4]#, event5, event6, event7]
     #variable initialisation
     dict_of_attributes = {}
@@ -53,12 +49,14 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
     cmd_operf = 'operf ' + '-d ' + sample_data_destination + ' ' + operf_events + ' '+ program_to_execute
     cmd_opreport = 'opreport --symbols --session-dir=' + sample_data_destination +  ' >> ' + report_destination
     cmd_mkdir = 'mkdir -p ' + sample_data_destination
+    cmd_annotate = 'opannotate -s --output-dir=' + result_directory + 'annotated/ ' + '--session-dir=' + sample_data_destination + ' '+ program_to_execute
     
     op.cmd_call(cmd_git)
     op.cmd_call(cmd_time)
     op.cmd_call(cmd_operf)
     op.cmd_call(cmd_opreport)
     op.cmd_call(cmd_mkdir)
+    op.cmd_call(cmd_annotate)
     
 #     subprocess.call(cmd_git, shell=True)
 #     subprocess.call(cmd_mkdir, shell=True)
@@ -72,6 +70,10 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
     f = open(report_destination, 'r')
     list_of_functions = op.get_function_list(f)
     f.close()
+    for function_name in list_of_functions:
+        dict_of_function_perc_time[function_name] = 0
+        dict_of_attributes[function_name] = [0,0,0,0,0,0,0,0,0,0,0,0]
+    print list_of_functions
     
     f = open(report_destination, 'r')
     s = f.readline()
@@ -88,12 +90,12 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
                 delimited = s.split(' ')
                 parsed = [item for item in delimited if item != '']
                 attributes = []
-                dict_of_function_perc_time[function_name] = float(parsed[1])
+                dict_of_function_perc_time[function_name] = float(parsed[1]) + dict_of_function_perc_time[function_name]
                 for index in range(len(list_of_events_recorded)):  # manually add the percentage clock cycles
-                    attributes.append(float(parsed[index * 2]))
+                    attributes.append(float(parsed[index * 2]) + dict_of_attributes[function_name][index])            
                 dict_of_attributes[function_name] = attributes
         s = f.readline()
-    
+    print dict_of_attributes
     llc_misses_per_instruction = op.get_llc_misses(list_of_functions, dict_of_attributes, list_of_events_recorded)
     CPI = op.get_CPI(list_of_functions, dict_of_attributes, list_of_events_recorded)
     bandwidth = op.get_bandwidth(list_of_functions, dict_of_function_perc_time, total_time, image_size, repeat)
@@ -112,6 +114,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
         print cmd_operf
         print cmd_opreport
         print 'oprofile sample directory: ' + sample_data_destination
+        print cmd_annotate
 
         print '=' * 100
         print commit_key,
@@ -142,10 +145,10 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
             index = list_of_functions.index(function)
             print '\t' +  function +':' + '{0}'.format(int(function_time[index]))                
         print '=' * 100
-    return bandwidth
+    return image_size * 2 * repeat/total_processing_time
 
 
-repeat = 50   #350 is about the maximum
+repeat = 100   #350 is about the maximum
 # width_arr = [2000, 5000, 10000, 20000, 50000, 100000, 500000]
 
 height = 3717
@@ -157,18 +160,33 @@ path_name = calib_directory + host_name + '/'
 text_file_name =  path_name + 'test_param_file.txt'
 grain_size_file_name = './oprof_reports/' + host_name + '/' + 'grain_size_test.txt'
 print grain_size_file_name 
-
-
+# 
+# 
 # subprocess.call('mkdir -p ' + path_name, shell=True)
 # cdg.generate_calib_files(height, width, text_file_name, path_name)
-
-cmd_rm_file = "rm -f " + grain_size_file_name
-cmd_create_file = "touch "+ grain_size_file_name
-op.cmd_call(cmd_rm_file)
-op.cmd_call(cmd_create_file)
-
-grain_size = 10000
+    
+# cmd_rm_file = "rm -f " + grain_size_file_name
+# cmd_create_file = "touch "+ grain_size_file_name
+# op.cmd_call(cmd_rm_file)
+# op.cmd_call(cmd_create_file)
+ 
+grain_size = 3528
 run_the_function(True, height, width, repeat, text_file_name, grain_size)
+
+# for grain_size in (3528, 3528/2,3528/3,3528/4,3528/6,3528/7, 3528*3, 3528*7,3528*9, 3528*21):
+#     a = op.accumulator(grain_size_file_name, grain_size, 5)
+#     for repeats in xrange(1,5):
+#         bandwidth = run_the_function(False, height, width, repeat, text_file_name, grain_size)
+#         a.add_number(bandwidth)
+#         print grain_size, op.get_bytes(bandwidth)
+#     a.average()
+# print 'starting'
+# grain_size = 20
+# run_the_function(True, height, width, repeat, text_file_name, grain_size)
+
+# for index in xrange(9, 41):
+#     run_the_function(True, height, width, repeat, text_file_name, index)
+#     print index
  
 # for grain_size in xrange(10000,1000000,2000):
 #     a = op.accumulator(grain_size_file_name, grain_size, 9)

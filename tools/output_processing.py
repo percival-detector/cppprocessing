@@ -82,6 +82,7 @@ def get_bytes(bytes):
 def get_function_list(file):
     list_of_functions = ['percival_ADC_decode(',
                          'percival_ADC_decode_p<tbb::blocked_range<unsigned int> >::operator()',
+                         'percival_ADC_decode_p<percival_range_iterator_mock_p>::operator()',
                          'percival_CDS_correction',
                          'percival_ADU_to_electron_correction', 
                          'percival_unit_ADC_decode(',
@@ -92,13 +93,16 @@ def get_function_list(file):
                          'percival_unit_ADC_calibration_p<percival_range_iterator_mock_p>::operator()',
                          'percival_unit_gain_multiplication(',
                          'percival_unit_gain_multiplication_p<tbb::blocked_range<unsigned int> >::operator()',
-                         'percival_unit_gain_multiplication_p<percival_range_iterator_mock_p>::operator()']
+                         'percival_unit_gain_multiplication_p<percival_range_iterator_mock_p>::operator()',
+                         'tbb::internal::',
+                         'percival_algorithm_p']
     s = file.readline()
     found_functions = []
     while s != '':
         for function_name in list_of_functions:
             if function_name in s:
-                found_functions.append(function_name)
+                if function_name not in found_functions:
+                    found_functions.append(function_name)
         s = file.readline()
     return found_functions
 
