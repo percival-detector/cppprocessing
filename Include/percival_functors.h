@@ -15,8 +15,25 @@
  *  */
 //#include "emmintrin.h"
 
-/*the following classes are created for tbb*/
+/* Forward declarations */
+//struct CDS_output;
+//struct unit_ADC_calibration_output;
+//struct unit_gain_multiplication_output;
+//struct unit_CDS__output;
+//
+//struct percival_range_iterator_mock_p;
+//class percival_unit_ADC_decode_p;
+//class percival_unit_ADC_calibration_p
+//class percival_unit_gain_multiplication_p
+//class percival_unit_ADC_decode_pipe_p
+//class percival_ADC_decode_p;
+//class percival_algorithm_p;
 
+/*
+ * 	A non-parallel version of TBB's block range.
+ * 	This is meant to mock block_range when TBB is absent.
+ *
+ */
 
 struct percival_range_iterator_mock_p{	/*this object mocks the block_range object in tbb so that the syntax of my library can accommodate tbb library*/
 	unsigned int lower;
@@ -29,6 +46,14 @@ struct percival_range_iterator_mock_p{	/*this object mocks the block_range objec
 	unsigned int begin() const {return lower;}
 	unsigned int end() const  {return upper;}
 };
+
+/*
+ * 	Unit functors
+ * 		unit_ADC_decode
+ * 		unit_ADC_calibration
+ * 		unit_gain_multiplication
+ *
+ */
 
 template<typename range_iterator>
 class percival_unit_ADC_decode_p{
@@ -183,6 +208,13 @@ public:
 	}
 };
 
+/*
+ *  A functor that groups three algorithms.
+ *  Mainly used in parallel_for.
+ *  Consider removing
+ *
+ */
+
 template<typename range_iterator>
 class percival_ADC_decode_pipe_p{
 	const percival_frame<unsigned short int> input;
@@ -218,6 +250,13 @@ public:
 		unit_gain_multiplication_p(r);
 	}
 };
+
+/*
+ *  A combined ADC_decode function used for parallel_for algorithms
+ *  Consider removing
+ *
+ */
+
 
 template<typename range_iterator>
 class percival_ADC_decode_p{
@@ -388,8 +427,15 @@ public:
  */
 
 /*
+ *  Possible choices of algorithms
+ *  	step 1: unit_ADC_decode
+ *  	step 2: unit_ADC_calibration
+ *  	step 3: unit_gain_multiplication
+ *  	step 4: unit_CDS_subtraction
+ *  	step 5: unit_ADU_to_electron
  *
- *  Supported pipelining
+ * 	The following enum lists the possible EXIT point from the above steps.
+ * 	e.g. unit_CDS_subtraction implies that step 1 - 4 will be performed.
  *
  */
 
@@ -398,20 +444,13 @@ enum algorithm_pipeline{
 	unit_gain_multiplication,
 	unit_CDS_subtraction,
 	unit_ADU_to_electron
-};
+};	/* unit_ADC_decode is not supported since the original unit_decode function will outperform */
 
 struct CDS_output{
 	const static algorithm_pipeline type = unit_CDS_subtraction;
 	percival_frame<unsigned short int> input_reset;
 	percival_frame<unsigned short int> input_sample;
 	percival_frame<float> output;
-};
-
-struct unit_ADC_decode_output{	/* it is easier not to use this function*/
-	percival_frame<unsigned short int> input;
-	percival_frame<unsigned short int> fine;
-	percival_frame<unsigned short int> coarse;
-	percival_frame<unsigned short int> gain;
 };
 
 struct unit_ADC_calibration_output{
@@ -426,6 +465,12 @@ struct unit_gain_multiplication_output{
 	percival_frame<float> output;
 };
 
+
+/*
+ * 	Functor used by TBB pipeline
+ *
+ *
+ */
 
 template<typename input_type, typename range_iterator>
 class percival_algorithm_p{
@@ -455,70 +500,83 @@ public:
 		unsigned int row, col_counter, row_counter, width, calib_data_width, position_in_calib_array;
 		float coarse_calibrated, fine_calibrated, gain_factor, result;
 		float *Oc, *Gc, *Of, *Gf, *G1, *G2, *G3, *G4, *output;
-		float ADU_to_electron = 1;
+		float* ADU_to_electron;
 
 
 		switch(pipeline_type){
-			case unit_ADC_calibrated:
-				reset_frame = NULL;
-				increment = 0;
-				break;
-			case unit_gain_multiplication:
-				reset_frame = NULL;
-				increment = 0;
-				break;
-			case unit_CDS_subtraction:
-				reset_frame = input.input_reset.data;
-				increment = 0;
-				break;
-			case unit_ADU_to_electron:
-				reset_frame = input.input_reset.data;
-				increment = 1;
-				break;
-			default:
-				/*throw appropriately here or assert.*/
-				break;
+		case unit_ADC_calibrated:
+			reset_frame = NULL;
+			increment = 0;
+			break;
+		case unit_gain_multiplication:
+			reset_frame = NULL;
+			increment = 0;
+			break;
+		case unit_CDS_subtraction:
+			reset_frame = input.input_reset.data;
+			increment = 0;
+			break;
+		case unit_ADU_to_electron:
+			reset_frame = input.input_reset.data;
+			increment = 1;
+			break;
+		default:
+			/*throw appropriately here or assert.*/
+			break;
 		}
 
 		/*Initialising variables needed*/
-			sample_frame = input.input_sample.data;
-			output = input.output.data;
+		sample_frame = input.input_sample.data;
+		output = input.output.data;
 
-			calib_data_width = calib.Gc.width;
-			width = input.input_sample.width;
+		calib_data_width = calib.Gc.width;
+		width = input.input_sample.width;
 
-			Gc = calib.Gc.data;
-			Oc = calib.Oc.data;
-			Gf = calib.Gf.data;
-			Of = calib.Of.data;
+		Gc = calib.Gc.data;
+		Oc = calib.Oc.data;
+		Gf = calib.Gf.data;
+		Of = calib.Of.data;
 
-			G1 = calib.Gain_lookup_table1.data;
-			G2 = calib.Gain_lookup_table2.data;
-			G3 = calib.Gain_lookup_table3.data;
-			G4 = calib.Gain_lookup_table4.data;
+		G1 = calib.Gain_lookup_table1.data;
+		G2 = calib.Gain_lookup_table2.data;
+		G3 = calib.Gain_lookup_table3.data;
+		G4 = calib.Gain_lookup_table4.data;
 
-			/*Used to correlate a pixel in sample with a pixel in calibration array*/
-			row = begin / width;
-			row_counter = begin%width;
-			col_counter = row_counter%7;
+		/*Used to correlate a pixel in sample with a pixel in calibration array*/
+		row = begin / width;
+		row_counter = begin%width;
+		col_counter = row_counter%7;
 
 		/*loop*/
 		for(unsigned int i = begin; i < end; ++i){
+
+			/* Initialising variables in loop appropriately */
 			arr[0] = 0; arr[1] = 0;
-			count = 0;current_count = 0;
 			data = sample_frame;
+
+			/*
+			 *  The count and current_count are two counters.
+			 *  They used to track whether the sample or reset data is being worked on by the while loop.
+			 */
+			count = 0;current_count = 0;
 
 			position_in_calib_array = col_counter + row * calib_data_width;
 
+			/*
+			 *  While loop to work on sample and reset frame.
+			 * 	The specification required CDS_subtraction to be applied only to pixels with gain == 0b00
+			 * */
 			do{
 				pixel = *(data + i);
 				/* unit_ADC_decode */
 				gain = pixel & 0x0003;
 				fineBits = (pixel & 0x3FC) >> 2;
 				coarseBits = (pixel & 0x7c00) >> 10;
+
 				/* unit_ADC_calib */
 				coarse_calibrated = (*(Oc + position_in_calib_array) - coarseBits) * *(Gc + position_in_calib_array);
 				fine_calibrated = (fineBits - *(Of + position_in_calib_array)) * *(Gf + position_in_calib_array);
+
 				if(pipeline_type != unit_ADC_calibrated){
 					/* unit_ADC_gain_multiplication */
 					switch(gain){
@@ -540,31 +598,49 @@ public:
 						throw datatype_exception("Invalid gain bit detected.");
 					}
 				}
-				arr[current_count] = gain_factor * (coarse_calibrated - fine_calibrated); /*store sample in slot 1 and reset in slot 0*/
+
+				/*
+				 * store calibrated sample in slot 0 and calibrated reset in slot 1.
+				 * slot 1 is zero if CDS_subtraction is not needed
+				 * */
+				arr[current_count] = gain_factor * (coarse_calibrated - fine_calibrated);
+
+				/* Updating current count after each iteration */
 				current_count = (current_count+1)&0x1;
+
 			}while( count&current_count );
+
+
+
 			/* subtraction */
 			result = arr[0] - arr[1];
 
+			/* Apply scaling if neede */
+			/* flat field correction and dark image subtraction can be applied here too. */
 			if(pipeline_type == unit_ADU_to_electron){
-				result *= ADU_to_electron;
+				result *= *(ADU_to_electron + i);
 			}
+
 			/*writing to memory*/
 			*(output+i) = result;
 
-			if( (col_counter^7) )
+			/*
+			 * Correlating a pixel in image frame with a pixel in calibration data.
+			 */
+
+			if( (col_counter^7) )			/* Bitwise XOR operator ^ is equivalent to !=. Used here for performance.*/
 				col_counter++;
-			else{
+			else
 				col_counter = 0;
-			}
-			if( (row_counter^width) ){
+
+			if( (row_counter^width) )
 				row_counter++;
-			}else{
+			else{
 				row_counter = 0;
 				row++;
 			}
 
-	}
+		}
 	}
 };
 
