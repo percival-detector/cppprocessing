@@ -27,20 +27,20 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
     event3 = op.oprofile_events('LLC_MISSES','0x41',60000)          #divide by LLC_REFS
     event4 = op.oprofile_events('l2_lines_in','0x07',1000000)       #100000
     
-    event5 = op.oprofile_events('br_inst_retired', '0x01', 400000)    #total branch instructions retired
-    event6 = op.oprofile_events('br_misp_retired', '0x01', 400000)    #total mispredicted branches. Divide by br_inst_retired
-    event7 = op.oprofile_events('uops_retired', 'stall_cycles',2000000)        #no of stall cycles. Divide by cpu cycles
-    
-    event8 = op.oprofile_events('dtlb_load_misses', '0x01',2000000) 
-#    event8 = op.oprofile_events('dtlb_load_misses', '0x81',1000)   #Ivy Bridge
-        
-    event9 = op.oprofile_events('LLC_REFS', '0x4f',6000)            
- 
-    event10 = op.oprofile_events('l1d_pend_miss', 'pending',2000000)        #cycles of l1d misses outstanding. Divide by CPU cycles
-    event11 = op.oprofile_events('resource_stalls', '0x01',2000000)        #no of stall cycles/divide by number of instructions
-    event12 = op.oprofile_events('l1d', '0x01',2000000)        #cycles of l1d misses outstanding. Divide by CPU cycles
+#     event5 = op.oprofile_events('br_inst_retired', '0x01', 400000)    #total branch instructions retired
+#     event6 = op.oprofile_events('br_misp_retired', '0x01', 400000)    #total mispredicted branches. Divide by br_inst_retired
+#     event7 = op.oprofile_events('uops_retired', 'stall_cycles',2000000)        #no of stall cycles. Divide by cpu cycles
+#     
+#     event8 = op.oprofile_events('dtlb_load_misses', '0x01',2000000) 
+# #    event8 = op.oprofile_events('dtlb_load_misses', '0x81',1000)   #Ivy Bridge
+#         
+#     event9 = op.oprofile_events('LLC_REFS', '0x4f',6000)            
+#  
+#     event10 = op.oprofile_events('l1d_pend_miss', 'pending',2000000)        #cycles of l1d misses outstanding. Divide by CPU cycles
+#     event11 = op.oprofile_events('resource_stalls', '0x01',2000000)        #no of stall cycles/divide by number of instructions
+#     event12 = op.oprofile_events('l1d', '0x01',2000000)        #cycles of l1d misses outstanding. Divide by CPU cycles
 
-    list_of_events = [event1, event2, event3, event4, event5, event6, event7, event8, event9, event10, event11, event12]
+    list_of_events = [event1, event2, event3, event4]#, event5, event6, event7, event8, event9, event10, event11, event12]
     #variable initialisation
     dict_of_attributes = {}
     total_time = 0.0
@@ -83,10 +83,10 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
     s = f.readline()
     commit_key = s;
     while s != '':
-	if 'Counted' in s:
-	    for event in list_of_events:
-		if (event.event_name + ' events') in s:
-  		    list_of_events_recorded.append(event)
+    	if 'Counted' in s:
+    	    for event in list_of_events:
+    		if (event.event_name + ' events') in s:
+      		    list_of_events_recorded.append(event)
         if 'Elapsed (wall clock) time ' in s:
             total_time = op.parse_time(s)
         for function_name in list_of_functions:

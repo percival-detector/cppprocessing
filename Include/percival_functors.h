@@ -495,34 +495,48 @@ public:
 		/*listing all variables*/
 		float arr[2] = {0,0};
 		unsigned short int gain, coarseBits, fineBits;
-		unsigned short int count,current_count, increment;
-		unsigned short int *data, *sample_frame, *reset_frame;
+		unsigned short int count,current_count, increment;	/* Only choose 0 or 1 for increment */
+		unsigned short int *data;
 		unsigned int row, col_counter, row_counter, width, calib_data_width, position_in_calib_array;
 		float coarse_calibrated, fine_calibrated, gain_factor, result;
 		float *Oc, *Gc, *Of, *Gf, *G1, *G2, *G3, *G4, *output;
 		float* ADU_to_electron;
+		bool stepOne, stepTwo, stepThree, stepFour;
 
+		/* ADC_calibrated */
+
+		/* gain_multiplication */
+		float *gain_frame, *calibrated;
+
+		/* CDS_subtraction & ADU_to_e*/
+		short unsigned int *sample_frame, *reset_frame;
 
 		switch(pipeline_type){
-		case unit_ADC_calibrated:
-			reset_frame = NULL;
-			increment = 0;
-			break;
-		case unit_gain_multiplication:
-			reset_frame = NULL;
-			increment = 0;
-			break;
-		case unit_CDS_subtraction:
-			reset_frame = input.input_reset.data;
-			increment = 0;
-			break;
-		case unit_ADU_to_electron:
-			reset_frame = input.input_reset.data;
-			increment = 1;
-			break;
-		default:
-			/*throw appropriately here or assert.*/
-			break;
+			case unit_ADC_calibrated:
+				reset_frame = NULL;
+				gain_frame = NULL;
+				increment = 0;
+				stepOne = true;
+				break;
+			case unit_gain_multiplication:
+				reset_frame = NULL;
+				sample_frame = NULL;
+				increment = 0;
+				stepTwo = true;
+				break;
+			case unit_CDS_subtraction:
+				reset_frame = input.input_reset.data;
+				increment = 1;
+				stepThree = true;
+				break;
+			case unit_ADU_to_electron:
+				reset_frame = input.input_reset.data;
+				increment = 1;
+				stepFour = true;
+				break;
+			default:
+				/*throw appropriately here or assert.*/
+				break;
 		}
 
 		/*Initialising variables needed*/
@@ -541,6 +555,8 @@ public:
 		G2 = calib.Gain_lookup_table2.data;
 		G3 = calib.Gain_lookup_table3.data;
 		G4 = calib.Gain_lookup_table4.data;
+
+		ADU_to_electron = calib.ADU_to_electrons_conversion.data;
 
 		/*Used to correlate a pixel in sample with a pixel in calibration array*/
 		row = begin / width;
@@ -567,6 +583,7 @@ public:
 			 * 	The specification required CDS_subtraction to be applied only to pixels with gain == 0b00
 			 * */
 			do{
+
 				pixel = *(data + i);
 				/* unit_ADC_decode */
 				gain = pixel & 0x0003;
@@ -577,12 +594,12 @@ public:
 				coarse_calibrated = (*(Oc + position_in_calib_array) - coarseBits) * *(Gc + position_in_calib_array);
 				fine_calibrated = (fineBits - *(Of + position_in_calib_array)) * *(Gf + position_in_calib_array);
 
-				if(pipeline_type != unit_ADC_calibrated){
+				if(!stepOne){
 					/* unit_ADC_gain_multiplication */
 					switch(gain){
 					case 0b00:
 						gain_factor = *(G1 + i);
-						count = 1;
+						count = increment;			/* choose 1 if processing of reset frame is needed. choose 0 otherwise */
 						data = reset_frame;
 						break;
 					case 0b01:
@@ -597,6 +614,8 @@ public:
 					default:
 						throw datatype_exception("Invalid gain bit detected.");
 					}
+				}else{
+					gain_factor = 1;
 				}
 
 				/*
@@ -617,7 +636,7 @@ public:
 
 			/* Apply scaling if neede */
 			/* flat field correction and dark image subtraction can be applied here too. */
-			if(pipeline_type == unit_ADU_to_electron){
+			if(stepFour){
 				result *= *(ADU_to_electron + i);
 			}
 
