@@ -153,21 +153,21 @@ void percival_ADC_decode_combined_pipeline(
 		unsigned int grain_size,
 		bool store_gain)
 {
-	/* Maximum number of tokens in existence at one point in time */
-	unsigned int max_tokens = 20;
+//	/* Maximum number of tokens in existence at one point in time */
+//	unsigned int max_tokens = 20;
+//
+//	/* starting a pipeline */
+//	tbb::pipeline pipeline;
+//
+//	/*
+//	 * A list of offset from the start of image array,
+//	 * corresponding to each token
+//	 *
+//	 * */
+//	unsigned int offset_arr [max_tokens];
+//	unsigned int *offset_ptr = & offset_arr[0];
 
-	/* starting a pipeline */
-	tbb::pipeline pipeline;
-
-	/*
-	 * A list of offset from the start of image array,
-	 * corresponding to each token
-	 *
-	 * */
-	unsigned int offset_arr [max_tokens];
-	unsigned int *offset_ptr = & offset_arr[0];
-
-	/* Initialising the input image struct */
+//	/* Initialising the input image struct */
 	CDS_output CDS_input;
 	CDS_input.input_sample = sample;
 	CDS_input.input_reset = reset;
@@ -178,14 +178,26 @@ void percival_ADC_decode_combined_pipeline(
 	 *
 	 */
 
-	percival_pipeline_stream_generator Input(offset_ptr, grain_size, sample.height * sample.width, max_tokens);
-	pipeline.add_filter( Input );
+//	percival_pipeline_stream_generator Input(offset_ptr, grain_size, sample.height * sample.width, max_tokens);
+//	pipeline.add_filter( Input );
+//
+//	ADC_decode_combined_filter<CDS_output> ADC_decode_CDS ( CDS_input, calib_params, grain_size );
+//	pipeline.add_filter( ADC_decode_CDS );
+//
+//	pipeline.run( max_tokens );
+//
+//	pipeline.clear();
 
-	ADC_decode_filter4<CDS_output> ADC_decode_CDS ( CDS_input, calib_params, grain_size );
-	pipeline.add_filter( ADC_decode_CDS );
+	/*
+	 *
+	 *  Parallel_for version for comparison purposes
+	 *
+	 */
 
-	pipeline.run( max_tokens );
+	unsigned int NoOfPixels = sample.width * sample.height;
 
-	pipeline.clear();
+	percival_algorithm_p< CDS_output, tbb::blocked_range<unsigned int> > percival_p (CDS_input,calib_params);
+	tbb::parallel_for( tbb::blocked_range<unsigned int>(0, NoOfPixels, grain_size), percival_p, tbb::auto_partitioner());
+
 }
 

@@ -482,7 +482,7 @@ public:
 		calib( calib )
 {}
 
-	void operator()(range_iterator & r)
+	void operator()(range_iterator & r) const
 	{
 		/*
 		 * array iterators

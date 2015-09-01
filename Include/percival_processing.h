@@ -45,7 +45,7 @@ public:
 			height = h;
 			/*On current 64 bits machine, alignment defaults to 64 bits*/
 			/*allocating memory*/
-			not_aligned = new T[width * height + 15];	/*15Bytes extra space to align*/
+			not_aligned = new T[width * height + 32];	/*32Bytes extra space to align*/
 
 			/*align to 128 bits boundary*/
 			std::size_t address = reinterpret_cast<std::size_t>(not_aligned);

@@ -64,7 +64,7 @@ void percival_ADC_decode_combined_pipeline(
 
 
 template<typename input_type>
-class ADC_decode_filter4 : public tbb::filter{
+class ADC_decode_combined_filter : public tbb::filter{
 private:
 	const unsigned int grain_size;		/* size of loop */
 	percival_calib_params calib_params;
@@ -73,7 +73,7 @@ private:
 	percival_range_iterator_mock_p range;
 
 public:
-	ADC_decode_filter4(
+	ADC_decode_combined_filter(
 			input_type & input,
 			const percival_calib_params & calib_params,
 			const unsigned int grain_size):
