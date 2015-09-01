@@ -22,11 +22,25 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
     #events to monitor
     #instructions
     event1 = op.oprofile_events('CPU_CLK_UNHALTED','0x00',100000000)
-    event2 = op.oprofile_events('INST_RETIRED','0x00',6000000)
+    event2 = op.oprofile_events('INST_RETIRED','0x00',60000000)
     #cache misses
-    event3 = op.oprofile_events('LLC_MISSES','0x41',60000)
-    event4 = op.oprofile_events('l2_lines_in','0x07',100000)
-    list_of_events = [event1, event2, event3, event4]#, event5, event6, event7]
+    event3 = op.oprofile_events('LLC_MISSES','0x41',60000)          #divide by LLC_REFS
+    event4 = op.oprofile_events('l2_lines_in','0x07',1000000)       #100000
+    
+    event5 = op.oprofile_events('br_inst_retired', '0x01', 400000)    #total branch instructions retired
+    event6 = op.oprofile_events('br_misp_retired', '0x01', 400000)    #total mispredicted branches. Divide by br_inst_retired
+    event7 = op.oprofile_events('uops_retired', 'stall_cycles',2000000)        #no of stall cycles. Divide by cpu cycles
+    
+    event8 = op.oprofile_events('dtlb_load_misses', '0x01',2000000) 
+#    event8 = op.oprofile_events('dtlb_load_misses', '0x81',1000)   #Ivy Bridge
+        
+    event9 = op.oprofile_events('LLC_REFS', '0x4f',6000)            
+ 
+    event10 = op.oprofile_events('l1d_pend_miss', 'pending',2000000)        #cycles of l1d misses outstanding. Divide by CPU cycles
+    event11 = op.oprofile_events('resource_stalls', '0x01',2000000)        #no of stall cycles/divide by number of instructions
+    event12 = op.oprofile_events('l1d', '0x01',2000000)        #cycles of l1d misses outstanding. Divide by CPU cycles
+
+    list_of_events = [event1, event2, event3, event4, event5, event6, event7, event8, event9, event10, event11, event12]
     #variable initialisation
     dict_of_attributes = {}
     total_time = 0.0
@@ -58,22 +72,12 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
     op.cmd_call(cmd_mkdir)
     op.cmd_call(cmd_annotate)
     
-#     subprocess.call(cmd_git, shell=True)
-#     subprocess.call(cmd_mkdir, shell=True)
-#     #subprocess.call('export LD_LIBRARY_PATH=/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/lib', shell=True)
-#     subprocess.call(cmd_time, shell=True)
-#     subprocess.call(cmd_operf, shell=True)
-#     subprocess.call(cmd_opreport, shell=True)
-    
-#     subprocess.call('opannotate -s --output-dir=' + result_directory + 'annotated/ ' + program_to_execute, shell=True)
-    
     f = open(report_destination, 'r')
     list_of_functions = op.get_function_list(f)
     f.close()
     for function_name in list_of_functions:
         dict_of_function_perc_time[function_name] = 0
-        dict_of_attributes[function_name] = [0,0,0,0,0,0,0,0,0,0,0,0]
-    print list_of_functions
+        dict_of_attributes[function_name] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     
     f = open(report_destination, 'r')
     s = f.readline()
@@ -81,7 +85,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
     while s != '':
 	if 'Counted' in s:
 	    for event in list_of_events:
-		if event.event_name in s:
+		if (event.event_name + ' events') in s:
   		    list_of_events_recorded.append(event)
         if 'Elapsed (wall clock) time ' in s:
             total_time = op.parse_time(s)
@@ -91,16 +95,23 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
                 parsed = [item for item in delimited if item != '']
                 attributes = []
                 dict_of_function_perc_time[function_name] = float(parsed[1]) + dict_of_function_perc_time[function_name]
-                for index in range(len(list_of_events_recorded)):  # manually add the percentage clock cycles
-                    attributes.append(float(parsed[index * 2]) + dict_of_attributes[function_name][index])            
+                for index in xrange(len(list_of_events_recorded)):  # manually add the percentage clock cycles
+                    attributes.append( float(parsed[index * 2]) + dict_of_attributes[function_name][index] )      
                 dict_of_attributes[function_name] = attributes
         s = f.readline()
-    print dict_of_attributes
+
     llc_misses_per_instruction = op.get_llc_misses(list_of_functions, dict_of_attributes, list_of_events_recorded)
     CPI = op.get_CPI(list_of_functions, dict_of_attributes, list_of_events_recorded)
     bandwidth = op.get_bandwidth(list_of_functions, dict_of_function_perc_time, total_time, image_size, repeat)
     function_time = op.get_time(list_of_functions, dict_of_function_perc_time, total_time, repeat)
-
+    l1d_miss_rate = op.get_L1D_miss_rate(list_of_functions, dict_of_attributes, list_of_events_recorded)
+    DTLB_miss_rate = op.get_DTLB_miss_rate(list_of_functions, dict_of_attributes, list_of_events_recorded)
+    LLC_miss_rate = op.get_LLC_miss_rate(list_of_functions, dict_of_attributes, list_of_events_recorded)
+    br_misspre_rate = op.get_br_mispre_rate(list_of_functions, dict_of_attributes, list_of_events_recorded)
+    resource_stall = op.get_resource_stall_rate(list_of_functions, dict_of_attributes, list_of_events_recorded)
+    l2_miss_rate = op.get_L2_miss_rate(list_of_functions, dict_of_attributes, list_of_events_recorded)
+    l1d_repl_rate = op.get_L1D_repl_rate(list_of_functions, dict_of_attributes, list_of_events_recorded)
+    
     for name, perc_time in dict_of_function_perc_time.iteritems():
         total_processing_time = total_processing_time + perc_time * total_time /1000 /100   #in seconds
 
@@ -143,7 +154,51 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
         print 'Processing time (ms) for each call:'
         for function in list_of_functions:
             index = list_of_functions.index(function)
-            print '\t' +  function +':' + '{0}'.format(int(function_time[index]))                
+            print '\t' +  function +':' + '{0}'.format(int(function_time[index]))  
+        
+        if len(l1d_miss_rate) != 0:
+            print 'L1D misses percentage:'
+            for function in list_of_functions:
+                index = list_of_functions.index(function)
+                print '\t' +  function +':' + '{0:.2%}'.format(l1d_miss_rate[index]) 
+                
+        if len(l1d_repl_rate) != 0:
+            print 'L1D replacement rate:'
+            for function in list_of_functions:
+                index = list_of_functions.index(function)
+                print '\t' +  function +':' + '{0:.2%}'.format(l1d_repl_rate[index]) 
+                
+        if len(l2_miss_rate) != 0:
+            print 'L2 misses percentage:'
+            for function in list_of_functions:
+                index = list_of_functions.index(function)
+                print '\t' +  function +':' + '{0:.2%}'.format(l2_miss_rate[index]) 
+        
+        if len(DTLB_miss_rate) != 0:
+            print 'DTLB miss per instruction:'
+            for function in list_of_functions:
+                index = list_of_functions.index(function)
+                print '\t' +  function +':' + '{0:.2}'.format(DTLB_miss_rate[index]) 
+        
+        if len(LLC_miss_rate) != 0:
+            print 'LLC miss rate:'
+            for function in list_of_functions:
+                index = list_of_functions.index(function)
+                print '\t' +  function +':' + '{0:.2%}'.format(LLC_miss_rate[index]) 
+        
+        if len(br_misspre_rate) != 0:     
+            print 'Branch misprediction percentage:'
+            for function in list_of_functions:
+                index = list_of_functions.index(function)
+                print '\t' +  function +':' + '{0:.2%}'.format(br_misspre_rate[index]) 
+        
+        if len(resource_stall) != 0:
+            print 'Resource stall cycle percentage:'
+            for function in list_of_functions:
+                index = list_of_functions.index(function)
+                print '\t' +  function +':' + '{0:.2%}'.format(resource_stall[index]) 
+               
+                     
         print '=' * 100
     return image_size * 2 * repeat/total_processing_time
 
@@ -160,26 +215,30 @@ path_name = calib_directory + host_name + '/'
 text_file_name =  path_name + 'test_param_file.txt'
 grain_size_file_name = './oprof_reports/' + host_name + '/' + 'grain_size_test.txt'
 print grain_size_file_name 
-# 
-# 
+ 
+ 
 # subprocess.call('mkdir -p ' + path_name, shell=True)
 # cdg.generate_calib_files(height, width, text_file_name, path_name)
-    
+#       
 # cmd_rm_file = "rm -f " + grain_size_file_name
 # cmd_create_file = "touch "+ grain_size_file_name
 # op.cmd_call(cmd_rm_file)
 # op.cmd_call(cmd_create_file)
- 
+  
 grain_size = 3528
 run_the_function(True, height, width, repeat, text_file_name, grain_size)
-
-# for grain_size in (3528, 3528/2,3528/3,3528/4,3528/6,3528/7, 3528*3, 3528*7,3528*9, 3528*21):
-#     a = op.accumulator(grain_size_file_name, grain_size, 5)
-#     for repeats in xrange(1,5):
-#         bandwidth = run_the_function(False, height, width, repeat, text_file_name, grain_size)
+#  1,3,7,9,21, 59,63,177,413,531,
+#  *      1239,3717
+# for grain_size in (3528, 3528/2,3528/3,3528/4,3528/6,3528/7, 3528*3, 3528*7,3528*9, 3528*21, 3528*59, 3528*63, 3528*177,3528*413,3528*531,3528*1239):
+#     a = op.accumulator(grain_size_file_name, grain_size, 2)
+#     for repeats in xrange(1,2):
+#         bandwidth = run_the_function(True, height, width, repeat, text_file_name, grain_size)
 #         a.add_number(bandwidth)
 #         print grain_size, op.get_bytes(bandwidth)
 #     a.average()
+#     
+    
+    
 # print 'starting'
 # grain_size = 20
 # run_the_function(True, height, width, repeat, text_file_name, grain_size)

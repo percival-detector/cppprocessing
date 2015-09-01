@@ -23,11 +23,17 @@ def get_operf_option(list):
 
 def get_llc_misses(list_of_functions, attributes, list_of_events_recorded):
     llc_misses_per_instruction = []
+    event_names = []
     for event in list_of_events_recorded:
+        event_names.append(event.event_name)    
         if event.event_name == 'LLC_MISSES':
             index_llc_misses = list_of_events_recorded.index(event)
         elif  event.event_name == 'INST_RETIRED':
             index_inst_retired = list_of_events_recorded.index(event)
+    
+    if 'LLC_MISSES' not in event_names or 'INST_RETIRED' not in event_names:
+        return []
+    
     for function in list_of_functions:
         llc_misses = attributes[function][index_llc_misses] * list_of_events_recorded[index_llc_misses].sample_rate  
         inst_retired = attributes[function][index_inst_retired] * list_of_events_recorded[index_inst_retired].sample_rate
@@ -36,16 +42,155 @@ def get_llc_misses(list_of_functions, attributes, list_of_events_recorded):
 
 def get_CPI(list_of_functions, attributes, list_of_events_recorded):
     CPI = []
+    event_names = []
     for event in list_of_events_recorded:
+        event_names.append(event.event_name)    
         if event.event_name == 'CPU_CLK_UNHALTED':
             index_cycle = list_of_events_recorded.index(event)
         elif  event.event_name == 'INST_RETIRED':
             index_inst_retired = list_of_events_recorded.index(event)
+    
+    if 'CPU_CLK_UNHALTED' not in event_names or 'INST_RETIRED' not in event_names:
+        return []
+    
     for function in list_of_functions:
         cycle = attributes[function][index_cycle] * list_of_events_recorded[index_cycle].sample_rate  
         inst_retired = attributes[function][index_inst_retired] * list_of_events_recorded[index_inst_retired].sample_rate
         CPI.append(float(cycle/inst_retired))
     return CPI
+
+def get_LLC_miss_rate(list_of_functions, attributes, list_of_events_recorded):
+    LLC_miss_rate = []
+    event_names = []
+    for event in list_of_events_recorded:
+        event_names.append(event.event_name)    
+        if event.event_name == 'LLC_MISSES':
+            index_llc_misses = list_of_events_recorded.index(event)
+        elif  event.event_name == 'LLC_REFS':
+            index_llc_refs = list_of_events_recorded.index(event)
+    
+    if 'LLC_MISSES' or 'LLC_REFS' not in event_names:
+        return []
+    
+    for function in list_of_functions:
+        llc_misses = attributes[function][index_llc_misses] * list_of_events_recorded[index_llc_misses].sample_rate  
+        llc_refs = attributes[function][index_llc_refs] * list_of_events_recorded[index_llc_refs].sample_rate
+        LLC_miss_rate.append(float(llc_misses/llc_refs))
+    return LLC_miss_rate
+
+def get_DTLB_miss_rate(list_of_functions, attributes, list_of_events_recorded):
+    dtlb_load_misses_rate = []
+    event_names = []
+    for event in list_of_events_recorded:
+        event_names.append(event.event_name)    
+        if event.event_name == 'dtlb_load_misses':
+            index_dtlb_load_misses = list_of_events_recorded.index(event)
+        elif  event.event_name == 'INST_RETIRED':
+            index_inst_retired = list_of_events_recorded.index(event)
+    
+    if 'dtlb_load_misses' not in event_names or 'INST_RETIRED' not in event_names:
+        return []
+    
+    for function in list_of_functions:
+        dtlb_load_misses = attributes[function][index_dtlb_load_misses] * list_of_events_recorded[index_dtlb_load_misses].sample_rate  
+        inst_retired = attributes[function][index_inst_retired] * list_of_events_recorded[index_inst_retired].sample_rate
+        dtlb_load_misses_rate.append(float(dtlb_load_misses/inst_retired))
+    return dtlb_load_misses_rate
+
+def get_L1D_miss_rate(list_of_functions, attributes, list_of_events_recorded):
+    L1D_miss_rate = []
+    event_names = []
+    for event in list_of_events_recorded:
+        event_names.append(event.event_name)    
+        if event.event_name == 'CPU_CLK_UNHALTED':
+            index_cycle = list_of_events_recorded.index(event)
+        elif  event.event_name == 'l1d_pend_miss':
+            index_l1d_pend_miss = list_of_events_recorded.index(event)
+    
+    if 'CPU_CLK_UNHALTED' not in event_names or 'l1d_pend_miss' not in event_names:
+        return []
+    
+    for function in list_of_functions:
+        cycle = attributes[function][index_cycle] * list_of_events_recorded[index_cycle].sample_rate  
+        l1d_pend_miss = attributes[function][index_l1d_pend_miss] * list_of_events_recorded[index_l1d_pend_miss].sample_rate
+        L1D_miss_rate.append(float(l1d_pend_miss/cycle))
+    return L1D_miss_rate
+
+def get_L1D_repl_rate(list_of_functions, attributes, list_of_events_recorded):
+    L1D_repl_rate = []
+    event_names = []
+    for event in list_of_events_recorded:
+        event_names.append(event.event_name)    
+        if event.event_name == 'CPU_CLK_UNHALTED':
+            index_cycle = list_of_events_recorded.index(event)
+        elif  event.event_name == 'l1d':
+            index_l1d_repl = list_of_events_recorded.index(event)
+    
+    if 'CPU_CLK_UNHALTED' not in event_names or 'l1d' not in event_names:
+        return []
+    
+    for function in list_of_functions:
+        cycle = attributes[function][index_cycle] * list_of_events_recorded[index_cycle].sample_rate  
+        l1d_repl = attributes[function][index_l1d_repl] * list_of_events_recorded[index_l1d_repl].sample_rate
+        L1D_repl_rate.append(float(l1d_repl/cycle))
+    return L1D_repl_rate
+
+def get_L2_miss_rate(list_of_functions, attributes, list_of_events_recorded):
+    L2_miss_rate = []
+    event_names = []
+    for event in list_of_events_recorded:
+        event_names.append(event.event_name)    
+        if event.event_name == 'l2_lines_in':
+            index_L2_lines_in = list_of_events_recorded.index(event)
+        elif  event.event_name == 'INST_RETIRED':
+            index_inst_retired = list_of_events_recorded.index(event)
+    
+    if 'l2_lines_in' not in event_names or 'INST_RETIRED' not in event_names:
+        return []
+    
+    for function in list_of_functions:
+        L2_lines_in = attributes[function][index_L2_lines_in] * list_of_events_recorded[index_L2_lines_in].sample_rate  
+        inst_retired = attributes[function][index_inst_retired] * list_of_events_recorded[index_inst_retired].sample_rate
+        L2_miss_rate.append(float(L2_lines_in/inst_retired))
+    return L2_miss_rate
+
+def get_br_mispre_rate(list_of_functions, attributes, list_of_events_recorded):
+    br_mispre_rate = []
+    event_names = []
+    for event in list_of_events_recorded:
+        event_names.append(event.event_name)    
+        if event.event_name == 'br_inst_retired':
+            index_br_inst_retired = list_of_events_recorded.index(event)
+        elif  event.event_name == 'br_misp_retired':
+            index_br_misp_retired = list_of_events_recorded.index(event)
+    
+    if 'br_inst_retired' not in event_names or 'br_misp_retired' not in event_names:
+        return []
+    
+    for function in list_of_functions:
+        br_inst_retired = attributes[function][index_br_inst_retired] * list_of_events_recorded[index_br_inst_retired].sample_rate  
+        br_misp_retired = attributes[function][index_br_inst_retired] * list_of_events_recorded[index_br_inst_retired].sample_rate
+        br_mispre_rate.append(float(br_misp_retired/br_inst_retired))
+    return br_mispre_rate
+
+def get_resource_stall_rate(list_of_functions, attributes, list_of_events_recorded):
+    resource_stall_rate = []
+    event_names = []
+    for event in list_of_events_recorded:
+        event_names.append(event.event_name)    
+        if event.event_name == 'CPU_CLK_UNHALTED':
+            index_cycle = list_of_events_recorded.index(event)
+        elif  event.event_name == 'resource_stalls':
+            index_resource_stall = list_of_events_recorded.index(event)
+    
+    if 'CPU_CLK_UNHALTED' not in event_names or 'resource_stalls' not in event_names:
+        return []
+    
+    for function in list_of_functions:
+        cycle = attributes[function][index_cycle] * list_of_events_recorded[index_cycle].sample_rate  
+        resource_stall = attributes[function][index_resource_stall] * list_of_events_recorded[index_resource_stall].sample_rate
+        resource_stall_rate.append(float(resource_stall/cycle))
+    return resource_stall_rate
 
 def get_bandwidth(list_of_functions, attributes, total_time, image_size, repeat):
     bandwidth = []
@@ -94,8 +239,10 @@ def get_function_list(file):
                          'percival_unit_gain_multiplication(',
                          'percival_unit_gain_multiplication_p<tbb::blocked_range<unsigned int> >::operator()',
                          'percival_unit_gain_multiplication_p<percival_range_iterator_mock_p>::operator()',
-                         'tbb::internal::',
-                         'percival_algorithm_p']
+                         'libtbb',
+                         'percival_algorithm_p<CDS_output, percival_range_iterator_mock_p>',
+                         'ADC_decode_combined_filter<CDS_output>::operator()',
+                         'percival_algorithm_p<CDS_output, tbb::blocked_range<unsigned int> >::operator()']
     s = file.readline()
     found_functions = []
     while s != '':
