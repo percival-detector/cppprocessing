@@ -168,7 +168,7 @@ void percival_ADC_decode_combined_pipeline(
 	unsigned int *offset_ptr = & offset_arr[0];
 
 	/* Initialising the input image struct */
-	CDS_output CDS_input;
+	head_to_CDS CDS_input;
 	CDS_input.input_sample = sample;
 	CDS_input.input_reset = reset;
 	CDS_input.output = output;
@@ -181,7 +181,7 @@ void percival_ADC_decode_combined_pipeline(
 	percival_pipeline_stream_generator Input(offset_ptr, grain_size, sample.height * sample.width, max_tokens);
 	pipeline.add_filter( Input );
 
-	ADC_decode_combined_filter<CDS_output> ADC_decode_CDS ( CDS_input, calib_params, grain_size );
+	ADC_decode_combined_filter<head_to_CDS> ADC_decode_CDS ( CDS_input, calib_params, grain_size );
 	pipeline.add_filter( ADC_decode_CDS );
 
 	pipeline.run( max_tokens );
@@ -196,7 +196,7 @@ void percival_ADC_decode_combined_pipeline(
 
 //	unsigned int NoOfPixels = sample.width * sample.height;
 //
-//	percival_algorithm_p< CDS_output, tbb::blocked_range<unsigned int> > percival_p (CDS_input,calib_params);
+//	percival_algorithm_p< head_to_CDS, tbb::blocked_range<unsigned int> > percival_p (CDS_input,calib_params);
 //	tbb::parallel_for( tbb::blocked_range<unsigned int>(0, NoOfPixels, grain_size), percival_p, tbb::auto_partitioner());
 
 }

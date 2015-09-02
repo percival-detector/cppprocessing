@@ -16,9 +16,9 @@
 //#include "emmintrin.h"
 
 /* Forward declarations */
-//struct CDS_output;
-//struct unit_ADC_calibration_output;
-//struct unit_gain_multiplication_output;
+//struct head_to_CDS;
+//struct head_to_ADC_calibration;
+//struct head_to_gain_multiplication;
 //struct unit_CDS__output;
 //
 //struct percival_range_iterator_mock_p;
@@ -439,32 +439,47 @@ public:
  *
  */
 
+/*
+ *  Various combinations of the processing algorithm steps
+ */
+
 enum algorithm_pipeline{
+	head_to_ADC_calibration_enu,
+	head_to_gain_multiplication_enu,
+	head_to_CDS_enu,
+	ADC_calibration_to_gain_multiplication_enu,
 	unit_ADC_calibrated,
 	unit_gain_multiplication,
 	unit_CDS_subtraction,
 	unit_ADU_to_electron
 };	/* unit_ADC_decode is not supported since the original unit_decode function will outperform */
 
-struct CDS_output{
-	const static algorithm_pipeline type = unit_CDS_subtraction;
+struct head_to_CDS{
+	const static algorithm_pipeline type = head_to_CDS_enu;
 	percival_frame<unsigned short int> input_reset;
 	percival_frame<unsigned short int> input_sample;
 	percival_frame<float> output;
 };
 
-struct unit_ADC_calibration_output{
-	const static algorithm_pipeline type = unit_ADC_calibrated;
-	percival_frame<unsigned short int> input;
+struct head_to_ADC_calibration{
+	const static algorithm_pipeline type = head_to_ADC_calibration_enu;
+	percival_frame<unsigned short int> input_sample;
 	percival_frame<float> output;
 };
 
-struct unit_gain_multiplication_output{
-	const static algorithm_pipeline type = unit_gain_multiplication;
-	percival_frame<unsigned short int> input;
+struct head_to_gain_multiplication{
+	const static algorithm_pipeline type = head_to_gain_multiplication_enu;
+	percival_frame<unsigned short int> input_sample;
 	percival_frame<float> output;
 };
 
+struct ADC_calibration_to_gain_multiplication{
+	const static algorithm_pipeline type = ADC_calibration_to_gain_multiplication_enu;
+	percival_frame<unsigned short int> coarse;
+	percival_frame<unsigned short int> fine;
+	percival_frame<unsigned short int> gain;
+	percival_frame<float> output;
+};
 
 /*
  * 	Functor used by TBB pipeline
@@ -495,53 +510,22 @@ public:
 		/*listing all variables*/
 		float arr[2] = {0,0};
 		unsigned short int gain, coarseBits, fineBits;
-		unsigned short int count,current_count, increment;	/* Only choose 0 or 1 for increment */
+		unsigned short int count,current_count, process_reset;	/* Only choose 0 or 1 for process_reset */
 		unsigned short int *data;
 		unsigned int row, col_counter, row_counter, width, calib_data_width, position_in_calib_array;
 		float coarse_calibrated, fine_calibrated, gain_factor, result;
 		float *Oc, *Gc, *Of, *Gf, *G1, *G2, *G3, *G4, *output;
 		float* ADU_to_electron;
-		bool stepOne, stepTwo, stepThree, stepFour;
 
-		/* ADC_calibrated */
-
-		/* gain_multiplication */
-		float *gain_frame, *calibrated;
-
+		/* input_sample, input_reset, fine, coarse, output, gain */
+		short unsigned int *sample_frame;
 		/* CDS_subtraction & ADU_to_e*/
-		short unsigned int *sample_frame, *reset_frame;
-
-		switch(pipeline_type){
-			case unit_ADC_calibrated:
-				reset_frame = NULL;
-				gain_frame = NULL;
-				increment = 0;
-				stepOne = true;
-				break;
-			case unit_gain_multiplication:
-				reset_frame = NULL;
-				sample_frame = NULL;
-				increment = 0;
-				stepTwo = true;
-				break;
-			case unit_CDS_subtraction:
-				reset_frame = input.input_reset.data;
-				increment = 1;
-				stepThree = true;
-				break;
-			case unit_ADU_to_electron:
-				reset_frame = input.input_reset.data;
-				increment = 1;
-				stepFour = true;
-				break;
-			default:
-				/*throw appropriately here or assert.*/
-				break;
-		}
+		short unsigned int *reset_frame;
 
 		/*Initialising variables needed*/
 		sample_frame = input.input_sample.data;
 		output = input.output.data;
+		reset_frame = input.input_reset.data;
 
 		calib_data_width = calib.Gc.width;
 		width = input.input_sample.width;
@@ -583,7 +567,6 @@ public:
 			 * 	The specification required CDS_subtraction to be applied only to pixels with gain == 0b00
 			 * */
 			do{
-
 				pixel = *(data + i);
 				/* unit_ADC_decode */
 				gain = pixel & 0x0003;
@@ -594,12 +577,11 @@ public:
 				coarse_calibrated = (*(Oc + position_in_calib_array) - coarseBits) * *(Gc + position_in_calib_array);
 				fine_calibrated = (fineBits - *(Of + position_in_calib_array)) * *(Gf + position_in_calib_array);
 
-				if(!stepOne){
 					/* unit_ADC_gain_multiplication */
 					switch(gain){
 					case 0b00:
 						gain_factor = *(G1 + i);
-						count = increment;			/* choose 1 if processing of reset frame is needed. choose 0 otherwise */
+						count = 1;			/* choose 1 if processing of reset frame is needed. choose 0 otherwise */
 						data = reset_frame;
 						break;
 					case 0b01:
@@ -614,9 +596,6 @@ public:
 					default:
 						throw datatype_exception("Invalid gain bit detected.");
 					}
-				}else{
-					gain_factor = 1;
-				}
 
 				/*
 				 * store calibrated sample in slot 0 and calibrated reset in slot 1.
@@ -634,11 +613,9 @@ public:
 			/* subtraction */
 			result = arr[0] - arr[1];
 
-			/* Apply scaling if neede */
+			/* Apply scaling if needed */
 			/* flat field correction and dark image subtraction can be applied here too. */
-			if(stepFour){
-				result *= *(ADU_to_electron + i);
-			}
+			result *= *(ADU_to_electron + i);
 
 			/*writing to memory*/
 			*(output+i) = result;
@@ -647,12 +624,12 @@ public:
 			 * Correlating a pixel in image frame with a pixel in calibration data.
 			 */
 
-			if( (col_counter^7) )			/* Bitwise XOR operator ^ is equivalent to !=. Used here for performance.*/
+			if( (col_counter^6) )			/* Bitwise XOR operator ^ is equivalent to !=. Used here for performance.*/
 				col_counter++;
 			else
 				col_counter = 0;
 
-			if( (row_counter^width) )
+			if( (row_counter^(width - 1)) )
 				row_counter++;
 			else{
 				row_counter = 0;
