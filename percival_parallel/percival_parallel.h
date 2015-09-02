@@ -14,6 +14,14 @@
 #include "percival_processing.h"
 #include "percival_functors.h"
 
+/* Use the following to set optimised parameters
+struct optimised_parameter{
+	const static unsigned int grain_size;
+	const static unsigned int max_tokens;
+	const static unsigned int max_threads;
+};
+*/
+
 void percival_unit_ADC_decode_pf(
 		const percival_frame<unsigned short int> & input,
 		percival_frame<unsigned short int> & Coarse,
@@ -58,8 +66,7 @@ void percival_ADC_decode_combined_pipeline(
 		const percival_frame<unsigned short int> & reset,
 		percival_frame<float> & output,
 		const percival_calib_params & calib_params,
-		unsigned int grain_size = 3528,
-		bool store_gain = 0);
+		unsigned int grain_size = 3528);
 
 
 

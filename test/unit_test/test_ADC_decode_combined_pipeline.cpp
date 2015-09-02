@@ -107,14 +107,15 @@ percival_ADC_decode_combined_pipeline(
 		BOOST_REQUIRE_THROW(percival_ADC_decode_combined_pipeline(sample_frame,reset_frame,output_frame, calib_params, TEST_FRAME_WIDTH), dataspace_exception);
 	}
 
-//	BOOST_AUTO_TEST_CASE ( should_throw_exception_if_grain_size_exceed_no_of_element_or_below_zero ){
-//		BOOST_REQUIRE_THROW(percival_ADC_decode_combined_pipeline(sample_frame,reset_frame,output_frame, calib_params, TEST_FRAME_WIDTH * TEST_FRAME_HEIGHT + 1), datatype_exception);
-////		BOOST_REQUIRE_THROW(percival_ADC_decode_combined_pipeline(sample_frame,reset_frame,output_frame, calib_params, -10), datatype_exception);
-//	}
-//
-//	BOOST_AUTO_TEST_CASE ( should_not_throw_exception_if_grain_size_is_zero ){
-//		BOOST_REQUIRE_NO_THROW(percival_ADC_decode_combined_pipeline(sample_frame,reset_frame,output_frame, calib_params, 0));
-//	}
+	BOOST_AUTO_TEST_CASE ( should_throw_exception_if_grain_size_exceed_no_of_element_or_below_zero ){
+		BOOST_REQUIRE_NO_THROW(percival_ADC_decode_combined_pipeline(sample_frame,reset_frame,output_frame, calib_params, TEST_FRAME_WIDTH * TEST_FRAME_HEIGHT + 1));
+		BOOST_REQUIRE_NO_THROW(percival_ADC_decode_combined_pipeline(sample_frame,reset_frame,output_frame, calib_params, -10));
+		BOOST_REQUIRE_NO_THROW(percival_ADC_decode_combined_pipeline(sample_frame,reset_frame,output_frame, calib_params, 0));
+	}
+
+	BOOST_AUTO_TEST_CASE ( should_not_throw_exception_if_grain_size_is_zero ){
+		BOOST_REQUIRE_NO_THROW(percival_ADC_decode_combined_pipeline(sample_frame,reset_frame,output_frame, calib_params, 0));
+	}
 
 
 //COMPUTATION TESTS

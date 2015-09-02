@@ -43,4 +43,10 @@ void percival_ADU_to_electron_correction_check(
 		percival_frame<float> &output,
 		const percival_calib_params & calib);
 
+/* Function 6 */
+/* Checks whether input and calibration array dimensions are consistent */
+void percival_input_calib_dimension_check(
+		const percival_frame<unsigned short int> & input,
+		const percival_calib_params & calib);
+
 #endif /* INCLUDE_PERCIVAL_DATA_VALIDITY_CHECKS_H_ */

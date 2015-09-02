@@ -8,6 +8,7 @@
 
 #include "percival_processing.h"
 #include "percival_parallel.h"
+#include "percival_data_validity_checks.h"
 #include "tbb/pipeline.h"
 
 void percival_ADC_decode_pipe(
@@ -150,9 +151,26 @@ void percival_ADC_decode_combined_pipeline(
 		const percival_frame<unsigned short int> & reset,
 		percival_frame<float> & output,
 		const percival_calib_params & calib_params,
-		unsigned int grain_size,
-		bool store_gain)
+		unsigned int grain_size)
 {
+	unsigned short int default_grain_size = sample.width;
+
+	/* Input, calib dimension checks */
+	percival_input_calib_dimension_check(sample,calib_params);
+	/* sample reset dimension check */
+	if( (sample.width != reset.width) || (sample.height != reset.height) )
+		throw dataspace_exception("Sample, reset frames dimension mismatch.");
+	if( (sample.width != output.width) || (sample.height != output.height) )
+		throw dataspace_exception("Sample, Output frames dimension mismatch.");
+
+	unsigned int width = sample.width;
+	unsigned int height = sample.height;
+	unsigned int NoOfPixels = width * height;
+
+	/* grain size check */
+	if( (grain_size > NoOfPixels) || (grain_size <= 0) )
+		grain_size = default_grain_size;
+
 	/* Maximum number of tokens in existence at one point in time */
 	unsigned int max_tokens = 20;
 

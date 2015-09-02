@@ -107,3 +107,4 @@ BOOST_FIXTURE_TEST_SUITE (percival_ADC_decode_pf_test,fixture_frame_pf)
 		}
 
 BOOST_AUTO_TEST_SUITE_END()
+
