@@ -15,9 +15,8 @@
  *  */
 
 // get AVX intrinsics
+#ifdef __AVX__
 #include <immintrin.h>
-#include <assert.h>
-#ifndef __AVX__
 #endif
 
 
@@ -513,13 +512,13 @@ public:
 		short unsigned int *sample_frame, *reset_frame;
 		float  *output;
 
-		/* 12 AVX arrays, 16 registers */
+		/* 10 AVX arrays, 16 registers */
 		__m256 Gc_ymm, Oc_ymm, Gf_ymm, Of_ymm, ADU_2e_conv_ymm;
 		__m256 gain_mask_ymm;
 		__m256 result_ymm;
-		__m256 tmp_ymm, tmp_ymm1, tmp_ymm2;
 		__m256 gain_factor_ymm;
 		__m256 sample_result_ymm, reset_result_ymm;
+		__m256 tmp_ymm0, tmp_ymm1, tmp_ymm2, tmp_ymm3, tmp_ymm4, tmp_ymm5;
 
 		/* memory to temporarily store arrays of 8 float */
 		float fine_arr[2][8], coarse_arr[2][8], gain_factor_arr[2][8];
@@ -658,15 +657,15 @@ public:
 
 			/* sample frame: is_reset_frame = 0 */
 			is_reset_frame = 0;
-			tmp_ymm  = _mm256_loadu_ps( &coarse_arr[is_reset_frame][0] );
-			tmp_ymm  = _mm256_sub_ps ( Oc_ymm, tmp_ymm );	//Oc - coarseBits
-			tmp_ymm  = _mm256_mul_ps ( tmp_ymm, Gc_ymm );	//Gc * (Oc - coarseBits)
+			tmp_ymm0  = _mm256_loadu_ps( &coarse_arr[is_reset_frame][0] );
+			tmp_ymm0  = _mm256_sub_ps ( Oc_ymm, tmp_ymm0 );	//Oc - coarseBits
+			tmp_ymm0  = _mm256_mul_ps ( tmp_ymm0, Gc_ymm );	//Gc * (Oc - coarseBits)
 
 			tmp_ymm1 = _mm256_loadu_ps( &fine_arr[is_reset_frame][0] );
 			tmp_ymm1 = _mm256_sub_ps ( tmp_ymm1, Of_ymm );  //Of - fineBits
 			tmp_ymm1 = _mm256_mul_ps ( tmp_ymm1, Gf_ymm );  //Gf * (Of - fineBits)
 
-			tmp_ymm2 = _mm256_sub_ps ( tmp_ymm, tmp_ymm1 );  //calibrated sample
+			tmp_ymm2 = _mm256_sub_ps ( tmp_ymm0, tmp_ymm1 );  //calibrated sample
 
 			gain_factor_ymm = _mm256_loadu_ps( &gain_factor_arr[is_reset_frame][0] );
 
@@ -674,19 +673,19 @@ public:
 
 			/* Reset frame: is_reset_frame = 1 */
 			is_reset_frame = 1;
-			tmp_ymm  = _mm256_loadu_ps( &coarse_arr[is_reset_frame][0] );
-			tmp_ymm  = _mm256_sub_ps ( Oc_ymm, tmp_ymm );
-			tmp_ymm  = _mm256_mul_ps ( tmp_ymm, Gc_ymm );
+			tmp_ymm3  = _mm256_loadu_ps( &coarse_arr[is_reset_frame][0] );
+			tmp_ymm3  = _mm256_sub_ps ( Oc_ymm, tmp_ymm3 );
+			tmp_ymm3  = _mm256_mul_ps ( tmp_ymm3, Gc_ymm );
 
-			tmp_ymm1 = _mm256_loadu_ps( &fine_arr[is_reset_frame][0] );
-			tmp_ymm1 = _mm256_sub_ps ( tmp_ymm1, Of_ymm );
-			tmp_ymm1 = _mm256_mul_ps ( tmp_ymm1, Gf_ymm );
+			tmp_ymm4 = _mm256_loadu_ps( &fine_arr[is_reset_frame][0] );
+			tmp_ymm4 = _mm256_sub_ps ( tmp_ymm4, Of_ymm );
+			tmp_ymm4 = _mm256_mul_ps ( tmp_ymm4, Gf_ymm );
 
-			tmp_ymm2 = _mm256_sub_ps ( tmp_ymm, tmp_ymm1 );
+			tmp_ymm5 = _mm256_sub_ps ( tmp_ymm3, tmp_ymm4 );
 
 			gain_factor_ymm = _mm256_loadu_ps( &gain_factor_arr[is_reset_frame][0] );
 
-			reset_result_ymm = _mm256_mul_ps ( tmp_ymm2, gain_factor_ymm );
+			reset_result_ymm = _mm256_mul_ps ( tmp_ymm5, gain_factor_ymm );
 
 			gain_mask_ymm = _mm256_loadu_ps(gain_mask);
 
