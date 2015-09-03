@@ -13,21 +13,13 @@
  * SSE: cacheablity, Single Floating Point (SP, FP) operations
  *
  *  */
-//#include "emmintrin.h"
 
-/* Forward declarations */
-//struct head_to_CDS;
-//struct head_to_ADC_calibration;
-//struct head_to_gain_multiplication;
-//struct unit_CDS__output;
-//
-//struct percival_range_iterator_mock_p;
-//class percival_unit_ADC_decode_p;
-//class percival_unit_ADC_calibration_p
-//class percival_unit_gain_multiplication_p
-//class percival_unit_ADC_decode_pipe_p
-//class percival_ADC_decode_p;
-//class percival_algorithm_p;
+// get AVX intrinsics
+#include <immintrin.h>
+#include <assert.h>
+#ifndef __AVX__
+#endif
+
 
 /*
  * 	A non-parallel version of TBB's block range.
@@ -505,22 +497,34 @@ public:
 		unsigned int begin = r.begin();
 		unsigned int end = r.end();
 		unsigned short int pixel;
-		algorithm_pipeline pipeline_type = input.type;
 
 		/*listing all variables*/
-		float arr[2] = {0,0};
 		unsigned short int gain, coarseBits, fineBits;
-		unsigned short int count,current_count, process_reset;	/* Only choose 0 or 1 for process_reset */
+		unsigned short int count,current_count;	/* Only choose 0 or 1 for process_reset */
 		unsigned short int *data;
-		unsigned int row, col_counter, row_counter, width, calib_data_width, position_in_calib_array;
-		float coarse_calibrated, fine_calibrated, gain_factor, result;
-		float *Oc, *Gc, *Of, *Gf, *G1, *G2, *G3, *G4, *output;
-		float* ADU_to_electron;
+		unsigned int row, row_counter, width, calib_data_width, position_in_calib_array, location;
+		unsigned int is_reset_frame;
 
-		/* input_sample, input_reset, fine, coarse, output, gain */
-		short unsigned int *sample_frame;
-		/* CDS_subtraction & ADU_to_e*/
-		short unsigned int *reset_frame;
+		/* constants */
+		float *Oc, *Gc, *Of, *Gf, *G1, *G2, *G3, *G4;
+		float* ADU_to_electron;
+		float gain_factor;
+
+		short unsigned int *sample_frame, *reset_frame;
+		float  *output;
+
+		/* 12 AVX arrays, 16 registers */
+		__m256 Gc_ymm, Oc_ymm, Gf_ymm, Of_ymm, ADU_2e_conv_ymm;
+		__m256 gain_mask_ymm;
+		__m256 result_ymm;
+		__m256 tmp_ymm, tmp_ymm1, tmp_ymm2;
+		__m256 gain_factor_ymm;
+		__m256 sample_result_ymm, reset_result_ymm;
+
+		/* memory to temporarily store arrays of 8 float */
+		float fine_arr[2][8], coarse_arr[2][8], gain_factor_arr[2][8];
+		float gain_mask[8];
+		float tmp[8];
 
 		/*Initialising variables needed*/
 		sample_frame = input.input_sample.data;
@@ -545,100 +549,170 @@ public:
 		/*Used to correlate a pixel in sample with a pixel in calibration array*/
 		row = begin / width;
 		row_counter = begin%width;
-		col_counter = row_counter%7;
+
+		/* range to apply AVX */
+		/* Needs to be done carefully to avoid segmentation fault */
+		const unsigned int avx_grain_end = end - 7;	/* if the grain ends in the middle of the row */
 
 		/*loop*/
-		for(unsigned int i = begin; i < end; ++i){
+		for(unsigned int i = begin; i < end; i+=7){	/* move 7 elements forward each time */
 
-			/* Initialising variables in loop appropriately */
-			arr[0] = 0; arr[1] = 0;
-			data = sample_frame;
+			/*
+			 *  Efficient loop counter
+			 *
+			 */
+			if( (row_counter^(width - 7)) && (i ^ begin))
+				row_counter+=7;
+			else{
+				if(i ^ begin){	/* If this is not start of the loop */
+					row_counter = 0;
+					row++;
+				}
+				/*
+				 * 	Load 7 new elements of calibration data Gc, Oc, Gf, Of for every increment in row.
+				 * 	Also load when loop starts.
+				 */
+
+				/* load first segments of calibration data */
+				position_in_calib_array = row * calib_data_width; //This starts with 0.
+				/*
+				 * If row increases, modify avx_row_end and updata Calibration params
+				 *
+				 * Each load takes 8 32-bit float. All calbration arrays are multiples of 7.
+				 * All percival_frame based memory buffer has at least 8 byte extra space at the end of the buffer.
+				 * Segmentation fault might result if this is not guarantteed.
+				 *
+				 * */
+				Gc_ymm = _mm256_loadu_ps(Gc + position_in_calib_array);
+				Gf_ymm = _mm256_loadu_ps(Gf + position_in_calib_array);
+				Oc_ymm = _mm256_loadu_ps(Oc + position_in_calib_array);
+				Of_ymm = _mm256_loadu_ps(Of + position_in_calib_array);
+			}
+
+			for(unsigned short int m = 0; m < 8; m ++){
+				gain_mask[m] = 0;
+				gain_factor_arr[0][m] = 0;
+				gain_factor_arr[1][m] = 0;
+			}
 
 			/*
 			 *  The count and current_count are two counters.
 			 *  They used to track whether the sample or reset data is being worked on by the while loop.
 			 */
-			count = 0;current_count = 0;
 
-			position_in_calib_array = col_counter + row * calib_data_width;
+			ADU_2e_conv_ymm = _mm256_loadu_ps(ADU_to_electron + i);
+
 
 			/*
 			 *  While loop to work on sample and reset frame.
 			 * 	The specification required CDS_subtraction to be applied only to pixels with gain == 0b00
 			 * */
-			do{
-				pixel = *(data + i);
-				/* unit_ADC_decode */
-				gain = pixel & 0x0003;
-				fineBits = (pixel & 0x3FC) >> 2;
-				coarseBits = (pixel & 0x7c00) >> 10;
+			for(unsigned int jj = 0; jj < 7; ++jj){
+				data = sample_frame;
+				count = 0; current_count = 0;
+				do{
+					location = i + jj;
+					pixel = *(data + location);
 
-				/* unit_ADC_calib */
-				coarse_calibrated = (*(Oc + position_in_calib_array) - coarseBits) * *(Gc + position_in_calib_array);
-				fine_calibrated = (fineBits - *(Of + position_in_calib_array)) * *(Gf + position_in_calib_array);
+					/* unit_ADC_decode */
+					gain = pixel & 0x0003;
+					fineBits = (pixel & 0x3FC) >> 2;
+					coarseBits = (pixel & 0x7c00) >> 10;
 
 					/* unit_ADC_gain_multiplication */
 					switch(gain){
 					case 0b00:
-						gain_factor = *(G1 + i);
+						gain_factor = *(G1 +  location);
 						count = 1;			/* choose 1 if processing of reset frame is needed. choose 0 otherwise */
 						data = reset_frame;
 						break;
 					case 0b01:
-						gain_factor = *(G2 + i);
+						gain_factor = *(G2  + location);
 						break;
 					case 0b10:
-						gain_factor = *(G3 + i);
+						gain_factor = *(G3  + location);
 						break;
 					case 0b11:
-						gain_factor = *(G4 + i);
+						gain_factor = *(G4  + location);
 						break;
 					default:
 						throw datatype_exception("Invalid gain bit detected.");
 					}
 
-				/*
-				 * store calibrated sample in slot 0 and calibrated reset in slot 1.
-				 * slot 1 is zero if CDS_subtraction is not needed
-				 * */
-				arr[current_count] = gain_factor * (coarse_calibrated - fine_calibrated);
+					/*
+					 * store calibrated sample in slot 0 and calibrated reset in slot 1.
+					 * slot 1 is zero if CDS_subtraction is not needed
+					 * */
+					coarse_arr[current_count][jj] = coarseBits;
+					fine_arr[current_count][jj] = fineBits;
+					gain_factor_arr[current_count][jj] = gain_factor;
 
-				/* Updating current count after each iteration */
-				current_count = (current_count+1)&0x1;
+					gain_mask [jj] = count;
 
-			}while( count&current_count );
+					/* Updating current count after each iteration */
+					current_count = (current_count+1)&0x1;
+				}while( count&current_count );
+			}//end of inner for loop
 
+			/* Do computation here */
 
+			/* sample frame: is_reset_frame = 0 */
+			is_reset_frame = 0;
+			tmp_ymm  = _mm256_loadu_ps( &coarse_arr[is_reset_frame][0] );
+			tmp_ymm  = _mm256_sub_ps ( Oc_ymm, tmp_ymm );	//Oc - coarseBits
+			tmp_ymm  = _mm256_mul_ps ( tmp_ymm, Gc_ymm );	//Gc * (Oc - coarseBits)
+
+			tmp_ymm1 = _mm256_loadu_ps( &fine_arr[is_reset_frame][0] );
+			tmp_ymm1 = _mm256_sub_ps ( tmp_ymm1, Of_ymm );  //Of - fineBits
+			tmp_ymm1 = _mm256_mul_ps ( tmp_ymm1, Gf_ymm );  //Gf * (Of - fineBits)
+
+			tmp_ymm2 = _mm256_sub_ps ( tmp_ymm, tmp_ymm1 );  //calibrated sample
+
+			gain_factor_ymm = _mm256_loadu_ps( &gain_factor_arr[is_reset_frame][0] );
+
+			sample_result_ymm = _mm256_mul_ps ( tmp_ymm2, gain_factor_ymm );
+
+			/* Reset frame: is_reset_frame = 1 */
+			is_reset_frame = 1;
+			tmp_ymm  = _mm256_loadu_ps( &coarse_arr[is_reset_frame][0] );
+			tmp_ymm  = _mm256_sub_ps ( Oc_ymm, tmp_ymm );
+			tmp_ymm  = _mm256_mul_ps ( tmp_ymm, Gc_ymm );
+
+			tmp_ymm1 = _mm256_loadu_ps( &fine_arr[is_reset_frame][0] );
+			tmp_ymm1 = _mm256_sub_ps ( tmp_ymm1, Of_ymm );
+			tmp_ymm1 = _mm256_mul_ps ( tmp_ymm1, Gf_ymm );
+
+			tmp_ymm2 = _mm256_sub_ps ( tmp_ymm, tmp_ymm1 );
+
+			gain_factor_ymm = _mm256_loadu_ps( &gain_factor_arr[is_reset_frame][0] );
+
+			reset_result_ymm = _mm256_mul_ps ( tmp_ymm2, gain_factor_ymm );
+
+			gain_mask_ymm = _mm256_loadu_ps(gain_mask);
 
 			/* subtraction */
-			result = arr[0] - arr[1];
+			tmp_ymm1 = _mm256_mul_ps ( gain_mask_ymm, reset_result_ymm );
+
+			tmp_ymm1 = _mm256_sub_ps ( sample_result_ymm, tmp_ymm1 );
 
 			/* Apply scaling if needed */
 			/* flat field correction and dark image subtraction can be applied here too. */
-			result *= *(ADU_to_electron + i);
+			result_ymm = _mm256_mul_ps ( ADU_2e_conv_ymm, tmp_ymm1 );
 
-			/*writing to memory*/
-			*(output+i) = result;
 
-			/*
-			 * Correlating a pixel in image frame with a pixel in calibration data.
-			 */
 
-			if( (col_counter^6) )			/* Bitwise XOR operator ^ is equivalent to !=. Used here for performance.*/
-				col_counter++;
-			else
-				col_counter = 0;
-
-			if( (row_counter^(width - 1)) )
-				row_counter++;
-			else{
-				row_counter = 0;
-				row++;
+			if( (i < avx_grain_end) ){
+				/*writing to memory*/
+				_mm256_storeu_ps( (output + i), result_ymm );
+			}else{
+				_mm256_storeu_ps( tmp, result_ymm);
+				for(unsigned int kk = 0; kk < 7; ++kk){
+					*(output + i + kk) = tmp[kk];
+				}
 			}
-
-		}
-	}
-};
+		} //outermost for loop
+	}//definition of operator overloading
+}; //definition of class
 
 
 

@@ -196,7 +196,7 @@ void percival_ADC_decode_combined_pipeline(
 	 *
 	 */
 
-	percival_pipeline_stream_generator Input(offset_ptr, grain_size, sample.height * sample.width, max_tokens);
+	percival_pipeline_stream_generator Input(offset_ptr, grain_size, NoOfPixels, max_tokens);
 	pipeline.add_filter( Input );
 
 	ADC_decode_combined_filter<head_to_CDS> ADC_decode_CDS ( CDS_input, calib_params, grain_size );
