@@ -556,9 +556,13 @@ public:
 		ADU_2e_conv_ymm = _mm256_loadu_ps( ADU_to_electron );
 
 		for(unsigned short int m = 0; m < 8; m ++){
-			*( gain_mask + m ) = 0;
+			*( coarse_arr + m ) = 0;
+			*( fine_arr + m ) = 0;
 			*( gain_factor_arr + m) = 0;
-			*( gain_factor_arr + 8 + m ) = 0;
+
+			*( coarse_arr + m + 8 ) = 0;
+			*( fine_arr + m + 8 ) = 0;
+			*( gain_factor_arr + m + 8) = 0;
 		}
 
 		/*loop*/
@@ -609,51 +613,37 @@ public:
 			data = sample_frame;
 			count = 0; current_count = 0;
 			/* counting the array index for temporary storage */
-			index = current_count * 8 + col_counter;
 
 			do{
 
 				pixel = *(data + i);
+				index = current_count * 8 + col_counter;
 
 				/* unit_ADC_decode */
+				*( coarse_arr + index ) = (pixel & 0x7c00) >> 10;;
+				*( fine_arr + index ) = (pixel & 0x3FC) >> 2;
+
 				gain = pixel & 0x0003;
-				fineBits = (pixel & 0x3FC) >> 2;
-				coarseBits = (pixel & 0x7c00) >> 10;
 
 				/* unit_ADC_gain_multiplication */
 				switch(gain){
 				case 0b00:
-					gain_factor = *(G1 +  i);
+					*( gain_factor_arr + index ) = *(G1 +  i);
 					count = 1;			/* choose 1 if processing of reset frame is needed. choose 0 otherwise */
 					data = reset_frame;
 					break;
 				case 0b01:
-					gain_factor = *(G2  + i);
+					*( gain_factor_arr + index ) = *(G2  + i);
 					break;
 				case 0b10:
-					gain_factor = *(G3  + i);
+					*( gain_factor_arr + index ) = *(G3  + i);
 					break;
 				case 0b11:
-					gain_factor = *(G4  + i);
+					*( gain_factor_arr + index ) = *(G4  + i);
 					break;
 				default:
 					throw datatype_exception("Invalid gain bit detected.");
 				}
-
-				/*
-				 * store calibrated sample in slot 0 and calibrated reset in slot 1.
-				 * slot 1 is zero if CDS_subtraction is not needed
-				 * */
-//				coarse_arr[current_count][col_counter] = coarseBits;
-//				fine_arr[current_count][col_counter] = fineBits;
-//				gain_factor_arr[current_count][col_counter] = gain_factor;
-				/* change this to pointer dereferencing */
-
-				*( coarse_arr + index ) = coarseBits;
-				*( fine_arr + index ) = fineBits;
-				*( gain_factor_arr + index ) = gain_factor;
-
-				*( gain_mask + col_counter ) = count;
 
 				/* Updating current count after each iteration */
 				current_count = (current_count+1)&0x1;
@@ -697,12 +687,8 @@ public:
 
 				reset_result_ymm = _mm256_mul_ps ( tmp_ymm5, gain_factor_ymm );
 
-				gain_mask_ymm = _mm256_loadu_ps(gain_mask);
-
 				/* subtraction */
-				tmp_ymm1 = _mm256_mul_ps ( gain_mask_ymm, reset_result_ymm );
-
-				tmp_ymm1 = _mm256_sub_ps ( sample_result_ymm, tmp_ymm1 );
+				tmp_ymm1 = _mm256_sub_ps ( sample_result_ymm, reset_result_ymm );
 
 				/* Apply scaling if needed */
 				/* flat field correction and dark image subtraction can be applied here too. */
@@ -722,17 +708,30 @@ public:
 
 				/* reset for next iteration */
 				for(unsigned short int m = 0; m < 8; m ++){
-					*( gain_mask + m ) = 0;
+//					*( coarse_arr + m ) = 0;
+//					*( fine_arr + m ) = 0;
 					*( gain_factor_arr + m) = 0;
-					*( gain_factor_arr + 8 + m ) = 0;
+
+//					*( coarse_arr + m + 8 ) = 0;
+//					*( fine_arr + m + 8 ) = 0;
+					*( gain_factor_arr + m + 8) = 0;
+
 				}
 
 				/* load next cycle */
 				ADU_2e_conv_ymm = _mm256_loadu_ps( ADU_to_electron + i + 1 );
+#define PREFETCH_DISTANCE 32
+				if( ((i + PREFETCH_DISTANCE) < end) && (!(i % 32)) ){
+					_mm_prefetch( ( sample_frame + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);	//Preload 14 iterations ahead ~154 cycle per iteration
+					_mm_prefetch( ( reset_frame + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);
 
-				if( (i + 28) < end ){
-					_mm_prefetch( ( sample_frame + i + 1 + 28 ) ,_MM_HINT_T0);	//Preload 14 cycle ahead ~154*14 instructions
-					_mm_prefetch( ( reset_frame + i + 1 + 28 ) ,_MM_HINT_T0);
+					_mm_prefetch( ( G1 + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);	//Preload 14 iterations ahead ~154 cycle per iteration
+					_mm_prefetch( ( G2 + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);
+
+					_mm_prefetch( ( G3 + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);	//Preload 14 iterations ahead ~154 cycle per iteration
+					_mm_prefetch( ( G4 + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);
+
+					_mm_prefetch( ( ADU_to_electron + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);	//Preload 14 iterations ahead ~154 cycle per iteration
 				}
 				col_counter = 0;
 			}  // end of loop counter
