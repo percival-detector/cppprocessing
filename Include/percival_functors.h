@@ -19,7 +19,6 @@
 #include <immintrin.h>
 #endif
 
-
 /*
  * 	A non-parallel version of TBB's block range.
  * 	This is meant to mock block_range when TBB is absent.
@@ -499,7 +498,7 @@ public:
 
 		/*listing all variables*/
 		unsigned short int gain, coarseBits, fineBits;
-		unsigned short int count,current_count;	/* Only choose 0 or 1 for process_reset */
+		unsigned short int count,current_count, index;	/* Only choose 0 or 1 for process_reset */
 		unsigned short int *data;
 		unsigned int row, row_counter, col_counter, width, calib_data_width, position_in_calib_array, location;
 		unsigned int is_reset_frame;
@@ -521,7 +520,7 @@ public:
 		__m256 tmp_ymm0, tmp_ymm1, tmp_ymm2, tmp_ymm3, tmp_ymm4, tmp_ymm5;
 
 		/* memory to temporarily store arrays of 8 float */
-		float fine_arr[2][8], coarse_arr[2][8], gain_factor_arr[2][8];
+		float fine_arr[16], coarse_arr[16], gain_factor_arr[16];
 		float gain_mask[8];
 		float tmp[8];
 
@@ -557,14 +556,13 @@ public:
 		ADU_2e_conv_ymm = _mm256_loadu_ps( ADU_to_electron );
 
 		for(unsigned short int m = 0; m < 8; m ++){
-			gain_mask[m] = 0;
-			gain_factor_arr[0][m] = 0;
-			gain_factor_arr[1][m] = 0;
+			*( gain_mask + m ) = 0;
+			*( gain_factor_arr + m) = 0;
+			*( gain_factor_arr + 8 + m ) = 0;
 		}
 
 		/*loop*/
 		for(unsigned int i = begin; i < end; ++i){	/* move 7 elements forward each time */
-
 			/*
 			 *  Efficient loop counter
 			 *
@@ -610,8 +608,11 @@ public:
 			 * */
 			data = sample_frame;
 			count = 0; current_count = 0;
+			/* counting the array index for temporary storage */
+			index = current_count * 8 + col_counter;
 
 			do{
+
 				pixel = *(data + i);
 
 				/* unit_ADC_decode */
@@ -643,15 +644,21 @@ public:
 				 * store calibrated sample in slot 0 and calibrated reset in slot 1.
 				 * slot 1 is zero if CDS_subtraction is not needed
 				 * */
-				coarse_arr[current_count][col_counter] = coarseBits;
-				fine_arr[current_count][col_counter] = fineBits;
-				gain_factor_arr[current_count][col_counter] = gain_factor;
+//				coarse_arr[current_count][col_counter] = coarseBits;
+//				fine_arr[current_count][col_counter] = fineBits;
+//				gain_factor_arr[current_count][col_counter] = gain_factor;
+				/* change this to pointer dereferencing */
 
-				gain_mask [col_counter] = count;
+				*( coarse_arr + index ) = coarseBits;
+				*( fine_arr + index ) = fineBits;
+				*( gain_factor_arr + index ) = gain_factor;
+
+				*( gain_mask + col_counter ) = count;
 
 				/* Updating current count after each iteration */
 				current_count = (current_count+1)&0x1;
 			}while( count&current_count );
+
 
 			/* do a computation every 7 iterations */
 			if( (col_counter^6) )
@@ -660,33 +667,33 @@ public:
 				/* do a computation */
 				/* sample frame: is_reset_frame = 0 */
 				is_reset_frame = 0;
-				tmp_ymm0  = _mm256_loadu_ps( &coarse_arr[is_reset_frame][0] );
+				tmp_ymm0  = _mm256_loadu_ps( coarse_arr );
 				tmp_ymm0  = _mm256_sub_ps ( Oc_ymm, tmp_ymm0 );	//Oc - coarseBits
 				tmp_ymm0  = _mm256_mul_ps ( tmp_ymm0, Gc_ymm );	//Gc * (Oc - coarseBits)
 
-				tmp_ymm1 = _mm256_loadu_ps( &fine_arr[is_reset_frame][0] );
+				tmp_ymm1 = _mm256_loadu_ps( fine_arr );
 				tmp_ymm1 = _mm256_sub_ps ( tmp_ymm1, Of_ymm );  //Of - fineBits
 				tmp_ymm1 = _mm256_mul_ps ( tmp_ymm1, Gf_ymm );  //Gf * (Of - fineBits)
 
 				tmp_ymm2 = _mm256_sub_ps ( tmp_ymm0, tmp_ymm1 );  //calibrated sample
 
-				gain_factor_ymm = _mm256_loadu_ps( &gain_factor_arr[is_reset_frame][0] );
+				gain_factor_ymm = _mm256_loadu_ps( gain_factor_arr );
 
 				sample_result_ymm = _mm256_mul_ps ( tmp_ymm2, gain_factor_ymm );
 
 				/* Reset frame: is_reset_frame = 1 */
 				is_reset_frame = 1;
-				tmp_ymm3  = _mm256_loadu_ps( &coarse_arr[is_reset_frame][0] );
+				tmp_ymm3  = _mm256_loadu_ps( coarse_arr + 8 );
 				tmp_ymm3  = _mm256_sub_ps ( Oc_ymm, tmp_ymm3 );
 				tmp_ymm3  = _mm256_mul_ps ( tmp_ymm3, Gc_ymm );
 
-				tmp_ymm4 = _mm256_loadu_ps( &fine_arr[is_reset_frame][0] );
+				tmp_ymm4 = _mm256_loadu_ps( fine_arr + 8 );
 				tmp_ymm4 = _mm256_sub_ps ( tmp_ymm4, Of_ymm );
 				tmp_ymm4 = _mm256_mul_ps ( tmp_ymm4, Gf_ymm );
 
 				tmp_ymm5 = _mm256_sub_ps ( tmp_ymm3, tmp_ymm4 );
 
-				gain_factor_ymm = _mm256_loadu_ps( &gain_factor_arr[is_reset_frame][0] );
+				gain_factor_ymm = _mm256_loadu_ps( gain_factor_arr + 8 );
 
 				reset_result_ymm = _mm256_mul_ps ( tmp_ymm5, gain_factor_ymm );
 
@@ -715,14 +722,18 @@ public:
 
 				/* reset for next iteration */
 				for(unsigned short int m = 0; m < 8; m ++){
-					gain_mask[m] = 0;
-					gain_factor_arr[0][m] = 0;
-					gain_factor_arr[1][m] = 0;
+					*( gain_mask + m ) = 0;
+					*( gain_factor_arr + m) = 0;
+					*( gain_factor_arr + 8 + m ) = 0;
 				}
 
 				/* load next cycle */
 				ADU_2e_conv_ymm = _mm256_loadu_ps( ADU_to_electron + i + 1 );
 
+				if( (i + 28) < end ){
+					_mm_prefetch( ( sample_frame + i + 1 + 28 ) ,_MM_HINT_T0);	//Preload 14 cycle ahead ~154*14 instructions
+					_mm_prefetch( ( reset_frame + i + 1 + 28 ) ,_MM_HINT_T0);
+				}
 				col_counter = 0;
 			}  // end of loop counter
 
