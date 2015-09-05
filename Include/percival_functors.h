@@ -577,7 +577,7 @@ public:
 				coarse_calibrated = (*(Oc + position_in_calib_array) - coarseBits) * *(Gc + position_in_calib_array);
 				fine_calibrated = (fineBits - *(Of + position_in_calib_array)) * *(Gf + position_in_calib_array);
 
-					/* unit_ADC_gain_multiplication */
+				/* unit_ADC_gain_multiplication */
 					switch(gain){
 					case 0b00:
 						gain_factor = *(G1 + i);
