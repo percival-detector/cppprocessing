@@ -16,7 +16,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
     parallel_debug = './parallel_debug/cppProcessing2.0 '
     parallel_profile = './parallel_profile/cppProcessing2.0 '
 
-    cmdl_arg = '1 '  + str(width) + ' '+ str(height) + ' ' + str(repeat) + ' ' + text_file_name + ' ' + str(grain_size)   
+    cmdl_arg = '1 '  + str(width) + ' '+ str(height) + ' ' + str(repeat) + ' ' + text_file_name + ' ' + str(grain_size) + ' 1'
     program_to_execute = parallel_debug + cmdl_arg
 
     #events to monitor
@@ -219,7 +219,7 @@ print grain_size_file_name
  
 # subprocess.call('mkdir -p ' + path_name, shell=True)
 # cdg.generate_calib_files(height, width, text_file_name, path_name)
-#       
+#          
 # cmd_rm_file = "rm -f " + grain_size_file_name
 # cmd_create_file = "touch "+ grain_size_file_name
 # op.cmd_call(cmd_rm_file)

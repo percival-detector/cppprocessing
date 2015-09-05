@@ -24,7 +24,7 @@ def run_application(execute_function, width, height, repeat):
     report_destination = result_directory + 'bandwidth_report.txt'
 
     cmdl_arg = '1 '  + str(width) + ' '+ str(height) + ' ' + str(repeat) + ' ' + text_file_name + ' ' + str(grain_size) + ' ' + str(execute_function)   
-    program_to_execute = parallel_debug + cmdl_arg
+    program_to_execute = parallel_profile + cmdl_arg
 
     cmd_time = '(/usr/bin/time -v ' + program_to_execute + ') &> ' + report_destination
     op.cmd_call('mkdir -p ' + result_directory)

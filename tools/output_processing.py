@@ -242,7 +242,8 @@ def get_function_list(file):
                          'libtbb',
                          'percival_algorithm_p<CDS_output, percival_range_iterator_mock_p>',
                          'ADC_decode_combined_filter<CDS_output>::operator()',
-                         'percival_algorithm_p<CDS_output, tbb::blocked_range<unsigned int> >::operator()']
+                         'percival_algorithm_p<CDS_output, tbb::blocked_range<unsigned int> >::operator()',
+                         'percival_algorithm_p<head_to_CDS, percival_range_iterator_mock_p>::operator()']
     s = file.readline()
     found_functions = []
     while s != '':
