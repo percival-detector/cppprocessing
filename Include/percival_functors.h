@@ -16,8 +16,10 @@
 
 // get AVX intrinsics
 #ifdef __AVX__
-#include <immintrin.h>
 #endif
+#include <immintrin.h>
+#include <emmintrin.h>
+
 
 /*
  * 	A non-parallel version of TBB's block range.
@@ -503,6 +505,7 @@ public:
 		float *Oc, *Gc, *Of, *Gf, *G1, *G2, *G3, *G4;
 		float* ADU_to_electron;
 
+		short unsigned int data0, data1, data2, data3, data4, data5, data6;
 		short unsigned int *sample_frame, *reset_frame;
 		float  *output;
 
@@ -518,7 +521,15 @@ public:
 		__m256 const_0xFF_ymm = _mm256_set1_ps ( 0xFF );
 		__m256 const_0x1F_ymm = _mm256_set1_ps ( 0x1F );
 		__m256 const_0x03_ymm = _mm256_set1_ps ( 0x03 );
+		__m256 const_0x02_ymm = _mm256_set1_ps ( 0x02 );
+		__m256 const_0x01_ymm = _mm256_set1_ps ( 0x01 );
 		__m256 const_0_ymm = _mm256_set1_ps ( 0 );
+		__m256i const_0xFF_int_ymm = _mm256_set1_epi32 ( 0xFF );
+		__m256i const_0x1F_int_ymm = _mm256_set1_epi32 ( 0x1F );
+		__m256i const_0x03_int_ymm = _mm256_set1_epi32 ( 0x03 );
+		__m256i fine_int_ymm, coarse_int_ymm, gain_int_ymm;
+
+
 		__m256 sample_gain_mask_ymm;
 
 		float tmp[8];
@@ -598,41 +609,69 @@ public:
 			data = sample_frame + i;
 			for(unsigned short ii = 0; ii < 2; ii++){
 
-				fine_ymm = _mm256_set_ps ( 0,
-						( (*(data + 6)>>2)&0xFF ), ( (*(data + 5)>>2)&0xFF ), ( (*(data + 4)>>2)&0xFF ),
-						( (*(data + 3)>>2)&0xFF ), ( (*(data + 2)>>2)&0xFF ), ( (*(data + 1)>>2)&0xFF ),
-						( (*(data)>>2)&0xFF )
+				data0 = *(data);
+				data1 = *(data + 1);
+				data2 = *(data + 2);
+				data3 = *(data + 3);
+				data4 = *(data + 4);
+				data5 = *(data + 5);
+				data6 = *(data + 6);
+
+//				fine_ymm = _mm256_set_ps ( 0,
+//						( (data6 >> 2) ), ( (data5 >> 2) ), ( (data4 >> 2) ),
+//						( (data3 >> 2) ), ( (data2 >> 2) ), ( (data1 >> 2) ),
+//						( (data0 >> 2) )
+//				);	/* note order is reverse */
+
+//				coarse_ymm = _mm256_set_ps ( 0,
+//						( (data6 >> 10)&0x1F ), ( (data5 >> 10)&0x1F ), ( (data4 >> 10)&0x1F ),
+//						( (data3 >> 10)&0x1F ), ( (data2 >> 10)&0x1F ), ( (data1 >> 10)&0x1F ),
+//						( (data0 >> 10)&0x1F )
+//				);	/* note order is reverse */
+
+				fine_int_ymm = _mm256_set_epi32 ( 0,
+						( (data6 >> 2) ), ( (data5 >> 2) ), ( (data4 >> 2) ),
+						( (data3 >> 2) ), ( (data2 >> 2) ), ( (data1 >> 2) ),
+						( (data0 >> 2) )
 				);	/* note order is reverse */
 
-				coarse_ymm = _mm256_set_ps ( 0,
-						( (*(data + 6)>>10)&0x1F ), ( (*(data + 5)>>10)&0x1F ), ( (*(data + 4)>>10)&0x1F ),
-						( (*(data + 3)>>10)&0x1F ), ( (*(data + 2)>>10)&0x1F ), ( (*(data + 1)>>10)&0x1F ),
-						( (*(data)>>10)&0x1F )
+				fine_int_ymm =  _mm256_castps_si256(_mm256_and_ps (  _mm256_castsi256_ps( fine_int_ymm ),  _mm256_castsi256_ps( const_0xFF_int_ymm ) ));
+				fine_ymm = _mm256_cvtepi32_ps ( fine_int_ymm );
+
+				coarse_int_ymm = _mm256_set_epi32 ( 0,
+						( (data6 >> 10) ), ( (data5 >> 10) ), ( (data4 >> 10) ),
+						( (data3 >> 10) ), ( (data2 >> 10) ), ( (data1 >> 10) ),
+						( (data0 >> 10) )
 				);	/* note order is reverse */
 
-				gain_mask_1_ymm = _mm256_set_ps ( 0,
-						( (*(data + 6)&3) ==0 ), ( (*(data + 5)&3) ==0 ), ( (*(data + 4)&3) ==0 ),
-						( (*(data + 3)&3) ==0 ), ( (*(data + 2)&3) ==0 ), ( (*(data + 1)&3) ==0 ),
-						( (*(data + 0)&3) ==0 )
+				coarse_int_ymm =  _mm256_castps_si256(_mm256_and_ps (  _mm256_castsi256_ps( coarse_int_ymm ),  _mm256_castsi256_ps( const_0xFF_int_ymm ) ));
+				coarse_ymm = _mm256_cvtepi32_ps ( coarse_int_ymm );
+
+				gain_int_ymm = _mm256_set_epi32 ( 0,
+						( (data6 ) ), ( (data5 ) ), ( (data4 ) ),
+						( (data3 ) ), ( (data2 ) ), ( (data1 ) ),
+						( (data0 ) )
 				);	/* note order is reverse */
 
-				gain_mask_2_ymm = _mm256_set_ps ( 0,
-						( (*(data + 6)&3) ==1 ), ( (*(data + 5)&3) ==1 ), ( (*(data + 4)&3) ==1 ),
-						( (*(data + 3)&3) ==1 ), ( (*(data + 2)&3) ==1 ), ( (*(data + 1)&3) ==1 ),
-						( (*(data + 0)&3) ==1 )
-				);	/* note order is reverse */
+				gain_int_ymm =  _mm256_castps_si256(_mm256_and_ps (  _mm256_castsi256_ps( gain_int_ymm ),  _mm256_castsi256_ps( const_0x03_int_ymm ) ));
+				gain_ymm = _mm256_cvtepi32_ps ( gain_int_ymm );
 
-				gain_mask_3_ymm = _mm256_set_ps ( 0,
-						( (*(data + 6)&3) ==2 ), ( (*(data + 5)&3) ==2 ), ( (*(data + 4)&3) ==2 ),
-						( (*(data + 3)&3) ==2 ), ( (*(data + 2)&3) ==2 ), ( (*(data + 1)&3) ==2 ),
-						( (*(data + 0)&3) ==2 )
-				);	/* note order is reverse */
 
-				gain_mask_4_ymm = _mm256_set_ps ( 0,
-						( (*(data + 6)&3) ==3 ), ( (*(data + 5)&3) ==3 ), ( (*(data + 4)&3) ==3 ),
-						( (*(data + 3)&3) ==3 ), ( (*(data + 2)&3) ==3 ), ( (*(data + 1)&3) ==3 ),
-						( (*(data + 0)&3) ==3 )
-				);	/* note order is reverse */
+//				gain_ymm = _mm256_set_ps ( 0,
+//						( (data6&3) ), ( (data5&3) ), ( (data4&3) ),
+//						( (data3&3) ), ( (data2&3) ), ( (data1&3) ),
+//						( (data0&3) )
+//				);
+
+				gain_mask_1_ymm = _mm256_cmp_ps ( gain_ymm, const_0_ymm , 0);
+				gain_mask_2_ymm = _mm256_cmp_ps ( gain_ymm, const_0x01_ymm , 0 );
+				gain_mask_3_ymm = _mm256_cmp_ps ( gain_ymm, const_0x02_ymm , 0 );
+				gain_mask_4_ymm = _mm256_cmp_ps ( gain_ymm, const_0x03_ymm , 0 );
+
+				gain_mask_1_ymm = _mm256_and_ps ( gain_mask_1_ymm, const_0x01_ymm );
+				gain_mask_2_ymm = _mm256_and_ps ( gain_mask_2_ymm, const_0x01_ymm );
+				gain_mask_3_ymm = _mm256_and_ps ( gain_mask_3_ymm, const_0x01_ymm );
+				gain_mask_4_ymm = _mm256_and_ps ( gain_mask_4_ymm, const_0x01_ymm );
 
 				gain_factor_ymm = _mm256_mul_ps ( gain_mask_1_ymm, gain_table_1_ymm );
 				gain_mask_2_ymm = _mm256_mul_ps ( gain_mask_2_ymm, gain_table_2_ymm );
