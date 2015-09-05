@@ -151,7 +151,8 @@ void percival_ADC_decode_combined_pipeline(
 		const percival_frame<unsigned short int> & reset,
 		percival_frame<float> & output,
 		const percival_calib_params & calib_params,
-		unsigned int grain_size)
+		unsigned int grain_size,
+		unsigned int max_tokens)
 {
 	unsigned short int default_grain_size = sample.width;
 
@@ -172,7 +173,7 @@ void percival_ADC_decode_combined_pipeline(
 		grain_size = default_grain_size;
 
 	/* Maximum number of tokens in existence at one point in time */
-	unsigned int max_tokens = 20;
+//	unsigned int max_tokens = 20;
 
 	/* starting a pipeline */
 	tbb::pipeline pipeline;

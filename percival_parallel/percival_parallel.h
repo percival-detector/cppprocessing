@@ -66,7 +66,8 @@ void percival_ADC_decode_combined_pipeline(
 		const percival_frame<unsigned short int> & reset,
 		percival_frame<float> & output,
 		const percival_calib_params & calib_params,
-		unsigned int grain_size = 3528);
+		unsigned int grain_size = 3528,
+		unsigned int max_tokens = 20);
 
 
 

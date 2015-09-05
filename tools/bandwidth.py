@@ -3,7 +3,7 @@ import socket
 import subprocess
 import output_processing as op
 
-def run_application(execute_function, width, height, repeat):
+def run_application(execute_function, width, height, repeat, max_tokens, max_threads):
     #Program to execute
     debug_version = './Debug/cppProcessing2.0 '
     profile_version = './Profiling/cppProcessing2.0 '
@@ -23,7 +23,7 @@ def run_application(execute_function, width, height, repeat):
     result_directory = './oprof_reports/'+ socket.gethostname() + '/'
     report_destination = result_directory + 'bandwidth_report.txt'
 
-    cmdl_arg = '1 '  + str(width) + ' '+ str(height) + ' ' + str(repeat) + ' ' + text_file_name + ' ' + str(grain_size) + ' ' + str(execute_function)   
+    cmdl_arg = '1 '  + str(width) + ' '+ str(height) + ' ' + str(repeat) + ' ' + text_file_name + ' ' + str(grain_size) + ' ' + str(execute_function)   + ' ' + str(max_tokens) + ' ' + str(max_threads)
     program_to_execute = parallel_profile + cmdl_arg
 
     cmd_time = '(/usr/bin/time -v ' + program_to_execute + ') &> ' + report_destination
@@ -46,14 +46,23 @@ def parse(file):
     print total_time/1000
     return total_time/1000
 
+def time_function (width, height, repeat, max_tokens, max_threads):
+    # run_application(0, width, height, repeat)
+    time0 = run_application(0, width, height, repeat, max_tokens, max_threads)
+    time1 = run_application(1, width, height, repeat, max_tokens, max_threads)
+    
+    timediff = (time1 - time0)
+    bandwidth = op.get_bytes(10 * repeat * width * height * 2 / timediff) + '/s'
+    
+    return bandwidth
+    
+
 width = 3528
 height = 3717
 repeat = 100
+max_tokens = 20
+max_threads = 20
 # run_application(0, width, height, repeat)
-time0 = run_application(0, width, height, repeat)
-time1 = run_application(1, width, height, repeat)
-
-timediff = (time1 - time0)
-bandwidth = op.get_bytes(10 * repeat * width * height * 2 / timediff) + '/s'
+bandwidth = time_function(width, height, repeat, max_tokens, max_threads)
 
 print bandwidth 

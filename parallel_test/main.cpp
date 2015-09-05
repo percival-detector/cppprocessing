@@ -35,6 +35,11 @@ int main(int argn, char* argv[]){
 	 * main use_meaningless_image_yes, width height repeat test_params_file
 	 * main no commandline input, use default test image.
 	 *
+	 * Maximum number of tokens
+	 * Number of threads
+	 * grain_size
+	 *
+	 *
 	 */
 
 	percival_frame<unsigned short int> sample_frame;
@@ -70,9 +75,11 @@ int main(int argn, char* argv[]){
 	std::string config_file = "./data/test_param_file.txt";
 
 	int width, height;
-	int repeat=1000;
+	int repeat=100;
 	unsigned int grain_size = 3528;
 	unsigned int execute_function = 1;
+	unsigned int max_tokens = 20;
+	unsigned int max_threads = 20;
 //used for profiling
 	height = 160;		//fixed
 	bool use_meaningless_image = false;
@@ -93,6 +100,13 @@ int main(int argn, char* argv[]){
 				sscanf(argv[6], "%d", &grain_size);
 				if(argn >= 8){
 					sscanf(argv[7], "%d", &execute_function);
+					if(argn >= 9 ){
+						sscanf(argv[8], "%d", &max_tokens);
+						if(argn >= 10 ){
+							sscanf(argv[9], "%d", &max_threads);
+						}
+					}
+
 				}
 			}
 		}//using computer generated data
@@ -115,7 +129,7 @@ int main(int argn, char* argv[]){
 	percival_load_calib_params(calib_params, global_params);
 
 	/*settin the number of threads to use*/
-	tbb::task_scheduler_init init();
+	tbb::task_scheduler_init init(max_threads);
 
 	if(use_meaningless_image){
 		/*14 images per iteration*/
@@ -228,7 +242,7 @@ int main(int argn, char* argv[]){
 //				percival_ADC_decode_pf_combined_tbb_pipeline1(reset_frame, ADC_decoded_reset_frame ,calib_params, grain_size);
 //				percival_CDS_correction(ADC_decoded_sample_frame, ADC_decoded_reset_frame, electron_corrected_frame);
 				if(execute_function)
-					percival_ADC_decode_combined_pipeline(sample_frame, reset_frame, CDS_frame, calib_params, grain_size);
+					percival_ADC_decode_combined_pipeline(sample_frame, reset_frame, CDS_frame, calib_params, grain_size, max_tokens);
 //				percival_ADC_decode_pf_unit_combined_tbb_pipeline1(sample_frame, ADC_decoded_sample_frame ,calib_params, sample_gain_frame, sample_fine_frame, sample_coarse_frame, calibrated_sample_frame, 3528/7);
 //				percival_ADC_decode_pf_unit_combined_tbb_pipeline1(reset_frame, ADC_decoded_reset_frame ,calib_params, reset_gain_frame, reset_fine_frame, reset_coarse_frame, calibrated_reset_frame, 3528/7);
 			}
