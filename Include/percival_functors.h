@@ -494,36 +494,34 @@ public:
 		 */
 		unsigned int begin = r.begin();
 		unsigned int end = r.end();
-		unsigned short int pixel;
 
 		/*listing all variables*/
-		unsigned short int gain, coarseBits, fineBits;
-		unsigned short int count,current_count, index;	/* Only choose 0 or 1 for process_reset */
 		unsigned short int *data;
-		unsigned int row, row_counter, col_counter, width, calib_data_width, position_in_calib_array, location;
-		unsigned int is_reset_frame;
+		unsigned int row, row_counter, col_counter, width, calib_data_width, position_in_calib_array;
 
 		/* constants */
 		float *Oc, *Gc, *Of, *Gf, *G1, *G2, *G3, *G4;
 		float* ADU_to_electron;
-		float gain_factor;
 
 		short unsigned int *sample_frame, *reset_frame;
 		float  *output;
 
 		/* 10 AVX arrays, 16 registers */
 		__m256 Gc_ymm, Oc_ymm, Gf_ymm, Of_ymm, ADU_2e_conv_ymm;
-		__m256 gain_mask_ymm;
-		__m256 result_ymm;
-		__m256 gain_factor_ymm;
-		__m256 sample_result_ymm, reset_result_ymm;
-		__m256 tmp_ymm0, tmp_ymm1, tmp_ymm2, tmp_ymm3, tmp_ymm4, tmp_ymm5;
+		__m256 sample_shifted_2_ymm, sample_shifted_10_ymm, sample_ymm;
+		__m256 fine_ymm, coarse_ymm, gain_ymm ;
+		__m256 gain_mask_1_ymm, gain_mask_2_ymm, gain_mask_3_ymm, gain_mask_4_ymm;
+		__m256 gain_table_1_ymm, gain_table_2_ymm, gain_table_3_ymm, gain_table_4_ymm;
+		__m256 gain_factor_ymm, result_ymm, sample_result_ymm, reset_result_ymm,final_result_ymm;
+		__m256 tmp_ymm, tmp_ymm0, tmp_ymm1, tmp_ymm2, tmp_ymm3, tmp_ymm4;
 
-		/* memory to temporarily store arrays of 8 float */
-		float fine_arr[16], coarse_arr[16], gain_factor_arr[16];
-		float gain_mask[8];
+		__m256 const_0xFF_ymm = _mm256_set1_ps ( 0xFF );
+		__m256 const_0x1F_ymm = _mm256_set1_ps ( 0x1F );
+		__m256 const_0x03_ymm = _mm256_set1_ps ( 0x03 );
+		__m256 const_0_ymm = _mm256_set1_ps ( 0 );
+		__m256 sample_gain_mask_ymm;
+
 		float tmp[8];
-
 		/*Initialising variables needed*/
 		sample_frame = input.input_sample.data;
 		output = input.output.data;
@@ -553,26 +551,16 @@ public:
 		/* Needs to be done carefully to avoid segmentation fault */
 		const unsigned int avx_grain_end = end - 7;	/* if the grain ends in the middle of the row */
 
-		ADU_2e_conv_ymm = _mm256_loadu_ps( ADU_to_electron );
-
-		for(unsigned short int m = 0; m < 8; m ++){
-			*( coarse_arr + m ) = 0;
-			*( fine_arr + m ) = 0;
-			*( gain_factor_arr + m) = 0;
-
-			*( coarse_arr + m + 8 ) = 0;
-			*( fine_arr + m + 8 ) = 0;
-			*( gain_factor_arr + m + 8) = 0;
-		}
+		ADU_2e_conv_ymm = _mm256_loadu_ps( ADU_to_electron + begin );
 
 		/*loop*/
-		for(unsigned int i = begin; i < end; ++i){	/* move 7 elements forward each time */
+		for(unsigned int i = begin; i < end; i = i + 7){	/* move 7 elements forward each time */
 			/*
 			 *  Efficient loop counter
 			 *
 			 */
-			if( (row_counter^width) && (i ^ begin) ){
-				row_counter++;
+			if( (row_counter^(width-7)) && (i ^ begin) ){
+				row_counter+=7;
 			}else{
 				if(i ^ begin){	/* If this is not start of the loop */
 					row_counter = 0;
@@ -599,145 +587,125 @@ public:
 				Of_ymm = _mm256_loadu_ps( Of + position_in_calib_array );
 			}
 
-			/*
-			 *  The count and current_count are two counters.
-			 *  They used to track whether the sample or reset data is being worked on by the while loop.
-			 */
 
+			/* loading parameters */
+			gain_table_1_ymm = _mm256_loadu_ps( G1 + i);
+			gain_table_2_ymm = _mm256_loadu_ps( G2 + i);
+			gain_table_3_ymm = _mm256_loadu_ps( G3 + i);
+			gain_table_4_ymm = _mm256_loadu_ps( G4 + i);
 
+			sample_gain_mask_ymm = _mm256_set1_ps ( 1 );
+			data = sample_frame + i;
+			for(unsigned short ii = 0; ii < 2; ii++){
 
-			/*
-			 *  While loop to work on sample and reset frame.
-			 * 	The specification required CDS_subtraction to be applied only to pixels with gain == 0b00
-			 * */
-			data = sample_frame;
-			count = 0; current_count = 0;
-			/* counting the array index for temporary storage */
+				fine_ymm = _mm256_set_ps ( 0,
+						( (*(data + 6)>>2)&0xFF ), ( (*(data + 5)>>2)&0xFF ), ( (*(data + 4)>>2)&0xFF ),
+						( (*(data + 3)>>2)&0xFF ), ( (*(data + 2)>>2)&0xFF ), ( (*(data + 1)>>2)&0xFF ),
+						( (*(data)>>2)&0xFF )
+				);	/* note order is reverse */
 
-			do{
+				coarse_ymm = _mm256_set_ps ( 0,
+						( (*(data + 6)>>10)&0x1F ), ( (*(data + 5)>>10)&0x1F ), ( (*(data + 4)>>10)&0x1F ),
+						( (*(data + 3)>>10)&0x1F ), ( (*(data + 2)>>10)&0x1F ), ( (*(data + 1)>>10)&0x1F ),
+						( (*(data)>>10)&0x1F )
+				);	/* note order is reverse */
 
-				pixel = *(data + i);
-				index = current_count * 8 + col_counter;
+				gain_mask_1_ymm = _mm256_set_ps ( 0,
+						( (*(data + 6)&3) ==0 ), ( (*(data + 5)&3) ==0 ), ( (*(data + 4)&3) ==0 ),
+						( (*(data + 3)&3) ==0 ), ( (*(data + 2)&3) ==0 ), ( (*(data + 1)&3) ==0 ),
+						( (*(data + 0)&3) ==0 )
+				);	/* note order is reverse */
 
-				/* unit_ADC_decode */
-				*( coarse_arr + index ) = (pixel & 0x7c00) >> 10;;
-				*( fine_arr + index ) = (pixel & 0x3FC) >> 2;
+				gain_mask_2_ymm = _mm256_set_ps ( 0,
+						( (*(data + 6)&3) ==1 ), ( (*(data + 5)&3) ==1 ), ( (*(data + 4)&3) ==1 ),
+						( (*(data + 3)&3) ==1 ), ( (*(data + 2)&3) ==1 ), ( (*(data + 1)&3) ==1 ),
+						( (*(data + 0)&3) ==1 )
+				);	/* note order is reverse */
 
-				gain = pixel & 0x0003;
+				gain_mask_3_ymm = _mm256_set_ps ( 0,
+						( (*(data + 6)&3) ==2 ), ( (*(data + 5)&3) ==2 ), ( (*(data + 4)&3) ==2 ),
+						( (*(data + 3)&3) ==2 ), ( (*(data + 2)&3) ==2 ), ( (*(data + 1)&3) ==2 ),
+						( (*(data + 0)&3) ==2 )
+				);	/* note order is reverse */
 
-				/* unit_ADC_gain_multiplication */
-				switch(gain){
-				case 0b00:
-					*( gain_factor_arr + index ) = *(G1 +  i);
-					count = 1;			/* choose 1 if processing of reset frame is needed. choose 0 otherwise */
-					data = reset_frame;
-					break;
-				case 0b01:
-					*( gain_factor_arr + index ) = *(G2  + i);
-					break;
-				case 0b10:
-					*( gain_factor_arr + index ) = *(G3  + i);
-					break;
-				case 0b11:
-					*( gain_factor_arr + index ) = *(G4  + i);
-					break;
-				default:
-					throw datatype_exception("Invalid gain bit detected.");
-				}
+				gain_mask_4_ymm = _mm256_set_ps ( 0,
+						( (*(data + 6)&3) ==3 ), ( (*(data + 5)&3) ==3 ), ( (*(data + 4)&3) ==3 ),
+						( (*(data + 3)&3) ==3 ), ( (*(data + 2)&3) ==3 ), ( (*(data + 1)&3) ==3 ),
+						( (*(data + 0)&3) ==3 )
+				);	/* note order is reverse */
 
-				/* Updating current count after each iteration */
-				current_count = (current_count+1)&0x1;
-			}while( count&current_count );
+				gain_factor_ymm = _mm256_mul_ps ( gain_mask_1_ymm, gain_table_1_ymm );
+				gain_mask_2_ymm = _mm256_mul_ps ( gain_mask_2_ymm, gain_table_2_ymm );
+				gain_mask_3_ymm = _mm256_mul_ps ( gain_mask_3_ymm, gain_table_3_ymm );
+				gain_mask_4_ymm = _mm256_mul_ps ( gain_mask_4_ymm, gain_table_4_ymm );
 
+				gain_factor_ymm = _mm256_add_ps ( gain_factor_ymm, gain_mask_2_ymm );
+				gain_factor_ymm = _mm256_add_ps ( gain_factor_ymm, gain_mask_3_ymm );
+				gain_factor_ymm = _mm256_add_ps ( gain_factor_ymm, gain_mask_4_ymm );
 
-			/* do a computation every 7 iterations */
-			if( (col_counter^6) )
-				col_counter++;
-			else{
-				/* do a computation */
-				/* sample frame: is_reset_frame = 0 */
-				is_reset_frame = 0;
-				tmp_ymm0  = _mm256_loadu_ps( coarse_arr );
-				tmp_ymm0  = _mm256_sub_ps ( Oc_ymm, tmp_ymm0 );	//Oc - coarseBits
+				gain_factor_ymm = _mm256_mul_ps ( sample_gain_mask_ymm, gain_factor_ymm );
+
+				tmp_ymm0  = _mm256_sub_ps ( Oc_ymm, coarse_ymm );	//Oc - coarseBits
 				tmp_ymm0  = _mm256_mul_ps ( tmp_ymm0, Gc_ymm );	//Gc * (Oc - coarseBits)
 
-				tmp_ymm1 = _mm256_loadu_ps( fine_arr );
-				tmp_ymm1 = _mm256_sub_ps ( tmp_ymm1, Of_ymm );  //Of - fineBits
+				tmp_ymm1 = _mm256_sub_ps ( fine_ymm, Of_ymm );  //Of - fineBits
 				tmp_ymm1 = _mm256_mul_ps ( tmp_ymm1, Gf_ymm );  //Gf * (Of - fineBits)
 
 				tmp_ymm2 = _mm256_sub_ps ( tmp_ymm0, tmp_ymm1 );  //calibrated sample
 
-				gain_factor_ymm = _mm256_loadu_ps( gain_factor_arr );
+				result_ymm = _mm256_mul_ps ( tmp_ymm2, gain_factor_ymm );
 
-				sample_result_ymm = _mm256_mul_ps ( tmp_ymm2, gain_factor_ymm );
+				data = reset_frame + i;
 
-				/* Reset frame: is_reset_frame = 1 */
-				is_reset_frame = 1;
-				tmp_ymm3  = _mm256_loadu_ps( coarse_arr + 8 );
-				tmp_ymm3  = _mm256_sub_ps ( Oc_ymm, tmp_ymm3 );
-				tmp_ymm3  = _mm256_mul_ps ( tmp_ymm3, Gc_ymm );
-
-				tmp_ymm4 = _mm256_loadu_ps( fine_arr + 8 );
-				tmp_ymm4 = _mm256_sub_ps ( tmp_ymm4, Of_ymm );
-				tmp_ymm4 = _mm256_mul_ps ( tmp_ymm4, Gf_ymm );
-
-				tmp_ymm5 = _mm256_sub_ps ( tmp_ymm3, tmp_ymm4 );
-
-				gain_factor_ymm = _mm256_loadu_ps( gain_factor_arr + 8 );
-
-				reset_result_ymm = _mm256_mul_ps ( tmp_ymm5, gain_factor_ymm );
-
-				/* subtraction */
-				tmp_ymm1 = _mm256_sub_ps ( sample_result_ymm, reset_result_ymm );
-
-				/* Apply scaling if needed */
-				/* flat field correction and dark image subtraction can be applied here too. */
-				result_ymm = _mm256_mul_ps ( ADU_2e_conv_ymm, tmp_ymm1 );
-
-
-				/* write to memory */
-				if( (i < avx_grain_end) ){
-					/*writing to memory*/
-					_mm256_storeu_ps( (output + i - col_counter), result_ymm );
+				if(ii){
+					reset_result_ymm = result_ymm;
 				}else{
-					_mm256_storeu_ps( tmp, result_ymm);
-					for(unsigned int kk = 0; kk < 7; ++kk){
-						*(output + i + kk - col_counter) = tmp[kk];
-					}
+					sample_result_ymm = result_ymm;
 				}
 
-				/* reset for next iteration */
-				for(unsigned short int m = 0; m < 8; m ++){
-//					*( coarse_arr + m ) = 0;
-//					*( fine_arr + m ) = 0;
-					*( gain_factor_arr + m) = 0;
+				sample_gain_mask_ymm = gain_mask_1_ymm;
+			}//end of inner loop
 
-//					*( coarse_arr + m + 8 ) = 0;
-//					*( fine_arr + m + 8 ) = 0;
-					*( gain_factor_arr + m + 8) = 0;
+			result_ymm = sample_result_ymm - reset_result_ymm;
 
+			final_result_ymm = _mm256_mul_ps ( ADU_2e_conv_ymm, result_ymm );
+
+
+			/* write to memory */
+			if( i < avx_grain_end ){ //(i < avx_grain_end) ){
+				/*writing to memory*/
+				_mm256_storeu_ps( (output + i), final_result_ymm );
+			}else{
+				_mm256_storeu_ps( tmp, final_result_ymm);
+				for(unsigned int kk = 0; kk < 7; ++kk){
+					*(output + i + kk) = tmp[kk];
 				}
+			}
+			/* load next cycle */
+			ADU_2e_conv_ymm = _mm256_loadu_ps( ADU_to_electron + i + 7);
 
-				/* load next cycle */
-				ADU_2e_conv_ymm = _mm256_loadu_ps( ADU_to_electron + i + 1 );
-#define PREFETCH_DISTANCE 32
-				if( ((i + PREFETCH_DISTANCE) < end) && (!(i % 32)) ){
-					_mm_prefetch( ( sample_frame + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);	//Preload 14 iterations ahead ~154 cycle per iteration
-					_mm_prefetch( ( reset_frame + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);
+//#define PREFETCH_DISTANCE 32
 
-					_mm_prefetch( ( G1 + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);	//Preload 14 iterations ahead ~154 cycle per iteration
-					_mm_prefetch( ( G2 + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);
-
-					_mm_prefetch( ( G3 + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);	//Preload 14 iterations ahead ~154 cycle per iteration
-					_mm_prefetch( ( G4 + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);
-
-					_mm_prefetch( ( ADU_to_electron + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);	//Preload 14 iterations ahead ~154 cycle per iteration
-				}
-				col_counter = 0;
-			}  // end of loop counter
+		if( (row_counter^width) ){
+			row_counter++;
+		}else{
+			row_counter = 0;
+			row++;
+		}
 
 
-
+//			if( ((i + PREFETCH_DISTANCE) < end) && (!(i % 32)) ){
+//				_mm_prefetch( ( sample_frame + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);	//Preload 14 iterations ahead ~154 cycle per iteration
+//				_mm_prefetch( ( reset_frame + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);
+//
+//				_mm_prefetch( ( G1 + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);	//Preload 14 iterations ahead ~154 cycle per iteration
+//				_mm_prefetch( ( G2 + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);
+//
+//				_mm_prefetch( ( G3 + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);	//Preload 14 iterations ahead ~154 cycle per iteration
+//				_mm_prefetch( ( G4 + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);
+//
+//				_mm_prefetch( ( ADU_to_electron + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);	//Preload 14 iterations ahead ~154 cycle per iteration
+//			}
 
 		} //outermost for loop
 	}//definition of operator overloading
