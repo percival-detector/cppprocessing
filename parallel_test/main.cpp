@@ -72,7 +72,7 @@ int main(int argn, char* argv[]){
 	int width, height;
 	int repeat=1000;
 	unsigned int grain_size = 3528;
-	unsigned int execute_function;
+	unsigned int execute_function = 1;
 //used for profiling
 	height = 160;		//fixed
 	bool use_meaningless_image = false;
