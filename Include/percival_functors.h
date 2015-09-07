@@ -19,7 +19,7 @@
 #endif
 #include <immintrin.h>
 #include <emmintrin.h>
-
+#include "percival_avx.h"
 
 /*
  * 	A non-parallel version of TBB's block range.
@@ -324,7 +324,7 @@ public:
 
 		calib_data_width = calib.Gc.width;
 		width = input.input_sample.width;
-		counter = 0;
+		counter = (begin/7) * 8;
 
 		Gc = calib.Gc.data;
 		Oc = calib.Oc.data;
@@ -347,7 +347,7 @@ public:
 		/* Needs to be done carefully to avoid segmentation fault */
 		const unsigned int avx_grain_end = end - 7;	/* if the grain ends in the middle of the row */
 
-		ADU_2e_conv_ymm = _mm256_load_ps( ADU_to_electron + begin );
+		ADU_2e_conv_ymm = _mm256_load_ps( ADU_to_electron + counter );
 
 		/*loop*/
 		for(unsigned int i = begin; i < end; i = i + 7){	/* move 7 elements forward each time */
@@ -383,14 +383,12 @@ public:
 				Of_ymm = _mm256_load_ps( Of + position_in_calib_array );
 			}
 
-//			if( i == 21)
-//				std::cout << G1 << std::endl;
-
 			/* loading parameters */
 			gain_table_1_ymm = _mm256_load_ps( G1 + counter);
 			gain_table_2_ymm = _mm256_load_ps( G2 + counter);
 			gain_table_3_ymm = _mm256_load_ps( G3 + counter);
 			gain_table_4_ymm = _mm256_load_ps( G4 + counter);
+			ADU_2e_conv_ymm = _mm256_load_ps( ADU_to_electron + counter);
 
 			sample_gain_mask_ymm = _mm256_set1_ps ( 1 );
 			data = sample_frame + i;			//1
@@ -497,8 +495,6 @@ public:
 					*(output + i + kk) = tmp[kk];				//14
 				}
 			}
-			/* load next cycle */
-			ADU_2e_conv_ymm = _mm256_load_ps( ADU_to_electron + counter + 8);
 			counter += 8;
 		} //outermost for loop
 		delete [] unaligned;

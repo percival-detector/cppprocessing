@@ -116,7 +116,7 @@ void percival_ADC_decode_combined_pipeline(
 	unsigned short int default_grain_size = sample.width;
 
 	/* Input, calib dimension checks */
-//	percival_input_calib_dimension_check(sample,calib_params);
+	percival_input_calib_dimension_check_AVX(sample,calib_params);
 	/* sample reset dimension check */
 	if( (sample.width != reset.width) || (sample.height != reset.height) )
 		throw dataspace_exception("Sample, reset frames dimension mismatch.");
@@ -130,9 +130,6 @@ void percival_ADC_decode_combined_pipeline(
 	/* grain size check */
 	if( (grain_size > NoOfPixels) || (grain_size <= 0) )
 		grain_size = default_grain_size;
-
-	/* Maximum number of tokens in existence at one point in time */
-//	unsigned int max_tokens = 20;
 
 	/* starting a pipeline */
 	tbb::pipeline pipeline;

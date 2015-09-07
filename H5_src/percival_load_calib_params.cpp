@@ -8,11 +8,12 @@
 #include "percival_load_calib_params.h"
 #include "percival_HDF5_loader.h"
 #include <stdexcept>
+
 //include hdf5 specific header files here later during refactoring
 
 //these functions were originally part of the constructor of percival_calib_params. In order to separate the percival Processing library and the HDF5 library, they have been implemented here.
 
-void percival_load_calib_params(percival_calib_params & calib_params, percival_global_params & global_params){
+void percival_load_calib_params(percival_calib_params & calib_params, percival_global_params & global_params, bool align_mem){
 
 	if(!global_params.initialised())
 		throw std::invalid_argument("global_params not initialised.");
@@ -83,16 +84,28 @@ void percival_load_calib_params(percival_calib_params & calib_params, percival_g
 	percival_HDF5_loader(default_path_name_Gain_lookup_table3, default_data_set_name, tmp8, transposed);
 	percival_HDF5_loader(default_path_name_Gain_lookup_table4, default_data_set_name, tmp9, transposed);
 
-	percival_calib_params::Gc = percival_align_memory(tmp1, tmp10, 7, 8);
-	percival_calib_params::Oc = percival_align_memory(tmp2, tmp11, 7, 8);
-	percival_calib_params::Gf = percival_align_memory(tmp3, tmp12, 7, 8);
-	percival_calib_params::Of = percival_align_memory(tmp4, tmp13, 7, 8);
-	percival_calib_params::ADU_to_electrons_conversion = percival_align_memory(tmp5, tmp14, 7, 8);
-	percival_calib_params::Gain_lookup_table1 = percival_align_memory(tmp6, tmp15, 7, 8);
-	percival_calib_params::Gain_lookup_table2 = percival_align_memory(tmp7, tmp16, 7, 8);
-	percival_calib_params::Gain_lookup_table3 = percival_align_memory(tmp8, tmp17, 7, 8);
-	percival_calib_params::Gain_lookup_table4 = percival_align_memory(tmp9, tmp18, 7, 8);
+	if(align_mem){
+		percival_calib_params::Gc = percival_align_memory(tmp1, tmp10, 7, 8);
+		percival_calib_params::Oc = percival_align_memory(tmp2, tmp11, 7, 8);
+		percival_calib_params::Gf = percival_align_memory(tmp3, tmp12, 7, 8);
+		percival_calib_params::Of = percival_align_memory(tmp4, tmp13, 7, 8);
+		percival_calib_params::ADU_to_electrons_conversion = percival_align_memory(tmp5, tmp14, 7, 8);
+		percival_calib_params::Gain_lookup_table1 = percival_align_memory(tmp6, tmp15, 7, 8);
+		percival_calib_params::Gain_lookup_table2 = percival_align_memory(tmp7, tmp16, 7, 8);
+		percival_calib_params::Gain_lookup_table3 = percival_align_memory(tmp8, tmp17, 7, 8);
+		percival_calib_params::Gain_lookup_table4 = percival_align_memory(tmp9, tmp18, 7, 8);
+	}else{
+		percival_calib_params::Gc = tmp1;
+		percival_calib_params::Oc = tmp2;
+		percival_calib_params::Gf = tmp3;
+		percival_calib_params::Of = tmp4;
+		percival_calib_params::ADU_to_electrons_conversion = tmp5;
+		percival_calib_params::Gain_lookup_table1 = tmp6;
+		percival_calib_params::Gain_lookup_table2 = tmp7;
+		percival_calib_params::Gain_lookup_table3 = tmp8;
+		percival_calib_params::Gain_lookup_table4 = tmp9;
 
+	}
 	percival_inverse_frame(percival_calib_params::Gc, percival_calib_params::Gc);
 	percival_inverse_frame(percival_calib_params::Gf, percival_calib_params::Gf);
 }

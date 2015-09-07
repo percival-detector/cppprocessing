@@ -126,10 +126,10 @@ int main(int argn, char* argv[]){
 
 	percival_global_params global_params(config_file);
 	percival_calib_params calib_params;
-	percival_load_calib_params(calib_params, global_params);
+	percival_load_calib_params(calib_params, global_params, true);
 
 	/*settin the number of threads to use*/
-	tbb::task_scheduler_init init(max_threads);
+	tbb::task_scheduler_init init();
 
 	if(use_meaningless_image){
 		/*14 images per iteration*/
