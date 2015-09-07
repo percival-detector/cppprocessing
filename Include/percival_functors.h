@@ -418,58 +418,9 @@ public:
  *
  */
 
-/*
- *  Possible choices of algorithms
- *  	step 1: unit_ADC_decode
- *  	step 2: unit_ADC_calibration
- *  	step 3: unit_gain_multiplication
- *  	step 4: unit_CDS_subtraction
- *  	step 5: unit_ADU_to_electron
- *
- * 	The following enum lists the possible EXIT point from the above steps.
- * 	e.g. unit_CDS_subtraction implies that step 1 - 4 will be performed.
- *
- */
-
-/*
- *  Various combinations of the processing algorithm steps
- */
-
-enum algorithm_pipeline{
-	head_to_ADC_calibration_enu,
-	head_to_gain_multiplication_enu,
-	head_to_CDS_enu,
-	ADC_calibration_to_gain_multiplication_enu,
-	unit_ADC_calibrated,
-	unit_gain_multiplication,
-	unit_CDS_subtraction,
-	unit_ADU_to_electron
-};	/* unit_ADC_decode is not supported since the original unit_decode function will outperform */
-
 struct head_to_CDS{
-	const static algorithm_pipeline type = head_to_CDS_enu;
 	percival_frame<unsigned short int> input_reset;
 	percival_frame<unsigned short int> input_sample;
-	percival_frame<float> output;
-};
-
-struct head_to_ADC_calibration{
-	const static algorithm_pipeline type = head_to_ADC_calibration_enu;
-	percival_frame<unsigned short int> input_sample;
-	percival_frame<float> output;
-};
-
-struct head_to_gain_multiplication{
-	const static algorithm_pipeline type = head_to_gain_multiplication_enu;
-	percival_frame<unsigned short int> input_sample;
-	percival_frame<float> output;
-};
-
-struct ADC_calibration_to_gain_multiplication{
-	const static algorithm_pipeline type = ADC_calibration_to_gain_multiplication_enu;
-	percival_frame<unsigned short int> coarse;
-	percival_frame<unsigned short int> fine;
-	percival_frame<unsigned short int> gain;
 	percival_frame<float> output;
 };
 
@@ -480,11 +431,11 @@ struct ADC_calibration_to_gain_multiplication{
  */
 
 template<typename input_type, typename range_iterator>
-class percival_algorithm_p{
+class percival_algorithm_avx{
 	input_type input;
 	const percival_calib_params calib;
 public:
-	percival_algorithm_p(input_type & input, const percival_calib_params & calib ):
+	percival_algorithm_avx(input_type & input, const percival_calib_params & calib ):
 		input( input ),
 		calib( calib )
 {}
@@ -511,26 +462,21 @@ public:
 
 		/* 10 AVX arrays, 16 registers */
 		__m256 Gc_ymm, Oc_ymm, Gf_ymm, Of_ymm, ADU_2e_conv_ymm;
-		__m256 sample_shifted_2_ymm, sample_shifted_10_ymm, sample_ymm;
 		__m256 fine_ymm, coarse_ymm, gain_ymm ;
 		__m256 gain_mask_1_ymm, gain_mask_2_ymm, gain_mask_3_ymm, gain_mask_4_ymm;
 		__m256 gain_table_1_ymm, gain_table_2_ymm, gain_table_3_ymm, gain_table_4_ymm;
-		__m256 gain_factor_ymm, result_ymm, sample_result_ymm, reset_result_ymm,final_result_ymm;
-		__m256 tmp_ymm, tmp_ymm0, tmp_ymm1, tmp_ymm2, tmp_ymm3, tmp_ymm4;
+		__m256 gain_factor_ymm, result_ymm, sample_result_ymm, reset_result_ymm, final_result_ymm;
+		__m256 tmp_ymm, tmp_ymm0, tmp_ymm1, tmp_ymm2, tmp_ymm3;
 
-		__m256 const_0xFF_ymm = _mm256_set1_ps ( 0xFF );
-		__m256 const_0x1F_ymm = _mm256_set1_ps ( 0x1F );
 		__m256 const_0x03_ymm = _mm256_set1_ps ( 0x03 );
 		__m256 const_0x02_ymm = _mm256_set1_ps ( 0x02 );
 		__m256 const_0x01_ymm = _mm256_set_ps ( 0, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01 );
+		__m256i const_0x01_int_ymm = _mm256_set_epi32 ( 0, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01);
 		__m256 const_0_ymm = _mm256_set1_ps ( 0 );
 		__m256i const_0xFF_int_ymm = _mm256_set1_epi32 ( 0xFF );
 		__m256i const_0x1F_int_ymm = _mm256_set1_epi32 ( 0x1F );
 		__m256i const_0x03_int_ymm = _mm256_set1_epi32 ( 0x03 );
-		__m256i const_0x01_int_ymm = _mm256_set_epi32 ( 0, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01);
 		__m256i fine_int_ymm, coarse_int_ymm, gain_int_ymm;
-
-
 		__m256 sample_gain_mask_ymm;
 
 		float tmp[8];
@@ -571,12 +517,12 @@ public:
 			 *  Efficient loop counter
 			 *
 			 */
-			if( (row_counter^(width-7)) && (i ^ begin) ){
-				row_counter+=7;
+			if( (row_counter^(width-7)) && (i ^ begin) ){	//4
+				row_counter+=7;			//1
 			}else{
-				if(i ^ begin){	/* If this is not start of the loop */
+				if(i ^ begin){	/* If this is not start of the loop */		//1
 					row_counter = 0;
-					row++;	/* start counting only after the first element */
+					row++;	/* start counting only after the first element */	//1
 				}
 				/*
 				 * 	Load 7 new elements of calibration data Gc, Oc, Gf, Of for every increment in row.
@@ -584,7 +530,7 @@ public:
 				 */
 
 				/* load first segments of calibration data */
-				position_in_calib_array = row * calib_data_width; //This starts with 0.
+				position_in_calib_array = row * calib_data_width; //This starts with 0.	//3
 				/*
 				 * If row increases, modify avx_row_end and updata Calibration params
 				 *
@@ -607,7 +553,8 @@ public:
 			gain_table_4_ymm = _mm256_loadu_ps( G4 + i);
 
 			sample_gain_mask_ymm = _mm256_set1_ps ( 1 );
-			data = sample_frame + i;
+			data = sample_frame + i;			//1
+
 			for(unsigned short ii = 0; ii < 2; ii++){
 
 				data0 = *(data);
@@ -619,7 +566,7 @@ public:
 				data6 = *(data + 6);
 
 				fine_int_ymm = _mm256_set_epi32 ( 0,
-						( (data6 >> 2) ), ( (data5 >> 2) ), ( (data4 >> 2) ),
+						( (data6 >> 2) ), ( (data5 >> 2) ), ( (data4 >> 2) ),			//7
 						( (data3 >> 2) ), ( (data2 >> 2) ), ( (data1 >> 2) ),
 						( (data0 >> 2) )
 				);	/* note order is reverse */
@@ -628,7 +575,7 @@ public:
 				fine_ymm = _mm256_cvtepi32_ps ( fine_int_ymm );
 
 				coarse_int_ymm = _mm256_set_epi32 ( 0,
-						( (data6 >> 10) ), ( (data5 >> 10) ), ( (data4 >> 10) ),
+						( (data6 >> 10) ), ( (data5 >> 10) ), ( (data4 >> 10) ),			//7
 						( (data3 >> 10) ), ( (data2 >> 10) ), ( (data1 >> 10) ),
 						( (data0 >> 10) )
 				);	/* note order is reverse */
@@ -636,34 +583,33 @@ public:
 				coarse_int_ymm =  _mm256_castps_si256(_mm256_and_ps (  _mm256_castsi256_ps( coarse_int_ymm ),  _mm256_castsi256_ps( const_0x1F_int_ymm ) ));
 				coarse_ymm = _mm256_cvtepi32_ps ( coarse_int_ymm );
 
-//				gain_int_ymm = _mm256_set_epi32 ( 0,
-//						( (data6 ) ), ( (data5 ) ), ( (data4 ) ),
-//						( (data3 ) ), ( (data2 ) ), ( (data1 ) ),
-//						( (data0 ) )
-//				);	/* note order is reverse */
-
-				gain_int_ymm = _mm256_set1_epi32 ( 1 );
-
+				gain_int_ymm = _mm256_set_epi32 ( 0,
+						( (data6 ) ), ( (data5 ) ), ( (data4 ) ),
+						( (data3 ) ), ( (data2 ) ), ( (data1 ) ),
+						( (data0 ) )
+				);	/* note order is reverse */
 
 				gain_int_ymm =  _mm256_castps_si256(_mm256_and_ps (  _mm256_castsi256_ps( gain_int_ymm ),  _mm256_castsi256_ps( const_0x03_int_ymm ) ));
+
+//				gain_int_ymm = _mm256_set1_epi32 (1);
 				gain_ymm = _mm256_cvtepi32_ps ( gain_int_ymm );
 
-				gain_mask_1_ymm = _mm256_cmp_ps ( gain_ymm, const_0_ymm , 0);	//3
+				gain_mask_1_ymm = _mm256_cmp_ps ( gain_ymm, const_0_ymm , 0);	//3*4 = 12
 				gain_mask_2_ymm = _mm256_cmp_ps ( gain_ymm, const_0x01_ymm , 0 );
 				gain_mask_3_ymm = _mm256_cmp_ps ( gain_ymm, const_0x02_ymm , 0 );
 				gain_mask_4_ymm = _mm256_cmp_ps ( gain_ymm, const_0x03_ymm , 0 );
 
-				gain_mask_1_ymm = _mm256_and_ps ( gain_mask_1_ymm, const_0x01_ymm );	//1
+				gain_mask_1_ymm = _mm256_and_ps ( gain_mask_1_ymm, const_0x01_ymm );	//1*4 = 4
 				gain_mask_2_ymm = _mm256_and_ps ( gain_mask_2_ymm, const_0x01_ymm );
 				gain_mask_3_ymm = _mm256_and_ps ( gain_mask_3_ymm, const_0x01_ymm );
 				gain_mask_4_ymm = _mm256_and_ps ( gain_mask_4_ymm, const_0x01_ymm );
 
-				gain_factor_ymm = _mm256_mul_ps ( gain_mask_1_ymm, gain_table_1_ymm );	//5
+				gain_factor_ymm = _mm256_mul_ps ( gain_mask_1_ymm, gain_table_1_ymm );	//5 *4 = 20
 				gain_mask_2_ymm = _mm256_mul_ps ( gain_mask_2_ymm, gain_table_2_ymm );
 				gain_mask_3_ymm = _mm256_mul_ps ( gain_mask_3_ymm, gain_table_3_ymm );
 				gain_mask_4_ymm = _mm256_mul_ps ( gain_mask_4_ymm, gain_table_4_ymm );
 
-				gain_factor_ymm = _mm256_add_ps ( gain_factor_ymm, gain_mask_2_ymm );	//3
+				gain_factor_ymm = _mm256_add_ps ( gain_factor_ymm, gain_mask_2_ymm );	//3*3 = 9
 				gain_factor_ymm = _mm256_add_ps ( gain_factor_ymm, gain_mask_3_ymm );
 				gain_factor_ymm = _mm256_add_ps ( gain_factor_ymm, gain_mask_4_ymm );
 
@@ -679,26 +625,27 @@ public:
 
 				result_ymm = _mm256_mul_ps ( tmp_ymm2, gain_factor_ymm );					//5
 
-				data = reset_frame + i;
-
 				if(ii){
 					reset_result_ymm = result_ymm;
 				}else{
 					sample_result_ymm = result_ymm;
 					if(
-							_mm256_testz_si256 ( _mm256_cvtps_epi32( _mm256_mul_ps( gain_mask_1_ymm, const_0x01_ymm ) ), const_0x01_int_ymm)	//returns 1 if a&b == 0
+							_mm256_testz_si256 ( _mm256_cvtps_epi32( _mm256_mul_ps( gain_mask_1_ymm, const_0x01_ymm ) ), const_0x01_int_ymm)	//returns 0 if gain = 1		//9
 					){
 						reset_result_ymm = const_0_ymm;
-						break;
+						goto finish;
 					}
 				}
 
+				data = reset_frame + i;
 				sample_gain_mask_ymm = gain_mask_1_ymm;
+
 			}//end of inner loop
 
-			result_ymm = sample_result_ymm - reset_result_ymm;
+			finish:
+			result_ymm = _mm256_sub_ps ( sample_result_ymm, reset_result_ymm );	//3
 
-			final_result_ymm = _mm256_mul_ps ( ADU_2e_conv_ymm, result_ymm );
+			final_result_ymm = _mm256_mul_ps ( ADU_2e_conv_ymm, result_ymm );		//5
 
 			/* write to memory */
 			if( i < avx_grain_end ){ //(i < avx_grain_end) ){
@@ -707,34 +654,11 @@ public:
 			}else{
 				_mm256_storeu_ps( tmp, final_result_ymm);
 				for(unsigned int kk = 0; kk < 7; ++kk){
-					*(output + i + kk) = tmp[kk];
+					*(output + i + kk) = tmp[kk];				//14
 				}
 			}
 			/* load next cycle */
 			ADU_2e_conv_ymm = _mm256_loadu_ps( ADU_to_electron + i + 7);
-
-//#define PREFETCH_DISTANCE 32
-
-		if( (row_counter^width) ){
-			row_counter++;
-		}else{
-			row_counter = 0;
-			row++;
-		}
-
-
-//			if( ((i + PREFETCH_DISTANCE) < end) && (!(i % 32)) ){
-//				_mm_prefetch( ( sample_frame + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);	//Preload 14 iterations ahead ~154 cycle per iteration
-//				_mm_prefetch( ( reset_frame + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);
-//
-//				_mm_prefetch( ( G1 + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);	//Preload 14 iterations ahead ~154 cycle per iteration
-//				_mm_prefetch( ( G2 + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);
-//
-//				_mm_prefetch( ( G3 + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);	//Preload 14 iterations ahead ~154 cycle per iteration
-//				_mm_prefetch( ( G4 + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);
-//
-//				_mm_prefetch( ( ADU_to_electron + i + 1 + PREFETCH_DISTANCE ) ,_MM_HINT_T0);	//Preload 14 iterations ahead ~154 cycle per iteration
-//			}
 
 		} //outermost for loop
 	}//definition of operator overloading
