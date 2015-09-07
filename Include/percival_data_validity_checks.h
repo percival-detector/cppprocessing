@@ -49,4 +49,24 @@ void percival_input_calib_dimension_check(
 		const percival_frame<unsigned short int> & input,
 		const percival_calib_params & calib);
 
+/* Function 7 */
+/* Checks whether input and output array dimensions are consistent */
+template<typename in_type, typename out_type>
+void percival_input_output_dimension_check(
+		const percival_frame<in_type> & input,
+		const percival_frame<out_type> & output)
+{
+	if(input.width!=output.width)
+		throw dataspace_exception("Input and output frame width mismatch.");
+	if(input.height!=output.height)
+		throw dataspace_exception("Input and output frame width mismatch.");
+}
+
+/* Function 8 */
+/* Checks whether input and calibration array dimensions are consistent */
+void percival_input_calib_dimension_check_AVX(
+		const percival_frame<unsigned short int> & input,
+		const percival_calib_params & calib);
+
+
 #endif /* INCLUDE_PERCIVAL_DATA_VALIDITY_CHECKS_H_ */
