@@ -46,12 +46,12 @@ public:
 			/*On current 64 bits machine, alignment defaults to 64 bits*/
 			unsigned int align_to_N_bytes = 4096;
 			/*allocating memory*/
-			not_aligned = new T[width * height + align_to_N_bytes + 8];	/*32Bytes extra space to align*/
+			not_aligned = new T[width * height + ( align_to_N_bytes + 32 )/sizeof(T)];	/*32Bytes extra space to align*/
 
 			/*align to 128 bits boundary*/
 			std::size_t address = reinterpret_cast<std::size_t>(not_aligned);
 			std::size_t offset = address % align_to_N_bytes;
-			data = not_aligned + offset;
+			data = reinterpret_cast<T*>(reinterpret_cast<std::size_t>(not_aligned) + offset);
 		}
 	}
 
@@ -183,5 +183,36 @@ void percival_CDS_correction(percival_frame<float> &sample, const percival_frame
 void percival_unit_gain_multiplication(const percival_frame<unsigned short int> & src_frame, const percival_frame<float> & calibrated, percival_frame<float> & output, const percival_calib_params & calib_params, bool check_dimensions = true);
 void percival_unit_ADC_decode(const percival_frame<unsigned short int> &, percival_frame<unsigned short int> & Coarse, percival_frame<unsigned short int> & Fine, percival_frame<unsigned short int> & Gain);
 void percival_unit_ADC_calibration(const percival_frame<unsigned short int> & Coarse,const  percival_frame<unsigned short int> & Fine, percival_frame<float>& output, const percival_calib_params &, bool check_dimensions = true);
+
+template<typename T>
+percival_frame<T> percival_align_memory(percival_frame_mem<T> & input, percival_frame_mem<T> & output_buffer, unsigned int stride, unsigned int boundary_size){
+	/* Check size */
+	unsigned int input_NoOfPixels = input.width * input.height;
+	unsigned int output_NoOfPixels = output_buffer.width * output_buffer.height;
+	if((input.width % stride))
+		throw dataspace_exception("percival_align_memory: stride does not divide width.");
+
+	if( ((input_NoOfPixels/stride))*boundary_size > output_NoOfPixels )
+		throw dataspace_exception("percival_align_memory: spare space is insufficient.");
+
+	if( reinterpret_cast<std::size_t>(input.data)% (sizeof(T) * boundary_size))
+		throw dataspace_exception("percival_align_memory: first element of input data is not aligned.");
+	percival_frame<T> output;
+	output.height = input.height;
+	output.width = (input.width / stride ) * boundary_size;
+
+	for(unsigned int i = 0; i < input.width / stride; i ++){
+		for (unsigned int j = 0; j < boundary_size; j ++){
+			if(j < stride){
+				*(output_buffer.data + i * boundary_size + j) = *(input.data + i * stride + j);
+			}else{
+				*(output_buffer.data + i * boundary_size + j) = 0;
+			}
+		}
+	}
+
+	output = output_buffer;
+	return output;
+}
 
 #endif /* INCLUDE_PERCIVAL_PROCESSING_H_ */

@@ -281,7 +281,7 @@ public:
 
 		/*listing all variables*/
 		unsigned short int *data;
-		unsigned int row, row_counter, col_counter, width, calib_data_width, position_in_calib_array;
+		unsigned int row, row_counter, col_counter, width, calib_data_width, position_in_calib_array, counter;
 
 		/* constants */
 		float *Oc, *Gc, *Of, *Gf, *G1, *G2, *G3, *G4;
@@ -310,7 +310,13 @@ public:
 		__m256i fine_int_ymm, coarse_int_ymm, gain_int_ymm;
 		__m256 sample_gain_mask_ymm;
 
-		float tmp[8];
+		/* provide aligned memory access to _mm256_store_ps */
+		float* unaligned = new float[ 8 + 8 ];
+		float* tmp = reinterpret_cast<float*>(
+				reinterpret_cast<std::size_t>( unaligned ) +
+				reinterpret_cast<std::size_t>( unaligned ) % 32
+		);
+
 		/*Initialising variables needed*/
 		sample_frame = input.input_sample.data;
 		output = input.output.data;
@@ -318,6 +324,7 @@ public:
 
 		calib_data_width = calib.Gc.width;
 		width = input.input_sample.width;
+		counter = 0;
 
 		Gc = calib.Gc.data;
 		Oc = calib.Oc.data;
@@ -340,7 +347,7 @@ public:
 		/* Needs to be done carefully to avoid segmentation fault */
 		const unsigned int avx_grain_end = end - 7;	/* if the grain ends in the middle of the row */
 
-		ADU_2e_conv_ymm = _mm256_loadu_ps( ADU_to_electron + begin );
+		ADU_2e_conv_ymm = _mm256_load_ps( ADU_to_electron + begin );
 
 		/*loop*/
 		for(unsigned int i = begin; i < end; i = i + 7){	/* move 7 elements forward each time */
@@ -370,18 +377,20 @@ public:
 				 * Segmentation fault might result if this is not guarantteed.
 				 *
 				 * */
-				Gc_ymm = _mm256_loadu_ps( Gc + position_in_calib_array );
-				Gf_ymm = _mm256_loadu_ps( Gf + position_in_calib_array );
-				Oc_ymm = _mm256_loadu_ps( Oc + position_in_calib_array );
-				Of_ymm = _mm256_loadu_ps( Of + position_in_calib_array );
+				Gc_ymm = _mm256_load_ps( Gc + position_in_calib_array );
+				Gf_ymm = _mm256_load_ps( Gf + position_in_calib_array );
+				Oc_ymm = _mm256_load_ps( Oc + position_in_calib_array );
+				Of_ymm = _mm256_load_ps( Of + position_in_calib_array );
 			}
 
+//			if( i == 21)
+//				std::cout << G1 << std::endl;
 
 			/* loading parameters */
-			gain_table_1_ymm = _mm256_loadu_ps( G1 + i);
-			gain_table_2_ymm = _mm256_loadu_ps( G2 + i);
-			gain_table_3_ymm = _mm256_loadu_ps( G3 + i);
-			gain_table_4_ymm = _mm256_loadu_ps( G4 + i);
+			gain_table_1_ymm = _mm256_load_ps( G1 + counter);
+			gain_table_2_ymm = _mm256_load_ps( G2 + counter);
+			gain_table_3_ymm = _mm256_load_ps( G3 + counter);
+			gain_table_4_ymm = _mm256_load_ps( G4 + counter);
 
 			sample_gain_mask_ymm = _mm256_set1_ps ( 1 );
 			data = sample_frame + i;			//1
@@ -483,15 +492,17 @@ public:
 				/*writing to memory*/
 				_mm256_storeu_ps( (output + i), final_result_ymm );
 			}else{
-				_mm256_storeu_ps( tmp, final_result_ymm);
+				_mm256_store_ps( tmp, final_result_ymm);
 				for(unsigned int kk = 0; kk < 7; ++kk){
 					*(output + i + kk) = tmp[kk];				//14
 				}
 			}
 			/* load next cycle */
-			ADU_2e_conv_ymm = _mm256_loadu_ps( ADU_to_electron + i + 7);
-
+			ADU_2e_conv_ymm = _mm256_load_ps( ADU_to_electron + counter + 8);
+			counter += 8;
 		} //outermost for loop
+		delete [] unaligned;
+		tmp = NULL;
 	}//definition of operator overloading
 }; //definition of class
 

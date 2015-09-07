@@ -41,23 +41,6 @@ void percival_unit_gain_multiplication_pf(
 		percival_frame<float> & output,
 		const percival_calib_params & calib_params,
 		bool check_dimensions = true);
-
-void percival_ADC_decode_pipe(
-		const percival_frame<unsigned short int> & input,
-		percival_frame<float> & output,
-		const percival_calib_params & calib_params,
-		percival_frame<unsigned short int> gain,
-		percival_frame<unsigned short int> fine,
-		percival_frame<unsigned short int> coarse,
-		percival_frame<float> calibrated,
-		bool store_gain = false);
-
-void percival_ADC_decode_pf(
-		const percival_frame<unsigned short int> & src_frame,
-		percival_frame<float> & des_frame,
-		const percival_calib_params & calib_params,
-		unsigned int grain_size = 100000,
-		bool store_gain = false);
 /*
  * ADC_decode stage filter
  */
@@ -69,15 +52,13 @@ void percival_ADC_decode_combined_pipeline(
 		unsigned int grain_size = 3528,
 		unsigned int max_tokens = 20);
 
-
-
 template<typename input_type>
 class ADC_decode_combined_filter : public tbb::filter{
 private:
 	const unsigned int grain_size;		/* size of loop */
 	percival_calib_params calib_params;
 
-	percival_algorithm_p< input_type, percival_range_iterator_mock_p > algorithm;
+	percival_algorithm_avx< input_type, percival_range_iterator_mock_p > algorithm;
 	percival_range_iterator_mock_p range;
 
 public:
@@ -89,8 +70,8 @@ public:
 				calib_params(calib_params),
 				grain_size(grain_size),
 				algorithm(input, calib_params),
-				range(0,1)
-	{}
+				range(0,1){}
+
 
 	void* operator()(void* input){
 		unsigned int * offset_ptr = static_cast < unsigned int* >(input);

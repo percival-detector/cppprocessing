@@ -36,48 +36,7 @@ void percival_ADC_decode_pipe(
 }
 
 
-void percival_ADC_decode_pf(
-		const percival_frame<unsigned short int> & src_frame,
-		percival_frame<float> & des_frame,
-		const percival_calib_params & calib_params,
-		unsigned int grain_size,
-		bool store_gain)
-{
-	//initialize destination matrix
-	if(src_frame.width != des_frame.width || src_frame.height != des_frame.height){
-		throw dataspace_exception("percival_ADC_decode: output and input dimension mismatch.");
-	}//Saving time for memory allocation
-
-	if(calib_params.Gc.height != src_frame.height){
-		throw dataspace_exception("percival_ADC_decode: calibration array height and sample array height mismatch.");
-	}
-
-	if(calib_params.Gc.width != 7)
-		throw dataspace_exception("percival_ADC_decode: calibration array width and sample array width mismatch. Expected: width == 7.");
-
-	unsigned int NoOfPixels = src_frame.width * src_frame.height;
-
-	percival_ADC_decode_p< tbb::blocked_range<unsigned int> > ADC_decode_p (src_frame, des_frame, calib_params);
-	tbb::parallel_for( tbb::blocked_range<unsigned int>(0, NoOfPixels, 1000), ADC_decode_p);
-
-	//	percival_ADC_decode_p< percival_range_iterator_mock_p > ADC_decode_p (src_frame, des_frame, calib_params);
-	//	percival_range_iterator_mock_p range(0, NoOfPixels);
-	//	unsigned int NoOfGrains = NoOfPixels / grain_size;
-	//	unsigned int lower, upper;
-	//	for(unsigned int i = 0; i < NoOfGrains; ++i){
-	//		lower = i * grain_size;
-	//		upper = (i + 1) * grain_size;
-	//		range.lower = lower;
-	//		range.upper = upper;
-	//		ADC_decode_p(range);
-	//	}
-
-
-}
-
 /*===============================================================================================================================*/
-/* Pipeline design mark four*/
-/* Ultimate gigantic function */
 /*
  *  Generate a stream of data for later stages
  */
@@ -157,7 +116,7 @@ void percival_ADC_decode_combined_pipeline(
 	unsigned short int default_grain_size = sample.width;
 
 	/* Input, calib dimension checks */
-	percival_input_calib_dimension_check(sample,calib_params);
+//	percival_input_calib_dimension_check(sample,calib_params);
 	/* sample reset dimension check */
 	if( (sample.width != reset.width) || (sample.height != reset.height) )
 		throw dataspace_exception("Sample, reset frames dimension mismatch.");
@@ -219,4 +178,5 @@ void percival_ADC_decode_combined_pipeline(
 //	tbb::parallel_for( tbb::blocked_range<unsigned int>(0, NoOfPixels, grain_size), percival_p, tbb::auto_partitioner());
 
 }
+
 
