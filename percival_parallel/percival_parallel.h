@@ -48,7 +48,42 @@ void percival_ADC_decode_combined_pipeline(
 		unsigned int max_tokens = 20);
 
 class percival_pipeline_stream_generator;
-class ADC_decode_combined_filter;
+
+template<typename algorithm_name>
+class ADC_decode_combined_filter : public tbb::filter{
+private:
+	const unsigned int grain_size;		/* size of loop */
+	percival_calib_params calib_params;
+
+	algorithm_name algorithm;
+	percival_range_iterator_mock_p range;
+
+public:
+	ADC_decode_combined_filter(
+			const percival_frame<unsigned short> & sample,
+			const percival_frame<unsigned short> & reset,
+			percival_frame<float> & output,
+			const percival_calib_params & calib_params,
+			const unsigned int grain_size):
+				tbb::filter(/*is_serial=*/false),
+				calib_params(calib_params),
+				grain_size(grain_size),
+				algorithm(sample, reset, output, calib_params),
+				range(0,1){}
+
+
+	void* operator()(void* input){
+		unsigned int * offset_ptr = static_cast < unsigned int* >(input);
+		unsigned int offset = *offset_ptr;
+		/* range to loop over */
+		range.lower = offset;
+		range.upper = grain_size + offset;
+		/*running the algorithm*/
+		algorithm(range);
+		return NULL;	/*return to next stage if needed*/
+	}
+};
+
 
 
 #endif /* PERCIVAL_PARALLEL_PERCIVAL_PARALLEL_H_ */

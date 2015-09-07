@@ -8,7 +8,7 @@
 #ifndef INCLUDE_PERCIVAL_AVX_H_
 #define INCLUDE_PERCIVAL_AVX_H_
 
-//#ifdef __AVX__
+#ifdef __AVX__
 
 #include <immintrin.h>
 #include <emmintrin.h>
@@ -149,7 +149,7 @@ public:
 			gain_table_4_ymm = _mm256_loadu_ps( G4 + counter);
 			ADU_2e_conv_ymm = _mm256_loadu_ps( ADU_to_electron + counter);
 
-			sample_gain_mask_ymm = _mm256_set1_ps ( 1 );
+			sample_gain_mask_ymm = _mm256_set1_ps ( 0 );
 			data = sample_frame + i;			//1
 
 			for(unsigned short ii = 0; ii < 2; ii++){
@@ -260,7 +260,19 @@ public:
 		tmp = NULL;
 	}//definition of operator overloading
 }; //definition of class
-//#endif
 
+#ifdef _TBB_
 
+#include "percival_parallel.h"
+void percival_ADC_decode_combined_pipeline_avx(
+		const percival_frame<unsigned short int> & sample,
+		const percival_frame<unsigned short int> & reset,
+		percival_frame<float> & output,
+		const percival_calib_params & calib_params,
+		unsigned int grain_size,
+		unsigned int max_tokens);
+
+#endif
+
+#endif
 #endif /* INCLUDE_PERCIVAL_AVX_H_ */

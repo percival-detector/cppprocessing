@@ -80,40 +80,6 @@ public:
 	}
 };
 
-class ADC_decode_combined_filter : public tbb::filter{
-private:
-	const unsigned int grain_size;		/* size of loop */
-	percival_calib_params calib_params;
-
-	percival_algorithm_avx< percival_range_iterator_mock_p > algorithm;
-	percival_range_iterator_mock_p range;
-
-public:
-	ADC_decode_combined_filter(
-			const percival_frame<unsigned short> & sample,
-			const percival_frame<unsigned short> & reset,
-			percival_frame<float> & output,
-			const percival_calib_params & calib_params,
-			const unsigned int grain_size):
-				tbb::filter(/*is_serial=*/false),
-				calib_params(calib_params),
-				grain_size(grain_size),
-				algorithm(sample, reset, output, calib_params),
-				range(0,1){}
-
-
-	void* operator()(void* input){
-		unsigned int * offset_ptr = static_cast < unsigned int* >(input);
-		unsigned int offset = *offset_ptr;
-		/* range to loop over */
-		range.lower = offset;
-		range.upper = grain_size + offset;
-		/*running the algorithm*/
-		algorithm(range);
-		return NULL;	/*return to next stage if needed*/
-	}
-};
-
 void percival_ADC_decode_combined_pipeline(
 		const percival_frame<unsigned short int> & sample,
 		const percival_frame<unsigned short int> & reset,
@@ -160,7 +126,7 @@ void percival_ADC_decode_combined_pipeline(
 	percival_pipeline_stream_generator Input(offset_ptr, grain_size, NoOfPixels, max_tokens);
 	pipeline.add_filter( Input );
 
-	ADC_decode_combined_filter ADC_decode_CDS ( sample, reset, output, calib_params, grain_size );
+	ADC_decode_combined_filter< percival_algorithm_p< percival_range_iterator_mock_p > > ADC_decode_CDS( sample, reset, output, calib_params, grain_size );
 	pipeline.add_filter( ADC_decode_CDS );
 
 	pipeline.run( max_tokens );

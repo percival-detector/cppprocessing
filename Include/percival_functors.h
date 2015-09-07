@@ -254,14 +254,23 @@ struct head_to_CDS{
  */
 
 
-template<typename input_type, typename range_iterator>
+template<typename range_iterator>
 class percival_algorithm_p{
-	input_type input;
+	const percival_frame<unsigned short> input_sample;
+	const percival_frame<unsigned short> input_reset;
+	percival_frame<float> output_frame;
 	const percival_calib_params calib;
 public:
-	percival_algorithm_p(input_type & input, const percival_calib_params & calib ):
-		input( input ),
+	percival_algorithm_p(
+			const percival_frame<unsigned short> &input_sample,
+			const percival_frame<unsigned short> &output_reset,
+			percival_frame<float> &output_frame,
+			const percival_calib_params & calib ):
+		input_sample( input_sample ),
+		input_reset( input_reset ),
+		output_frame(output_frame),
 		calib( calib )
+
 {}
 
 	void operator()(range_iterator & r)
@@ -276,7 +285,7 @@ public:
 		/*listing all variables*/
 		float arr[2] = {0,0};
 		unsigned short int gain, coarseBits, fineBits;
-		unsigned short int count,current_count, increment;
+		unsigned short int count,current_count;
 		unsigned short int *data, *sample_frame, *reset_frame;
 		unsigned int row, col_counter, row_counter, width, calib_data_width, position_in_calib_array;
 		float coarse_calibrated, fine_calibrated, gain_factor, result;
@@ -284,11 +293,12 @@ public:
 		float ADU_to_electron = 1;
 
 		/*Initialising variables needed*/
-		sample_frame = input.input_sample.data;
-		output = input.output.data;
+		sample_frame = input_sample.data;
+		output = output_frame.data;
+		reset_frame = input_reset.data;
 
 		calib_data_width = calib.Gc.width;
-		width = input.input_sample.width;
+		width = input_sample.width;
 
 		Gc = calib.Gc.data;
 		Oc = calib.Oc.data;
