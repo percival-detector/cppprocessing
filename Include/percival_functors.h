@@ -243,179 +243,10 @@ public:
 	}
 };
 
-/*
- *  A combined ADC_decode function used for parallel_for algorithms
- *  Consider removing
- *
- */
-
-
-template<typename range_iterator>
-class percival_ADC_decode_p{
-	const percival_frame<unsigned short int> src_frame;
-	percival_frame<float> des_frame;
-	percival_calib_params calib_params;
-
-public:
-	percival_ADC_decode_p (
-			const percival_frame<unsigned short int> & src_frame,
-			percival_frame<float> & des_frame,
-			const percival_calib_params & calib_params):
-				src_frame(src_frame),
-				des_frame(des_frame),
-				calib_params(calib_params)
-{}
-
-	void operator()( const range_iterator & r ) const
-	{
-		//calibration parameters
-		const unsigned int calib_data_width = calib_params.Gc.width;
-		const float VinMax=1.43;
-		//these two values are from February test data from Hazem. should be changed if calibration data changes
-		//		const float FMax = 222;
-		//		const float CMax = 26;
-		//		const float factor = 5772;// 222 * 26;
-		//		const float inverseVinMax = 0.6993007; //1/1.43
-		float gain_factor = 1;
-
-		/*Allocate memory for reusable variables*/
-		short unsigned int gain, fineBits, coarseBits;
-		short unsigned int col, row, position_in_calib_array;
-
-		short unsigned int pixel;
-		unsigned int width;
-
-		width = src_frame.width;
-
-		float* Gc = calib_params.Gc.data;
-		float* Oc = calib_params.Oc.data;
-		float* Gf = calib_params.Gf.data;
-		float* Of = calib_params.Of.data;
-
-		float* G1 = calib_params.Gain_lookup_table1.data;
-		float* G2 = calib_params.Gain_lookup_table2.data;
-		float* G3 = calib_params.Gain_lookup_table3.data;
-		float* G4 = calib_params.Gain_lookup_table4.data;
-
-		float* output = des_frame.data;
-		//		__m128* vec = new __m128[4];
-		//		float* output_array = new float[4];
-		//algorithm
-		unsigned int end = r.end();
-		unsigned int begin = r.begin();
-		unsigned int col_counter, row_counter;
-		row_counter = begin%width;
-		col_counter = row_counter%7; row = begin/width;
-		float coarse_calibrated, fine_calibrated;
-
-		//		unsigned int end = r.end() - r.end() % 16;
-		//		unsigned int offset = 16 - r.begin() % 16;
-		//		unsigned int begin =  offset + r.begin();
-
-		/*start of for loop*/
-		for(unsigned int i = begin; i < end ; ++i){	//int i is sufficient
-			//			for(unsigned int k = 0; k < 16; k +=4){
-			//				for(unsigned int j = 0; j < 4; ++j){	/*use streaming SIMD to vectorize floating point computation*/
-			/*
-			 * minimising access */
-			pixel = *(src_frame.data + i);
-
-			/*
-			 * uses two bitwise AND, two negations, two additions, in exchange for
-			 * two modulus, one division,  6 cycles VS 30 cycles
-			 *
-			 */
-
-			/*Use binary masks instead*/
-			gain = pixel & 0x0003;
-			fineBits = (pixel & 0x3FC) >> 2;
-			coarseBits = (pixel & 0x7c00) >> 10;
-
-
-			position_in_calib_array = col_counter + row * calib_data_width;
-
-			//					col = i % width;			//0 ~ frame_width - 1
-			//					row = (i - col) / width;
-			//					position_in_calib_array = (col % 7) + (row * calib_data_width); //7 from 7 ADCs. todo code this in config.
-
-
-			switch(gain){
-			case 0b00:
-				gain_factor = *(G1 + i);
-				break;
-			case 0b01:
-				gain_factor = *(G2 + i);
-				break;
-			case 0b10:
-				gain_factor = *(G3 + i);
-				break;
-			case 0b11:
-				gain_factor = *(G4 + i);
-				break;
-			default:
-				throw datatype_exception("Invalid gain bit detected.");
-			}
-
-			coarse_calibrated = (*(Oc + position_in_calib_array) - coarseBits) * *(Gc + position_in_calib_array);
-			fine_calibrated = (fineBits - *(Of + position_in_calib_array)) * *(Gf + position_in_calib_array);
-
-			*(output+i) = gain_factor * (coarse_calibrated - fine_calibrated);
-
-			//					*(output + i)	= (float)gain_factor *
-			//							(		/*this factor can be absorbed into gain and needs not be here.*/
-			//									(
-			//											VinMax -
-			//											(
-			//													/*this can be done permanently to the calibration parameter and needs not be here*/
-			//													(
-			//															(
-			//																	(*(Oc + position_in_calib_array) - (fineBits - (unsigned short int)1)) / *(Gc + position_in_calib_array)		//In hazem's code coarseBits == FineArr, fineBits == CoarseArr
-			//															)
-			//															+		(
-			//																	(coarseBits - *(Of + position_in_calib_array)) / *(Gf + position_in_calib_array)
-			//															)
-			//													)
-			//											)
-			//									)
-			//							);
-			//				}
-
-			/*writing data to memory without polluting the cache*/
-			//			vec[k/4] = _mm_load_ps(output_array);
-			/*
-			 * uses two bitwise AND, two negations, two additions, in exchange for
-			 * two modulus, one division,  6 cycles VS 30 cycles
-			 *
-			 */
-			if( (col_counter^7) )
-				col_counter++;
-			else{
-				col_counter = 0;
-			}
-
-			if( (row_counter^width) ){
-				row_counter++;
-			}else{
-				row_counter = 0;
-				row++;
-			}
-
-		}
-		/*The bus is capable of transferring 64Bytes each time. Thus accumulate four sets of four data and transfer in one go*/
-		//		_mm_stream_ps( (output + i), vec[0]);
-		//		_mm_stream_ps((output+i + 4), vec[1]);
-		//		_mm_stream_ps((output+i + 8), vec[2]);
-		//		_mm_stream_ps((output+i + 12), vec[3]);
-
-	}
-};
-
-
-
 /*===============================================================================================================================*/
 /*
  * 	Ultimate combined giant huge functor
- *
+ *	AVX version
  */
 
 struct head_to_CDS{
@@ -591,7 +422,7 @@ public:
 
 				gain_int_ymm =  _mm256_castps_si256(_mm256_and_ps (  _mm256_castsi256_ps( gain_int_ymm ),  _mm256_castsi256_ps( const_0x03_int_ymm ) ));
 
-//				gain_int_ymm = _mm256_set1_epi32 (1);
+				//				gain_int_ymm = _mm256_set1_epi32 (1);
 				gain_ymm = _mm256_cvtepi32_ps ( gain_int_ymm );
 
 				gain_mask_1_ymm = _mm256_cmp_ps ( gain_ymm, const_0_ymm , 0);	//3*4 = 12
@@ -663,6 +494,127 @@ public:
 		} //outermost for loop
 	}//definition of operator overloading
 }; //definition of class
+
+/*===============================================================================================================================*/
+/*
+ * 	Ultimate combined giant huge functor
+ *	Non-AVX version
+ */
+
+
+template<typename input_type, typename range_iterator>
+class percival_algorithm_p{
+	input_type input;
+	const percival_calib_params calib;
+public:
+	percival_algorithm_p(input_type & input, const percival_calib_params & calib ):
+		input( input ),
+		calib( calib )
+{}
+
+	void operator()(range_iterator & r)
+	{
+		/*
+		 * array iterators
+		 */
+		unsigned int begin = r.begin();
+		unsigned int end = r.end();
+		unsigned short int pixel;
+
+		/*listing all variables*/
+		float arr[2] = {0,0};
+		unsigned short int gain, coarseBits, fineBits;
+		unsigned short int count,current_count, increment;
+		unsigned short int *data, *sample_frame, *reset_frame;
+		unsigned int row, col_counter, row_counter, width, calib_data_width, position_in_calib_array;
+		float coarse_calibrated, fine_calibrated, gain_factor, result;
+		float *Oc, *Gc, *Of, *Gf, *G1, *G2, *G3, *G4, *output;
+		float ADU_to_electron = 1;
+
+		/*Initialising variables needed*/
+		sample_frame = input.input_sample.data;
+		output = input.output.data;
+
+		calib_data_width = calib.Gc.width;
+		width = input.input_sample.width;
+
+		Gc = calib.Gc.data;
+		Oc = calib.Oc.data;
+		Gf = calib.Gf.data;
+		Of = calib.Of.data;
+
+		G1 = calib.Gain_lookup_table1.data;
+		G2 = calib.Gain_lookup_table2.data;
+		G3 = calib.Gain_lookup_table3.data;
+		G4 = calib.Gain_lookup_table4.data;
+
+		/*Used to correlate a pixel in sample with a pixel in calibration array*/
+		row = begin / width;
+		row_counter = begin%width;
+		col_counter = row_counter%7;
+
+		/*loop*/
+		for(unsigned int i = begin; i < end; ++i){
+			arr[0] = 0; arr[1] = 0;
+			count = 0;current_count = 0;
+			data = sample_frame;
+
+			position_in_calib_array = col_counter + row * calib_data_width;
+
+			do{
+				pixel = *(data + i);
+				/* unit_ADC_decode */
+				gain = pixel & 0x0003;
+				fineBits = (pixel & 0x3FC) >> 2;
+				coarseBits = (pixel & 0x7c00) >> 10;
+				/* unit_ADC_calib */
+				coarse_calibrated = (*(Oc + position_in_calib_array) - coarseBits) * *(Gc + position_in_calib_array);
+				fine_calibrated = (fineBits - *(Of + position_in_calib_array)) * *(Gf + position_in_calib_array);
+				/* unit_ADC_gain_multiplication */
+				switch(gain){
+				case 0b00:
+					gain_factor = *(G1 + i);
+					count = 1;
+					data = reset_frame;
+					break;
+				case 0b01:
+					gain_factor = *(G2 + i);
+					break;
+				case 0b10:
+					gain_factor = *(G3 + i);
+					break;
+				case 0b11:
+					gain_factor = *(G4 + i);
+					break;
+				default:
+					throw datatype_exception("Invalid gain bit detected.");
+				}
+			arr[current_count] = gain_factor * (coarse_calibrated - fine_calibrated); /*store sample in slot 1 and reset in slot 0*/
+			current_count = (current_count+1)&0x1;
+		}while( count&current_count );
+		/* subtraction */
+		result = arr[0] - arr[1];
+
+		result *= ADU_to_electron;
+
+		/*writing to memory*/
+		*(output+i) = result;
+
+		if( (col_counter^7) )
+			col_counter++;
+		else{
+			col_counter = 0;
+		}
+		if( (row_counter^width) ){
+			row_counter++;
+		}else{
+			row_counter = 0;
+			row++;
+		}
+
+	}
+}
+};
 
 
 
