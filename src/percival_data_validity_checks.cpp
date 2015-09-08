@@ -156,3 +156,14 @@ void percival_input_calib_dimension_check_AVX(
 	if((input.width%7))
 		throw dataspace_exception("Width of Gc, Gf, Oc, Of arrays is not divisible by 7.");
 }
+
+void  percival_input_calib_NULL_check(const percival_calib_params & calib_params){
+	if( ( calib_params.Gc.data == NULL )|| ( calib_params.Gf.data == NULL )|| ( calib_params.Oc.data == NULL ) || ( calib_params.Of.data == NULL ))
+		throw dataspace_exception("Pointer to calibration data is NULL.");
+
+	if( ( calib_params.Gain_lookup_table1.data == NULL )|| ( calib_params.Gain_lookup_table2.data == NULL )|| ( calib_params.Gain_lookup_table3.data == NULL ) || ( calib_params.Gain_lookup_table4.data == NULL ))
+		throw dataspace_exception("Pointer to calibration data is NULL.");
+
+	if( ( calib_params.ADU_to_electrons_conversion.data == NULL) )
+		throw dataspace_exception("Pointer to calibration data is NULL.");
+}

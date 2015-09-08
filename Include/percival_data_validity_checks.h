@@ -68,5 +68,10 @@ void percival_input_calib_dimension_check_AVX(
 		const percival_frame<unsigned short int> & input,
 		const percival_calib_params & calib);
 
+/* Function 9 */
+/* Checks whether whether calibration parameters contain and NULL pointers */
+void percival_input_calib_NULL_check(const percival_calib_params & calib);
+
+
 
 #endif /* INCLUDE_PERCIVAL_DATA_VALIDITY_CHECKS_H_ */
