@@ -36,49 +36,7 @@
 /* Generating a stream of data*/
 /* For segmentation */
 
-class percival_pipeline_stream_generator : public tbb::filter{
-private:
 
-	unsigned int offset;	/*offset within the frame*/
-	unsigned int* initial_ptr;
-	const unsigned int grain_size;
-	const unsigned int size;	/* image size to issue an end of frame */
-	const unsigned int max_number_of_tokens;
-	unsigned int current_index;
-	unsigned int next_index;
-
-public:
-	percival_pipeline_stream_generator(
-			unsigned int* initial_ptr,
-			unsigned int grain_size,
-			unsigned int frame_size,
-			unsigned int max_number_of_tokens
-	):
-		tbb::filter(/*is_serial=*/true),
-		initial_ptr( initial_ptr ),
-		grain_size( grain_size ),
-		offset( 0 ),
-		size( frame_size ),
-		max_number_of_tokens(max_number_of_tokens),
-		current_index( 0 ),
-		next_index( 0 )
-	{}
-
-	void* operator()(void*){
-		if(offset < size){
-			current_index = next_index;
-			*(initial_ptr + current_index) = offset;
-			next_index++;
-			if(next_index == max_number_of_tokens){
-				next_index = 0;
-			}
-			offset += grain_size;
-			return initial_ptr + current_index;
-		}else{
-			return NULL;
-		}
-	}
-};
 
 void percival_ADC_decode_combined_pipeline(
 		const percival_frame<unsigned short int> & sample,
@@ -91,7 +49,7 @@ void percival_ADC_decode_combined_pipeline(
 	unsigned short int default_grain_size = sample.width;
 
 	/* Input, calib dimension checks */
-	percival_input_calib_dimension_check_AVX(sample,calib_params);
+	percival_input_calib_dimension_check(sample,calib_params);
 	/* sample reset dimension check */
 	if( (sample.width != reset.width) || (sample.height != reset.height) )
 		throw dataspace_exception("Sample, reset frames dimension mismatch.");
@@ -126,8 +84,8 @@ void percival_ADC_decode_combined_pipeline(
 	percival_pipeline_stream_generator Input(offset_ptr, grain_size, NoOfPixels, max_tokens);
 	pipeline.add_filter( Input );
 
-	ADC_decode_combined_filter< percival_algorithm_p< percival_range_iterator_mock_p > > ADC_decode_CDS( sample, reset, output, calib_params, grain_size );
-	pipeline.add_filter( ADC_decode_CDS );
+//	ADC_decode_combined_filter< percival_algorithm_p< percival_range_iterator_mock_p > > ADC_decode_CDS( sample, reset, output, calib_params, grain_size );
+//	pipeline.add_filter( ADC_decode_CDS );
 
 	pipeline.run( max_tokens );
 

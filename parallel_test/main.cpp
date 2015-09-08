@@ -15,6 +15,7 @@
 #include "percival_HDF5_loader.h"
 #include "percival_HDF5_writer.h"
 #include "percival_parallel.h"
+#include "percival_avx.h"
 
 #include "tbb/task_scheduler_init.h"
 
@@ -242,7 +243,7 @@ int main(int argn, char* argv[]){
 //				percival_ADC_decode_pf_combined_tbb_pipeline1(reset_frame, ADC_decoded_reset_frame ,calib_params, grain_size);
 //				percival_CDS_correction(ADC_decoded_sample_frame, ADC_decoded_reset_frame, electron_corrected_frame);
 				if(execute_function)
-					percival_ADC_decode_combined_pipeline(sample_frame, reset_frame, CDS_frame, calib_params, grain_size, max_tokens);
+					percival_ADC_decode_combined_pipeline_avx(sample_frame, reset_frame, CDS_frame, calib_params, grain_size, max_tokens);
 //				percival_ADC_decode_pf_unit_combined_tbb_pipeline1(sample_frame, ADC_decoded_sample_frame ,calib_params, sample_gain_frame, sample_fine_frame, sample_coarse_frame, calibrated_sample_frame, 3528/7);
 //				percival_ADC_decode_pf_unit_combined_tbb_pipeline1(reset_frame, ADC_decoded_reset_frame ,calib_params, reset_gain_frame, reset_fine_frame, reset_coarse_frame, calibrated_reset_frame, 3528/7);
 			}

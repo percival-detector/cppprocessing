@@ -8,13 +8,14 @@
 #ifndef INCLUDE_PERCIVAL_AVX_H_
 #define INCLUDE_PERCIVAL_AVX_H_
 
-#ifdef __AVX__
+
 
 #include <immintrin.h>
 #include <emmintrin.h>
-#include "percival_avx.h"
+#include "percival_processing.h"
+#include "percival_functors.h"
+#include "percival_data_validity_checks.h"
 
-template<typename range_iterator>
 class percival_algorithm_avx{
 	const percival_frame<unsigned short> input_sample;
 	const percival_frame<unsigned short> input_reset;
@@ -23,7 +24,7 @@ class percival_algorithm_avx{
 public:
 	percival_algorithm_avx(
 			const percival_frame<unsigned short> &input_sample,
-			const percival_frame<unsigned short> &output_reset,
+			const percival_frame<unsigned short> &input_reset,
 			percival_frame<float> &output_frame,
 			const percival_calib_params & calib ):
 		input_sample( input_sample ),
@@ -32,7 +33,7 @@ public:
 		calib( calib )
 {}
 
-	void operator()(range_iterator & r) const
+	void operator()(percival_range_iterator_mock_p & r) const
 	{
 		/*
 		 * array iterators
@@ -136,20 +137,20 @@ public:
 				 * Segmentation fault might result if this is not guarantteed.
 				 *
 				 * */
-				Gc_ymm = _mm256_loadu_ps( Gc + position_in_calib_array );
-				Gf_ymm = _mm256_loadu_ps( Gf + position_in_calib_array );
-				Oc_ymm = _mm256_loadu_ps( Oc + position_in_calib_array );
-				Of_ymm = _mm256_loadu_ps( Of + position_in_calib_array );
+				Gc_ymm = _mm256_load_ps( Gc + position_in_calib_array );
+				Gf_ymm = _mm256_load_ps( Gf + position_in_calib_array );
+				Oc_ymm = _mm256_load_ps( Oc + position_in_calib_array );
+				Of_ymm = _mm256_load_ps( Of + position_in_calib_array );
 			}
 
 			/* loading parameters */
-			gain_table_1_ymm = _mm256_loadu_ps( G1 + counter);
-			gain_table_2_ymm = _mm256_loadu_ps( G2 + counter);
-			gain_table_3_ymm = _mm256_loadu_ps( G3 + counter);
-			gain_table_4_ymm = _mm256_loadu_ps( G4 + counter);
-			ADU_2e_conv_ymm = _mm256_loadu_ps( ADU_to_electron + counter);
+			gain_table_1_ymm = _mm256_load_ps( G1 + counter);
+			gain_table_2_ymm = _mm256_load_ps( G2 + counter);
+			gain_table_3_ymm = _mm256_load_ps( G3 + counter);
+			gain_table_4_ymm = _mm256_load_ps( G4 + counter);
+			ADU_2e_conv_ymm = _mm256_load_ps( ADU_to_electron + counter);
 
-			sample_gain_mask_ymm = _mm256_set1_ps ( 0 );
+			sample_gain_mask_ymm = _mm256_set1_ps ( 1 );
 			data = sample_frame + i;			//1
 
 			for(unsigned short ii = 0; ii < 2; ii++){
@@ -233,7 +234,6 @@ public:
 						goto finish;
 					}
 				}
-
 				data = reset_frame + i;
 				sample_gain_mask_ymm = gain_mask_1_ymm;
 
@@ -261,8 +261,6 @@ public:
 	}//definition of operator overloading
 }; //definition of class
 
-#ifdef _TBB_
-
 #include "percival_parallel.h"
 void percival_ADC_decode_combined_pipeline_avx(
 		const percival_frame<unsigned short int> & sample,
@@ -270,9 +268,7 @@ void percival_ADC_decode_combined_pipeline_avx(
 		percival_frame<float> & output,
 		const percival_calib_params & calib_params,
 		unsigned int grain_size,
-		unsigned int max_tokens);
+		unsigned int max_tokens = 20);
 
-#endif
 
-#endif
 #endif /* INCLUDE_PERCIVAL_AVX_H_ */

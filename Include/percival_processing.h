@@ -51,7 +51,7 @@ public:
 			/*align to 128 bits boundary*/
 			std::size_t address = reinterpret_cast<std::size_t>(not_aligned);
 			std::size_t offset = address % align_to_N_bytes;
-			data = reinterpret_cast<T*>(reinterpret_cast<std::size_t>(not_aligned) + offset);
+			data = reinterpret_cast<T*>(reinterpret_cast<std::size_t>(not_aligned) + align_to_N_bytes - offset);
 		}
 	}
 
