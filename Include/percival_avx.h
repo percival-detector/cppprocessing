@@ -16,6 +16,7 @@
 #include "percival_functors.h"
 #include "percival_data_validity_checks.h"
 
+template <typename range_iterator>
 class percival_algorithm_avx{
 	const percival_frame<unsigned short> input_sample;
 	const percival_frame<unsigned short> input_reset;
@@ -33,13 +34,17 @@ public:
 		calib( calib )
 {}
 
-	void operator()(percival_range_iterator_mock_p & r) const
+	void operator()(range_iterator & r) const
 	{
 		/*
 		 * array iterators
 		 */
 		unsigned int begin = r.begin();
 		unsigned int end = r.end();
+
+		if((begin%7)){
+			throw dataspace_exception("Grain not aligned with 7-element boundary.");
+		}
 
 		/*listing all variables*/
 		unsigned short int *data;
@@ -142,7 +147,6 @@ public:
 				Oc_ymm = _mm256_load_ps( Oc + position_in_calib_array );
 				Of_ymm = _mm256_load_ps( Of + position_in_calib_array );
 			}
-
 			/* loading parameters */
 			gain_table_1_ymm = _mm256_load_ps( G1 + counter);
 			gain_table_2_ymm = _mm256_load_ps( G2 + counter);
@@ -189,7 +193,7 @@ public:
 
 				gain_int_ymm =  _mm256_castps_si256(_mm256_and_ps (  _mm256_castsi256_ps( gain_int_ymm ),  _mm256_castsi256_ps( const_0x03_int_ymm ) ));
 
-				gain_int_ymm = _mm256_set1_epi32 (1);
+//				gain_int_ymm = _mm256_set1_epi32 (1);
 				gain_ymm = _mm256_cvtepi32_ps ( gain_int_ymm );
 
 				gain_mask_1_ymm = _mm256_cmp_ps ( gain_ymm, const_0_ymm , 0);	//3*4 = 12

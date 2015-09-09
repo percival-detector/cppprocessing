@@ -94,6 +94,16 @@ percival_ADC_decode_combined_pipeline_avx(
 		BOOST_REQUIRE_THROW(percival_ADC_decode_combined_pipeline_avx(sample_frame,reset_frame,wrong_size_frame_float, calib_params_avx, TEST_FRAME_WIDTH, 20), dataspace_exception);
 	}
 
+	BOOST_AUTO_TEST_CASE (should_throw_when_input_frame_has_NULL_pointer){
+		percival_frame<float> null_float;
+		percival_frame<unsigned short> null_int;
+
+		BOOST_REQUIRE_THROW(percival_ADC_decode_combined_pipeline_avx(sample_frame, null_int,output_frame, calib_params_avx, TEST_FRAME_WIDTH, 20), dataspace_exception);
+		BOOST_REQUIRE_THROW(percival_ADC_decode_combined_pipeline_avx(null_int,reset_frame,output_frame, calib_params_avx, TEST_FRAME_WIDTH, 20), dataspace_exception);
+		BOOST_REQUIRE_THROW(percival_ADC_decode_combined_pipeline_avx(sample_frame,reset_frame, null_float, calib_params_avx, TEST_FRAME_WIDTH, 20), dataspace_exception);
+	}
+
+
 	BOOST_AUTO_TEST_CASE (should_throw_exception_when_calibration_arrays_and_input_dimensions_mismatch){
 		calib_params_avx.Gc.set_frame_size(10, 7);
 		BOOST_REQUIRE_THROW(percival_ADC_decode_combined_pipeline_avx(sample_frame,reset_frame,output_frame, calib_params_avx, TEST_FRAME_WIDTH, 20), dataspace_exception);
