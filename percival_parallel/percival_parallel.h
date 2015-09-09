@@ -56,12 +56,18 @@ void percival_ADC_decode_combined_pipeline(
 class percival_pipeline_stream_generator;
 
 
+/*
+ * 	Use template to function as an interface that allows different algorithms to use TBB pipeline.
+ *
+ */
+template<typename algorithm_name>
 class ADC_decode_combined_filter : public tbb::filter{
 private:
 	const unsigned int grain_size;		/* size of loop */
 	percival_calib_params calib_params;
 
-	percival_algorithm_avx algorithm;
+	algorithm_name algorithm;
+//	percival_algorithm_avx algorithm;
 	percival_range_iterator_mock_p range;
 
 public:
