@@ -16,8 +16,16 @@ void percival_unit_gain_multiplication(
 		const percival_calib_params & calib_params,
 		bool check_dimensions)
 {
-	if(check_dimensions)
-		percival_unit_gain_multiplication_check(src_frame,calibrated,output,calib_params);
+	if(check_dimensions){
+		percival_input_output_dimension_check(src_frame, calibrated);
+		percival_input_output_dimension_check(src_frame, output);
+		percival_input_calib_dimension_check(src_frame, calib_params);
+		percival_input_calib_NULL_check(calib_params);
+		percival_null_check(src_frame);
+		percival_null_check(calibrated);
+		percival_null_check(output);
+
+	}
 
 	unsigned int NoOfPixels = src_frame.width * src_frame.height;
 

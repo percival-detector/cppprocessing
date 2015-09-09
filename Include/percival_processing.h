@@ -51,7 +51,7 @@ public:
 			/*align to 128 bits boundary*/
 			std::size_t address = reinterpret_cast<std::size_t>(not_aligned);
 			std::size_t offset = address % align_to_N_bytes;
-			data = reinterpret_cast<T*>(reinterpret_cast<std::size_t>(not_aligned) + align_to_N_bytes - offset);
+			data = reinterpret_cast<T*>(reinterpret_cast<std::size_t>(not_aligned) + offset);
 		}
 	}
 
@@ -133,18 +133,12 @@ class percival_global_params{
 private:
 	static bool is_initialised;
 	static bool is_initialised_every_member[255];
-	static int current_frame;
 
 	//"KnifeQuadBPos1/";, rather than "KnifeQuadBPos1/!X!/Sample";
 	static std::string top_level_data_set_name;
 
 public:
 	//frame and file properties
-	static unsigned int total_number_of_frames;
-
-	static unsigned int frame_height;
-	static unsigned int frame_width;
-
 	static std::string default_path_name;
 	static std::string default_data_set_name;			//make this private
 

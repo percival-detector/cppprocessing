@@ -142,10 +142,10 @@ bool percival_global_params::check_initialisation(){
 				(percival_global_params::is_initialised_every_member[5] == false)||
 					(percival_global_params::is_initialised_every_member[6] == false)||
 						(percival_global_params::is_initialised_every_member[7] == false)||
-							(percival_global_params::is_initialised_every_member[8] == false))||
+							(percival_global_params::is_initialised_every_member[8] == false)||
 								(percival_global_params::is_initialised_every_member[9] == false)||
 									(percival_global_params::is_initialised_every_member[10] == false)||
-										(percival_global_params::is_initialised_every_member[11] == false))||
+										(percival_global_params::is_initialised_every_member[11] == false)||
 											(percival_global_params::is_initialised_every_member[12] == false))
 	{
 		return 0;

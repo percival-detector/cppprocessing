@@ -75,22 +75,22 @@ BOOST_FIXTURE_TEST_SUITE (percival_unit_gain_multiplication_test,fixture_test_ga
 
 		*src_frame.data = 0b010100; //gain bit 00
 		*calibrated.data = 4.5;
-		BOOST_REQUIRE_NO_THROW(percival_unit_gain_multiplication(src_frame, calibrated, des_frame, calib_params));
+		BOOST_REQUIRE_NO_THROW(percival_unit_gain_multiplication(src_frame, calibrated, des_frame, calib_params, false));
 		BOOST_REQUIRE_CLOSE(*des_frame.data, 4.5 * 2.3, 0.01);
 
 		*src_frame.data = 0b010101; //gain bit 01
 		*calibrated.data = 4.5;
-		BOOST_REQUIRE_NO_THROW(percival_unit_gain_multiplication(src_frame, calibrated, des_frame, calib_params));
+		BOOST_REQUIRE_NO_THROW(percival_unit_gain_multiplication(src_frame, calibrated, des_frame, calib_params, false));
 		BOOST_REQUIRE_CLOSE(*des_frame.data, 4.5 * 3.5, 0.01);
 
 		*src_frame.data = 0b010110; //gain bit 10
 		*calibrated.data = 4.5;
-		BOOST_REQUIRE_NO_THROW(percival_unit_gain_multiplication(src_frame, calibrated, des_frame, calib_params));
+		BOOST_REQUIRE_NO_THROW(percival_unit_gain_multiplication(src_frame, calibrated, des_frame, calib_params, false));
 		BOOST_REQUIRE_CLOSE(*des_frame.data, 4.5 * 4.9, 0.01);
 
 		*src_frame.data = 0b010111; //gain bit 11
 		*calibrated.data = 4.5;
-		BOOST_REQUIRE_NO_THROW(percival_unit_gain_multiplication(src_frame, calibrated, des_frame, calib_params));
+		BOOST_REQUIRE_NO_THROW(percival_unit_gain_multiplication(src_frame, calibrated, des_frame, calib_params, false));
 		BOOST_REQUIRE_CLOSE(*des_frame.data, 4.5 * 8.0, 0.01);
 	}
 

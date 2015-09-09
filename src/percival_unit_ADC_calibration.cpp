@@ -16,7 +16,13 @@ void percival_unit_ADC_calibration(
 		bool check_dimensions)
 {
 	if(check_dimensions){
-		percival_unit_ADC_calibration_check(Coarse,Fine,output,calib);
+		percival_input_calib_NULL_check(calib);
+		percival_input_output_dimension_check(Coarse, Fine);
+		percival_input_output_dimension_check(output, Fine);
+		percival_input_calib_dimension_check(Coarse, calib);
+		percival_null_check(Coarse);
+		percival_null_check(Fine);
+		percival_null_check(output);
 	}
 
 	unsigned int NoOfPixels = output.width * output.height;
