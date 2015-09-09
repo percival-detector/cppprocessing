@@ -2,6 +2,10 @@
 import re
 import socket
 import subprocess
+from pkg_resources import require
+require('numpy')
+import numpy as np
+
 
 class oprofile_events:
     event_name = ''
@@ -169,7 +173,7 @@ def get_br_mispre_rate(list_of_functions, attributes, list_of_events_recorded):
     
     for function in list_of_functions:
         br_inst_retired = attributes[function][index_br_inst_retired] * list_of_events_recorded[index_br_inst_retired].sample_rate  
-        br_misp_retired = attributes[function][index_br_inst_retired] * list_of_events_recorded[index_br_inst_retired].sample_rate
+        br_misp_retired = attributes[function][index_br_misp_retired] * list_of_events_recorded[index_br_misp_retired].sample_rate
         br_mispre_rate.append(float(br_misp_retired/br_inst_retired))
     return br_mispre_rate
 
@@ -243,7 +247,8 @@ def get_function_list(file):
                          'percival_algorithm_p<CDS_output, percival_range_iterator_mock_p>',
                          'ADC_decode_combined_filter<CDS_output>::operator()',
                          'percival_algorithm_p<CDS_output, tbb::blocked_range<unsigned int> >::operator()',
-                         'percival_algorithm_p<head_to_CDS, percival_range_iterator_mock_p>::operator()']
+                         'percival_algorithm_p<head_to_CDS, percival_range_iterator_mock_p>::operator()',
+                         'ADC_decode_combined_filter::operator()(void*)']
     s = file.readline()
     found_functions = []
     while s != '':
@@ -287,7 +292,7 @@ class accumulator:
     
     def __init__(self, file_name, parameter_value, no_of_samples):
         self.data = []
-	self.parameter_value = parameter_value
+        self.parameter_value = parameter_value
         self.no_of_samples = no_of_samples
         self.file_name = file_name
         
@@ -296,15 +301,13 @@ class accumulator:
         self.data.append(number)
         
     def average(self):
-        sum = 0
-        for data in self.data:
-            sum = sum + data
-        no_of_samples = len(self.data)
-    
-        avg = sum / no_of_samples
+        array = np.array(self.data)
+        mean = np.mean(array)
+        std = np.std(array)
         f = open(self.file_name, 'a')
         f.write(str(self.parameter_value) + ':')
-        f.write(get_bytes(avg)+ ' ')
+        f.write(get_bytes(mean)+ ' ')
+        f.write(get_bytes(std)+ ' ')
         for data in self.data:
             f.write(get_bytes(data) + ' ')
         f.write('\n')

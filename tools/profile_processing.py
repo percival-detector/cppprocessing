@@ -17,7 +17,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
     parallel_profile = './parallel_profile/cppProcessing2.0 '
 
     cmdl_arg = '1 '  + str(width) + ' '+ str(height) + ' ' + str(repeat) + ' ' + text_file_name + ' ' + str(grain_size) + ' 1'
-    program_to_execute = parallel_debug + cmdl_arg
+    program_to_execute = parallel_profile + cmdl_arg
 
     #events to monitor
     #instructions
@@ -25,10 +25,10 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
     event2 = op.oprofile_events('INST_RETIRED','0x00',60000000)
     #cache misses
     event3 = op.oprofile_events('LLC_MISSES','0x41',60000)          #divide by LLC_REFS
-    event4 = op.oprofile_events('l2_lines_in','0x07',1000000)       #100000
+#     event4 = op.oprofile_events('l2_lines_in','0x07',1000000)       #100000
     
-#     event5 = op.oprofile_events('br_inst_retired', '0x01', 400000)    #total branch instructions retired
-#     event6 = op.oprofile_events('br_misp_retired', '0x01', 400000)    #total mispredicted branches. Divide by br_inst_retired
+    event5 = op.oprofile_events('br_inst_retired', '0x01', 400000)    #total branch instructions retired
+    event6 = op.oprofile_events('br_misp_retired', '0x01', 400000)    #total mispredicted branches. Divide by br_inst_retired
 #     event7 = op.oprofile_events('uops_retired', 'stall_cycles',2000000)        #no of stall cycles. Divide by cpu cycles
 #     
 #     event8 = op.oprofile_events('dtlb_load_misses', '0x01',2000000) 
@@ -40,7 +40,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
 #     event11 = op.oprofile_events('resource_stalls', '0x01',2000000)        #no of stall cycles/divide by number of instructions
 #     event12 = op.oprofile_events('l1d', '0x01',2000000)        #cycles of l1d misses outstanding. Divide by CPU cycles
 
-    list_of_events = [event1, event2, event3, event4]#, event5, event6, event7, event8, event9, event10, event11, event12]
+    list_of_events = [event1, event2, event3, event5, event6]#, event7, event8, event9, event10, event11, event12]
     #variable initialisation
     dict_of_attributes = {}
     total_time = 0.0
