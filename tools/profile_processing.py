@@ -27,8 +27,10 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
     event3 = op.oprofile_events('LLC_MISSES','0x41',60000)          #divide by LLC_REFS
 #     event4 = op.oprofile_events('l2_lines_in','0x07',1000000)       #100000
     
-    event5 = op.oprofile_events('br_inst_retired', '0x01', 400000)    #total branch instructions retired
-    event6 = op.oprofile_events('br_misp_retired', '0x01', 400000)    #total mispredicted branches. Divide by br_inst_retired
+#     event5 = op.oprofile_events('br_inst_retired', '0x01', 400000)    #total branch instructions retired
+#     event6 = op.oprofile_events('br_misp_retired', '0x01', 400000)    #total mispredicted branches. Divide by br_inst_retired
+    
+    event6 = op.oprofile_events('mem_trans_retired','0x02',2000000)
 #     event7 = op.oprofile_events('uops_retired', 'stall_cycles',2000000)        #no of stall cycles. Divide by cpu cycles
 #     
 #     event8 = op.oprofile_events('dtlb_load_misses', '0x01',2000000) 
@@ -40,7 +42,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
 #     event11 = op.oprofile_events('resource_stalls', '0x01',2000000)        #no of stall cycles/divide by number of instructions
 #     event12 = op.oprofile_events('l1d', '0x01',2000000)        #cycles of l1d misses outstanding. Divide by CPU cycles
 
-    list_of_events = [event1, event2, event3, event5, event6]#, event7, event8, event9, event10, event11, event12]
+    list_of_events = [event1, event2, event3, event6]#, event7, event8, event9, event10, event11, event12]
     #variable initialisation
     dict_of_attributes = {}
     total_time = 0.0
@@ -111,6 +113,7 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
     resource_stall = op.get_resource_stall_rate(list_of_functions, dict_of_attributes, list_of_events_recorded)
     l2_miss_rate = op.get_L2_miss_rate(list_of_functions, dict_of_attributes, list_of_events_recorded)
     l1d_repl_rate = op.get_L1D_repl_rate(list_of_functions, dict_of_attributes, list_of_events_recorded)
+    memory_bandwidth = op.get_memory_bandwidth(list_of_functions, dict_of_attributes, list_of_events_recorded)
     
     for name, perc_time in dict_of_function_perc_time.iteritems():
         total_processing_time = total_processing_time + perc_time * total_time /1000 /100   #in seconds
@@ -198,7 +201,12 @@ def run_the_function(print_result, height, width, repeat, text_file_name, grain_
                 index = list_of_functions.index(function)
                 print '\t' +  function +':' + '{0:.2%}'.format(resource_stall[index]) 
                
-                     
+        if len(memory_bandwidth) != 0:
+            print 'Memory Bandwidth'
+            for function in list_of_functions:
+                index = list_of_functions.index(function)
+                print '\t' +  function +':' + op.get_bytes(memory_bandwidth[index]) 
+                             
         print '=' * 100
     return image_size * 2 * repeat/total_processing_time
 
@@ -219,13 +227,13 @@ print grain_size_file_name
  
 # subprocess.call('mkdir -p ' + path_name, shell=True)
 # cdg.generate_calib_files(height, width, text_file_name, path_name)
-#          
+          
 # cmd_rm_file = "rm -f " + grain_size_file_name
 # cmd_create_file = "touch "+ grain_size_file_name
 # op.cmd_call(cmd_rm_file)
 # op.cmd_call(cmd_create_file)
   
-grain_size = 3528
+grain_size = 3528 * 2
 run_the_function(True, height, width, repeat, text_file_name, grain_size)
 #  1,3,7,9,21, 59,63,177,413,531,
 #  *      1239,3717

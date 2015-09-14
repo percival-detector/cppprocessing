@@ -7,8 +7,16 @@
 
 #include "percival_avx.h"
 #include "percival_parallel.h"
+#include "tbb/blocked_range.h"
 
+/*
+ * 	This function is used to get the largest 2's exponential smaller than x.
+ * 	If x is 1, return 1; if x is 0, return 0;
+ * 	Only accepts uint32
+ */
 inline unsigned int get_two_exponentials(unsigned int x){
+	if(x == 0)
+		return 0;
 	if(x == 1)
 		return 1;
 
@@ -49,41 +57,20 @@ void percival_ADC_decode_combined_pipeline_avx(
 	if( (grain_size > NoOfPixels) || (grain_size <= 0) )
 		grain_size = default_grain_size;
 
-	/* starting a pipeline */
-//	tbb::pipeline pipeline;
+	percival_algorithm_avx< tbb::blocked_range<unsigned int> > algorithm(sample, reset, output, calib_params, grain_size);
 
 	/*
-	 * A list of offset from the start of image array,
-	 * corresponding to each token
+	 * 	The chunk size should be multiples of grain_size.
 	 *
-	 * */
-//	unsigned int offset_arr [max_tokens];
-//	unsigned int *offset_ptr = & offset_arr[0];
+	 */
+	tbb::blocked_range<unsigned int> range(0, NoOfPixels/grain_size, 2);
+	tbb::parallel_for( range, algorithm);
 
-//	/*
-//	 *  Constructing the pipeline
-//	 *
-//	 */
-//
-//	percival_pipeline_stream_generator Input(offset_ptr, grain_size, NoOfPixels, max_tokens);
-//	pipeline.add_filter( Input );
-//
-//	ADC_decode_combined_filter<percival_algorithm_avx<percival_range_iterator_mock_p> > ADC_decode_CDS ( sample, reset, output, calib_params, grain_size );
-//	pipeline.add_filter( ADC_decode_CDS );
-//
-//	pipeline.run( max_tokens );
-//
-//	pipeline.clear();
-
-	percival_algorithm_avx< tbb::blocked_range<unsigned int> > algorithm(sample, reset, output, calib_params);
-	unsigned int lower = NoOfPixels/grain_size;
-	unsigned int upper = NoOfPixels/grain_size;
-
-	do{
-		lower = upper - get_two_exponentials(upper);
-		tbb::blocked_range<unsigned int> range(lower*grain_size, upper*grain_size, grain_size);
-		tbb::parallel_for( range, algorithm);
-		upper = lower;
-	}while(upper);
+//	do{
+//		lower = upper - get_two_exponentials(upper);
+//		tbb::blocked_range<unsigned int> (lower*grain_size, upper*grain_size, grain_size);
+//		tbb::parallel_for( range, algorithm);
+//		upper = lower;
+//	}while(upper);
 
 }

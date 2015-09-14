@@ -22,16 +22,19 @@ class percival_algorithm_avx{
 	const percival_frame<unsigned short> input_reset;
 	percival_frame<float> output_frame;
 	const percival_calib_params calib;
+	const unsigned int grain_size;
 public:
 	percival_algorithm_avx(
 			const percival_frame<unsigned short> &input_sample,
 			const percival_frame<unsigned short> &input_reset,
 			percival_frame<float> &output_frame,
-			const percival_calib_params & calib ):
+			const percival_calib_params & calib,
+			unsigned int grain_size):
 		input_sample( input_sample ),
 		input_reset( input_reset ),
 		output_frame(output_frame),
-		calib( calib )
+		calib( calib ),
+		grain_size(grain_size)
 {}
 
 	void operator()(range_iterator & r) const
@@ -39,8 +42,14 @@ public:
 		/*
 		 * array iterators
 		 */
-		unsigned int begin = r.begin();
-		unsigned int end = r.end();
+
+		/*
+		 *  Each subproblem needs to be multiples of 7
+		 * 	Ensure that all subranges are multiples of grain_size.
+		 *
+		 */
+		unsigned int begin = r.begin()*grain_size;
+		unsigned int end = r.end()*grain_size;
 
 		if((begin%7)){
 			throw dataspace_exception("Grain not aligned with 7-element boundary.");

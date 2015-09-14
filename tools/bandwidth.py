@@ -60,34 +60,37 @@ def time_function (width, height, repeat, max_tokens, max_threads, grain_size):
 
 width = 3528
 height = 3717
-repeat = 300
-grain_size = 3528
+repeat = 100
+grain_size = 529200*1.5
 max_tokens = 20
 max_threads = 20
-
-bandwidth = time_function(width, height, repeat, max_tokens, max_threads, grain_size)
-print op.get_bytes(bandwidth) + '/s'
 ###############################################################################################################
-## Automating varying parameters
-# host_name = socket.gethostname()
-# calib_directory = './calibration_data/'
-# path_name = calib_directory + host_name + '/'
-# text_file_name =  path_name + 'test_param_file.txt'
-# grain_size_file_name = './oprof_reports/' + host_name + '/' + 'grain_size_test.txt'
-# print grain_size_file_name 
-# cmd_rm_file = "rm -f " + grain_size_file_name
-# cmd_create_file = "touch "+ grain_size_file_name
-# op.cmd_call(cmd_rm_file)
-# op.cmd_call(cmd_create_file)
-
+# bandwidth = time_function(width, height, repeat, max_tokens, max_threads, grain_size)
+# print op.get_bytes(bandwidth) + '/s'
+###############################################################################################################
+# Automating varying parameters
+host_name = socket.gethostname()
+calib_directory = './calibration_data/'
+path_name = calib_directory + host_name + '/'
+text_file_name =  path_name + 'test_param_file.txt'
+grain_size_file_name = './oprof_reports/' + host_name + '/' + 'grain_size_test.txt'
+print grain_size_file_name 
+cmd_rm_file = "rm -f " + grain_size_file_name
+cmd_create_file = "touch "+ grain_size_file_name
+op.cmd_call(cmd_rm_file)
+op.cmd_call(cmd_create_file)
+   
 # for max_tokens in range(10,50,5):
-# #     for grain_size in (3528, 3528/2,3528/3,3528/4,3528/6,3528/7, 3528*3, 3528*7,3528*9, 3528*21, 3528*59, 3528*63, 3528*177,3528*413,3528*531,3528*1239):
-#     a = op.accumulator(grain_size_file_name, [max_threads, max_tokens, grain_size], 10)
-#     for repeats in xrange(1,10):
-#         bandwidth = time_function(width, height, repeat, max_tokens, max_threads, grain_size)
-#         a.add_number(bandwidth)
-#         print grain_size, op.get_bytes(bandwidth)
-#     a.average()
+#for grain_size in (3528/7,3528/6, 3528/4, 3528/3,3528/2,3528,3528*3, 3528*7,3528*9, 3528*21, 3528*59, 3528*63, 3528*177,3528*413,3528*531,3528*1239):
+# for multiple in range(20, 100, 5):
+#     grain_size = multiple * 3528
+for max_threads in range(1,25,1):    
+    a = op.accumulator(grain_size_file_name, [max_threads, max_tokens, grain_size], 10)
+    for repeats in xrange(1,3):
+        bandwidth = time_function(width, height, repeat, max_tokens, max_threads, grain_size)
+        a.add_number(bandwidth)
+        print grain_size, op.get_bytes(bandwidth)
+    a.average()
 
 # a = op.accumulator(grain_size_file_name, 1, 10)
 # for repeats in xrange(1,10):

@@ -130,7 +130,7 @@ int main(int argn, char* argv[]){
 	percival_load_calib_params(calib_params, global_params, true);
 
 	/*settin the number of threads to use*/
-	tbb::task_scheduler_init init();
+	tbb::task_scheduler_init init(max_threads);
 
 	if(use_meaningless_image){
 		/*14 images per iteration*/

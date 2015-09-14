@@ -196,6 +196,26 @@ def get_resource_stall_rate(list_of_functions, attributes, list_of_events_record
         resource_stall_rate.append(float(resource_stall/cycle))
     return resource_stall_rate
 
+def get_memory_bandwidth(list_of_functions, attributes, list_of_events_recorded):
+    memory_bandwidth = []
+    event_names = []
+    for event in list_of_events_recorded:
+        event_names.append(event.event_name)    
+        if event.event_name == 'mem_trans_retired':
+            index_mem_trans = list_of_events_recorded.index(event)
+        elif  event.event_name == 'CPU_CLK_UNHALTED':
+            index_cpu_clock = list_of_events_recorded.index(event)
+    
+    if 'mem_trans_retired' not in event_names or 'CPU_CLK_UNHALTED' not in event_names:
+        return []
+    
+    for function in list_of_functions:
+        mem_trans = attributes[function][index_mem_trans] * list_of_events_recorded[index_mem_trans].sample_rate  
+        cpu_clock = attributes[function][index_cpu_clock] * list_of_events_recorded[index_cpu_clock].sample_rate
+        memory_bandwidth.append(float(64 * mem_trans * 2.5e9/cpu_clock))
+    return memory_bandwidth
+
+
 def get_bandwidth(list_of_functions, attributes, total_time, image_size, repeat):
     bandwidth = []
     for function in list_of_functions:
@@ -248,7 +268,9 @@ def get_function_list(file):
                          'ADC_decode_combined_filter<CDS_output>::operator()',
                          'percival_algorithm_p<CDS_output, tbb::blocked_range<unsigned int> >::operator()',
                          'percival_algorithm_p<head_to_CDS, percival_range_iterator_mock_p>::operator()',
-                         'ADC_decode_combined_filter::operator()(void*)']
+                         'ADC_decode_combined_filter::operator()(void*)',
+                         'percival_algorithm_avx<tbb::blocked_range<unsigned int> >::operator()',
+                         'percival_algorithm_avx<percival_range_iterator_mock_p>::operator()']
     s = file.readline()
     found_functions = []
     while s != '':
