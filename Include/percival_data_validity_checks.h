@@ -82,7 +82,7 @@ void percival_input_output_dimension_check(
 	if(input.width!=output.width)
 		throw dataspace_exception("Input and output frame width mismatch.");
 	if(input.height!=output.height)
-		throw dataspace_exception("Input and output frame width mismatch.");
+		throw dataspace_exception("Input and output frame height mismatch.");
 }
 
 /* Function 8 */

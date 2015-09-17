@@ -11,7 +11,7 @@
 void percival_CDS_subtraction(percival_frame<float> &sample, const percival_frame<float> &reset, percival_frame<float> &output){
 
 	percival_CDS_correction_check(sample,reset,output);
-//can also put this as operator overloading
+	//can also put this as operator overloading
 	//todo: Confirm which gain bit indicates CDS_subtraction, 00, 01, 10, or 11
 	//exclude points in the list
 	for(unsigned int i = 0; i < sample.width * sample.height; i ++){
