@@ -65,12 +65,4 @@ void percival_ADC_decode_combined_pipeline_avx(
 	 */
 	tbb::blocked_range<unsigned int> range(0, NoOfPixels/grain_size, 2);
 	tbb::parallel_for( range, algorithm);
-
-//	do{
-//		lower = upper - get_two_exponentials(upper);
-//		tbb::blocked_range<unsigned int> (lower*grain_size, upper*grain_size, grain_size);
-//		tbb::parallel_for( range, algorithm);
-//		upper = lower;
-//	}while(upper);
-
 }

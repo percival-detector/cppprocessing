@@ -31,13 +31,13 @@ std::string percival_global_params::default_calib_params_dataset_name;
 
 
 percival_global_params::percival_global_params(const std::string & master_param_file){
-		percival_global_params::initialisation(master_param_file);
+	percival_global_params::initialisation(master_param_file);
 }
 
 percival_global_params::percival_global_params(){
 	if(!percival_global_params::is_initialised){
-	std::string default_master_param_file = "./data/test_param_file.txt";
-	percival_global_params::initialisation(default_master_param_file);
+		std::string default_master_param_file = "./data/test_param_file.txt";
+		percival_global_params::initialisation(default_master_param_file);
 	}
 }
 
@@ -139,14 +139,14 @@ bool percival_global_params::load_master_param_file(const std::string & master_p
 bool percival_global_params::check_initialisation(){
 	if( (percival_global_params::is_initialised_every_member[3] == false) ||
 			(percival_global_params::is_initialised_every_member[4] == false)||
-				(percival_global_params::is_initialised_every_member[5] == false)||
-					(percival_global_params::is_initialised_every_member[6] == false)||
-						(percival_global_params::is_initialised_every_member[7] == false)||
-							(percival_global_params::is_initialised_every_member[8] == false)||
-								(percival_global_params::is_initialised_every_member[9] == false)||
-									(percival_global_params::is_initialised_every_member[10] == false)||
-										(percival_global_params::is_initialised_every_member[11] == false)||
-											(percival_global_params::is_initialised_every_member[12] == false))
+			(percival_global_params::is_initialised_every_member[5] == false)||
+			(percival_global_params::is_initialised_every_member[6] == false)||
+			(percival_global_params::is_initialised_every_member[7] == false)||
+			(percival_global_params::is_initialised_every_member[8] == false)||
+			(percival_global_params::is_initialised_every_member[9] == false)||
+			(percival_global_params::is_initialised_every_member[10] == false)||
+			(percival_global_params::is_initialised_every_member[11] == false)||
+			(percival_global_params::is_initialised_every_member[12] == false))
 	{
 		return 0;
 	}
