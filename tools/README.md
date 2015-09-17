@@ -7,6 +7,16 @@
 - calibration_data_generator.py
 - output_processing.py
 - profile_processing.py
+- bandwidth.py
+
+## What are the assummed located of files
+- generated calibration data will be in ```calibration_data/host_name/```
+- OProfile directory will be in ```oprof_report/host_name/```
+- annotated source will be in ```oprof_report/host_name/```
+- bandwidth.py output will be in ```oprof_report/host_name/```
+- profile results will be displayed and the raw profile result will also be written to ```oprof_report/host_name/```.
+
+If any of the following script does not work especially when writing to file, it is probably because some folders do not exist. If they return such errors, touch the file before running the script.
 
 ## What do they do?
 
@@ -22,9 +32,11 @@
 	ADU_to_electron_conversion
 ```
 
-- the calibration data is written to *.h5 files where * is the name of the calibration data
+- the calibration data is written to '*.h5' files where '*' is the name of the calibration data
 - paths to these files are written to test_params_file.txt
 - these files are saved to ./oprofile_reports/host_name/, which will be overriden if originally exist.
+- range of these randomly generated values can be set.
+- takes a while if the arrays are large.
 
 ### output_processing.py
 - mainly for parsing and post-processing.
@@ -50,7 +62,7 @@ parse_time(time_string) | input time format is that of usr/bin/time in mm:ss.cs 
 
 ## How to run this
 cd to the top-level directory, which contains tools/ directory.
-```dls-python ./tools/profile_processing.py```
+```dls-python tools/profile_processing.py```
 
 ## Generated files
 ```
@@ -58,6 +70,9 @@ oprof_reports/<host_name>/oprof_data/
 oprof_reports/<host_name>/profile_report.txt
 [optional] oprof_reports/<host_name>/annotated/
 ```
-
-## Important variables
+### bandwidth.py
+Runs the test program with the function on and off. Then it takes the difference in time to compute the bandwidth of the processsing algorithm.
+If needed, ```use the accummulator``` object in output_processing.py to calculate average and standard deviation, and write the result to a text file. All graphs in my report are gotten using this script
+Run with
+```dls-python tools/bandwidth.py```
 
