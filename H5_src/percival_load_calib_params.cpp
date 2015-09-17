@@ -8,11 +8,12 @@
 #include "percival_load_calib_params.h"
 #include "percival_HDF5_loader.h"
 #include <stdexcept>
+
 //include hdf5 specific header files here later during refactoring
 
 //these functions were originally part of the constructor of percival_calib_params. In order to separate the percival Processing library and the HDF5 library, they have been implemented here.
 
-void percival_load_calib_params(percival_calib_params & calib_params, percival_global_params & global_params){
+void percival_load_calib_params(percival_calib_params & calib_params, percival_global_params & global_params, bool align_mem){
 
 	if(!global_params.initialised())
 		throw std::invalid_argument("global_params not initialised.");
@@ -30,17 +31,93 @@ void percival_load_calib_params(percival_calib_params & calib_params, percival_g
 
 	bool transposed = global_params.is_transposed_calib_params;
 
-	percival_HDF5_loader(default_path_name_Gc, default_data_set_name, percival_calib_params::Gc, transposed);
-	percival_HDF5_loader(default_path_name_Oc, default_data_set_name, percival_calib_params::Oc, transposed);
-	percival_HDF5_loader(default_path_name_Gf, default_data_set_name, percival_calib_params::Gf, transposed);
-	percival_HDF5_loader(default_path_name_Of, default_data_set_name, percival_calib_params::Of, transposed);
-	percival_HDF5_loader(default_path_name_ADU_to_electrons_conversion, default_data_set_name, percival_calib_params::ADU_to_electrons_conversion, transposed);
+	percival_frame_mem<float> tmp1;
+	percival_frame_mem<float> tmp2;
+	percival_frame_mem<float> tmp3;
+	percival_frame_mem<float> tmp4;
+	percival_frame_mem<float> tmp5;
+	percival_frame_mem<float> tmp6;
+	percival_frame_mem<float> tmp7;
+	percival_frame_mem<float> tmp8;
+	percival_frame_mem<float> tmp9;
 
-	percival_HDF5_loader(default_path_name_Gain_lookup_table1, default_data_set_name, percival_calib_params::Gain_lookup_table1, transposed);
-	percival_HDF5_loader(default_path_name_Gain_lookup_table2, default_data_set_name, percival_calib_params::Gain_lookup_table2, transposed);
-	percival_HDF5_loader(default_path_name_Gain_lookup_table3, default_data_set_name, percival_calib_params::Gain_lookup_table3, transposed);
-	percival_HDF5_loader(default_path_name_Gain_lookup_table4, default_data_set_name, percival_calib_params::Gain_lookup_table4, transposed);
+	percival_frame_mem<float> tmp10(3717, 8);
+	percival_frame_mem<float> tmp11(3717, 8);
+	percival_frame_mem<float> tmp12(3717, 8);
+	percival_frame_mem<float> tmp13(3717, 8);
+	percival_frame_mem<float> tmp14(3717, 3528 + 3528/7);
+	percival_frame_mem<float> tmp15(3717, 3528 + 3528/7);
+	percival_frame_mem<float> tmp16(3717, 3528 + 3528/7);
+	percival_frame_mem<float> tmp17(3717, 3528 + 3528/7);
+	percival_frame_mem<float> tmp18(3717, 3528 + 3528/7);
 
+
+	tmp1.automatic_empty = false;
+	tmp2.automatic_empty = false;
+	tmp3.automatic_empty = false;
+	tmp4.automatic_empty = false;
+	tmp5.automatic_empty = false;
+	tmp6.automatic_empty = false;
+	tmp7.automatic_empty = false;
+	tmp8.automatic_empty = false;
+	tmp9.automatic_empty = false;
+
+	tmp10.automatic_empty = false;
+	tmp11.automatic_empty = false;
+	tmp12.automatic_empty = false;
+	tmp13.automatic_empty = false;
+	tmp14.automatic_empty = false;
+	tmp15.automatic_empty = false;
+	tmp16.automatic_empty = false;
+	tmp17.automatic_empty = false;
+	tmp18.automatic_empty = false;
+
+
+	percival_HDF5_loader(default_path_name_Gc, default_data_set_name, tmp1, transposed);
+	percival_HDF5_loader(default_path_name_Oc, default_data_set_name, tmp2, transposed);
+	percival_HDF5_loader(default_path_name_Gf, default_data_set_name, tmp3, transposed);
+	percival_HDF5_loader(default_path_name_Of, default_data_set_name, tmp4, transposed);
+	percival_HDF5_loader(default_path_name_ADU_to_electrons_conversion, default_data_set_name, tmp5, transposed);
+
+	percival_HDF5_loader(default_path_name_Gain_lookup_table1, default_data_set_name, tmp6, transposed);
+	percival_HDF5_loader(default_path_name_Gain_lookup_table2, default_data_set_name, tmp7, transposed);
+	percival_HDF5_loader(default_path_name_Gain_lookup_table3, default_data_set_name, tmp8, transposed);
+	percival_HDF5_loader(default_path_name_Gain_lookup_table4, default_data_set_name, tmp9, transposed);
+
+	if(align_mem){
+		percival_calib_params::Gc = percival_align_memory(tmp1, tmp10, 7, 8);
+		percival_calib_params::Oc = percival_align_memory(tmp2, tmp11, 7, 8);
+		percival_calib_params::Gf = percival_align_memory(tmp3, tmp12, 7, 8);
+		percival_calib_params::Of = percival_align_memory(tmp4, tmp13, 7, 8);
+		percival_calib_params::ADU_to_electrons_conversion = percival_align_memory(tmp5, tmp14, 7, 8);
+		percival_calib_params::Gain_lookup_table1 = percival_align_memory(tmp6, tmp15, 7, 8);
+		percival_calib_params::Gain_lookup_table2 = percival_align_memory(tmp7, tmp16, 7, 8);
+		percival_calib_params::Gain_lookup_table3 = percival_align_memory(tmp8, tmp17, 7, 8);
+		percival_calib_params::Gain_lookup_table4 = percival_align_memory(tmp9, tmp18, 7, 8);
+	}else{
+		percival_calib_params::Gc = tmp1;
+		percival_calib_params::Oc = tmp2;
+		percival_calib_params::Gf = tmp3;
+		percival_calib_params::Of = tmp4;
+		percival_calib_params::ADU_to_electrons_conversion = tmp5;
+		percival_calib_params::Gain_lookup_table1 = tmp6;
+		percival_calib_params::Gain_lookup_table2 = tmp7;
+		percival_calib_params::Gain_lookup_table3 = tmp8;
+		percival_calib_params::Gain_lookup_table4 = tmp9;
+
+	}
+	percival_inverse_frame(percival_calib_params::Gc, percival_calib_params::Gc);
+	percival_inverse_frame(percival_calib_params::Gf, percival_calib_params::Gf);
+}
+
+void percival_inverse_frame(
+		percival_frame<float> &input,
+		percival_frame<float> &output)
+{
+	unsigned int NoOfPixels = input.width * input.height;
+	for(unsigned int i = 0; i < NoOfPixels; i++){
+		*( output.data + i ) = 1 / *( input.data + i );
+	}
 }
 
 /* default path included here for reference only todo: remove this in final product

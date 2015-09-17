@@ -16,7 +16,7 @@
 
 template<typename T>
 void percival_HDF5_writer(
-		percival_frame<T> & src_frame,
+		percival_frame_mem<T> & src_frame,
 		const char * path_name,
 		const char * data_set_name,
 		bool overwrite_existing = 1,			//default 1,  overwrite existing datasets only todo is this a good choice? or prefer overwriting file annd datasets?

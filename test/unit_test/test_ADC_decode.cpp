@@ -17,25 +17,49 @@ const int TEST_FRAME_WIDTH		=	210;		//cannot be 10
 
 class fixture_frame{
 public:
+	percival_frame_mem<unsigned short int> tmp1;
+	percival_frame_mem<float> tmp2;
+	percival_frame_mem<float> tmp3;
+
+	percival_frame_mem<float> tmp4;
+	percival_frame_mem<float> tmp5;
+	percival_frame_mem<float> tmp6;
+	percival_frame_mem<float> tmp7;
+	percival_frame_mem<float> tmp8;
+	percival_frame_mem<float> tmp9;
+	percival_frame_mem<float> tmp10;
+	percival_frame_mem<float> tmp11;
+
+	percival_calib_params calib_params;
 	percival_frame<unsigned short int> src_frame;
 	percival_frame<float> des_frame;
 	percival_frame<float> output_frame;
-	percival_calib_params calib_params;
 
-	fixture_frame(){
-		src_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-		des_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-		output_frame.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
+	fixture_frame():
+		tmp1(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+		tmp2(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+		tmp3(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+		tmp4(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+		tmp5(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+		tmp6(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+		tmp7(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
+		tmp8(TEST_FRAME_HEIGHT, 7),
+		tmp9(TEST_FRAME_HEIGHT, 7),
+		tmp10(TEST_FRAME_HEIGHT, 7),
+		tmp11(TEST_FRAME_HEIGHT, 7),
+		src_frame(tmp1),
+		des_frame(tmp2),
+		output_frame(tmp3)
 
-		calib_params.Gain_lookup_table1.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-		calib_params.Gain_lookup_table2.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-		calib_params.Gain_lookup_table3.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-		calib_params.Gain_lookup_table4.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-
-		calib_params.Gc.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-		calib_params.Gf.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-		calib_params.Oc.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
-		calib_params.Of.set_frame_size(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH);
+	{
+		calib_params.Gain_lookup_table1 = tmp4;
+		calib_params.Gain_lookup_table2 = tmp5;
+		calib_params.Gain_lookup_table3 = tmp6;
+		calib_params.Gain_lookup_table4 = tmp7;
+		calib_params.Gc = tmp8;
+		calib_params.Gf = tmp9;
+		calib_params.Oc = tmp10;
+		calib_params.Of = tmp11;
 	}
 };
 

@@ -2,7 +2,7 @@
 set(CMAKE_INCLUDE_CURRENT_DIR on)
 ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK)
 
-include_directories(${Boost_INCLUDE_DIRS} ${HDF5_INCLUDE_DIRS})
+include_directories(${Boost_INCLUDE_DIRS} ${HDF5_INCLUDE_DIRS} ../../percival_parallel/ )
 
 # Build list of test source files from current dir
 file(GLOB TEST_SOURCES *.cpp)
@@ -14,6 +14,8 @@ file(GLOB PCVL_ALGORITHM_SOURCE ../../src/*.cpp)
 
 # Add the debugging compiler flags.
 set( CMAKE_CXX_FLAGS "-O0 -g3 -pg -DDEBUG" )
+# Add the AVX flag
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx" )
 
 # Add test and project source files to executable
 add_executable(pcvl-unittest
@@ -23,5 +25,6 @@ add_executable(pcvl-unittest
 # Define libraries to link against
 target_link_libraries(pcvl-unittest 
                       pcvl-h5loader
+                      pcvl-tbb-algorithms
                       ${Boost_LIBRARIES})
 

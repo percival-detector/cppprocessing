@@ -5,6 +5,9 @@
  *      Author: pqm78245
  */
 #include "percival_processing.h"
+#include "percival_functors.h"
+#include "percival_data_validity_checks.h"
+
 void percival_unit_ADC_calibration(
 		const percival_frame<unsigned short int> & Coarse,
 		const  percival_frame<unsigned short int> & Fine,
@@ -13,68 +16,20 @@ void percival_unit_ADC_calibration(
 		bool check_dimensions)
 {
 	if(check_dimensions){
-		if(output.width != Coarse.width || output.height != Coarse.height)
-				throw dataspace_exception("In percival_unit_ADC_calibration: coarse_frame and output frame dimensions mismatch.");
-		if(output.width != Fine.width || output.height != Fine.height)
-				throw dataspace_exception("In percival_unit_ADC_calibration: fine_frame and output frame dimensions mismatch.");
-
-		if(calib.Gc.width != 7)
-			throw dataspace_exception("In percival_unit_ADC_calibration: width of Gc array is not 7.");
-		if(calib.Gf.width != 7)
-				throw dataspace_exception("In percival_unit_ADC_calibration: width of Gf array is not 7.");
-		if(calib.Oc.width != 7)
-				throw dataspace_exception("In percival_unit_ADC_calibration: width of Oc array is not 7.");
-		if(calib.Of.width != 7)
-				throw dataspace_exception("In percival_unit_ADC_calibration: width of Of array is not 7.");
-
-		if(calib.Gc.height != output.height)
-			throw dataspace_exception("In percival_unit_ADC_calibration: height of Gc array and height of output are unequal.");
-		if(calib.Gf.height != output.height)
-					throw dataspace_exception("In percival_unit_ADC_calibration: height of Gf array and height of output are unequal.");
-		if(calib.Oc.height != output.height)
-					throw dataspace_exception("In percival_unit_ADC_calibration: height of Oc array and height of output are unequal.");
-		if(calib.Of.height != output.height)
-					throw dataspace_exception("In percival_unit_ADC_calibration: height of Of array and height of output are unequal.");
+		percival_input_calib_NULL_check(calib);
+		percival_input_output_dimension_check(Coarse, Fine);
+		percival_input_output_dimension_check(output, Fine);
+		percival_input_calib_dimension_check(Coarse, calib);
+		percival_null_check(Coarse);
+		percival_null_check(Fine);
+		percival_null_check(output);
 	}
 
 	unsigned int NoOfPixels = output.width * output.height;
+	percival_range_iterator_mock_p iterator(0, NoOfPixels);
+	percival_unit_ADC_calibration_p <percival_range_iterator_mock_p> unit_ADC_calibration(Coarse, Fine, output, calib );
+	unit_ADC_calibration(iterator);
 
-	for(unsigned int i = 0; i < NoOfPixels; i++){
-
-		unsigned int col = i % output.width;			//0 ~ frame_width - 1
-		unsigned int row = (i - col) / output.width;
-		unsigned int position_in_calib_array = (col % 7) + (row * calib.Gc.width); //7 from 7 ADCs. todo code this in config.
-
-		float Gc_at_this_pixel = *(calib.Gc.data + position_in_calib_array);
-		float Oc_at_this_pixel = *(calib.Oc.data + position_in_calib_array);
-		float Gf_at_this_pixel = *(calib.Gf.data + position_in_calib_array);
-		float Of_at_this_pixel = *(calib.Of.data + position_in_calib_array);
-
-		float VinMax=1.43;
-		//these two values are from February test data from Hazem. should be changed if calibration data changes
-		float FMax = 222;
-		float CMax = 26;
-
-		*(output.data + i)	= (float)
-	    		(FMax * CMax *
-				(
-					1.0-
-					(
-							(1.0/VinMax)*
-							(
-									(
-											(Oc_at_this_pixel - *(Fine.data + i) - 1.0) / Gc_at_this_pixel		//In hazem's code coarseBits == FineArr, fineBits == CoarseArr
-									)
-							+		(
-											(*(Coarse.data + i) - Of_at_this_pixel) / Gf_at_this_pixel
-									)
-							)
-					)
-				)
-				);
-
-
-	}
 
 
 }

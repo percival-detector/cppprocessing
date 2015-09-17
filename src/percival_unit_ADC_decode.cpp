@@ -7,6 +7,8 @@
 
 
 #include "percival_processing.h"
+#include "percival_functors.h"
+#include "percival_data_validity_checks.h"
 
 void percival_unit_ADC_decode(
 		const percival_frame<unsigned short int> & input,
@@ -14,26 +16,10 @@ void percival_unit_ADC_decode(
 		percival_frame<unsigned short int> & Fine,
 		percival_frame<unsigned short int> & Gain)
 {
-	if(input.width != Coarse.width || input.height != Coarse.height)
-		throw dataspace_exception("In percival_unit_ADC_decode: coarse_frame and input frame dimensions mismatch.");
-	if(input.width != Fine.width || input.height != Fine.height)
-		throw dataspace_exception("In percival_unit_ADC_decode: fain_frame and input frame dimensions mismatch.");
-	if(input.width != Gain.width || input.height != Gain.height)
-		throw dataspace_exception("In percival_unit_ADC_decode: gain_frame and input frame dimensions mismatch.");
-
-	if(Coarse.data == Fine.data)
-		throw datatype_exception("In percival_unit_ADC_decode: Coarse and Fine frame pointers are identical.");
-	if(Coarse.data == Gain.data)
-		throw datatype_exception("In percival_unit_ADC_decode: Coarse and Gain frame pointers are identical.");
-	if(Gain.data == Fine.data)
-		throw datatype_exception("In percival_unit_ADC_decode: Gain and Fine frame pointers are identical.");
-
+	percival_unit_ADC_decode_check(input,Coarse,Fine,Gain);
 	unsigned int NoOfPixels = input.width * input.height;
-
-	for(unsigned int i = 0; i < NoOfPixels; i ++){
-		*(Gain.data + i) = *(input.data + i) % 0x0004;
-		*(Fine.data + i) = (*(input.data + i)  >> 2 ) %0x100;
-		*(Coarse.data + i) = (*(input.data + i) << 1) >> 11;
-	}
+	percival_range_iterator_mock_p iterator(0, NoOfPixels);
+	percival_unit_ADC_decode_p<percival_range_iterator_mock_p> unit_ADC_decode(input.data, Coarse.data, Fine.data, Gain.data);
+	unit_ADC_decode(iterator);
 }
 

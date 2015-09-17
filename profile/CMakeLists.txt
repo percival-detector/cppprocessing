@@ -17,13 +17,21 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg" )
 # so the following line is not necessary...
 # set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg" )
 
+# Add the AVX flag
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx" )
+
 message (STATUS "Profiling sources:      " ${PCVL_PROFILING_SOURCE})
 message (STATUS "Algorithm sources:      " ${PCVL_ALGORITHM_SOURCE})
 message (STATUS "CMAKE_CXX_FLAGS:        " ${CMAKE_CXX_FLAGS})
 message (STATUS "CMAKE_EXE_LINKER_FLAGS: " ${CMAKE_EXE_LINKER_FLAGS})
 
+# FIXME: the percival_avx.cpp source include TBB.
+#        so we have accidentally got a tight coupling with TBB which is not intended here.
+file(GLOB PERCIVAL_AVX_SRC "../src/percival_avx.cpp")
+list(REMOVE_ITEM PCVL_ALGORITHM_SOURCE ${PERCIVAL_AVX_SRC})
+
 # Add application source files to executable
-add_executable(pcvl-profiling 
+add_executable(pcvl-profiling
                ${PCVL_PROFILING_SOURCE}
                ${PCVL_ALGORITHM_SOURCE})
 

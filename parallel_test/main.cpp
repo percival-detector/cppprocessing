@@ -1,6 +1,12 @@
 /*
  * main.cpp
  *
+ *  Created on: 18 Aug 2015
+ *      Author: pqm78245
+ */
+/*
+ * main.cpp
+ *
  *  Created on: 10 Jul 2015
  *      Author: pqm78245
  */
@@ -8,6 +14,11 @@
 #include "percival_load_calib_params.h"
 #include "percival_HDF5_loader.h"
 #include "percival_HDF5_writer.h"
+#include "percival_parallel.h"
+#include "percival_avx.h"
+
+#include "tbb/task_scheduler_init.h"
+
 #include<string>
 #include<cstdio>
 #include<iostream>
@@ -24,6 +35,11 @@ int main(int argn, char* argv[]){
 	 * main use_meaningless_image_no, path_name, dataset_name, repeat
 	 * main use_meaningless_image_yes, width height repeat test_params_file
 	 * main no commandline input, use default test image.
+	 *
+	 * Maximum number of tokens
+	 * Number of threads
+	 * grain_size
+	 *
 	 *
 	 */
 
@@ -60,8 +76,11 @@ int main(int argn, char* argv[]){
 	std::string config_file = "./data/test_param_file.txt";
 
 	int width, height;
-	int repeat=1000;
-
+	int repeat=100;
+	unsigned int grain_size = 3528;
+	unsigned int execute_function = 1;
+	unsigned int max_tokens = 20;
+	unsigned int max_threads = 20;
 //used for profiling
 	height = 160;		//fixed
 	bool use_meaningless_image = false;
@@ -72,11 +91,24 @@ int main(int argn, char* argv[]){
 			sscanf(argv[2], "%d", &width);
 			if(argn >= 4)
 				sscanf(argv[3], "%d", &height);
-			if(argn == 6){
+			if(argn >= 6){
 				sscanf(argv[4], "%d", &repeat);
 				char tmp3[255];
 				sscanf(argv[5], "%s", tmp3);
 				config_file = tmp3;
+			}
+			if(argn >= 7){
+				sscanf(argv[6], "%d", &grain_size);
+				if(argn >= 8){
+					sscanf(argv[7], "%d", &execute_function);
+					if(argn >= 9 ){
+						sscanf(argv[8], "%d", &max_tokens);
+						if(argn >= 10 ){
+							sscanf(argv[9], "%d", &max_threads);
+						}
+					}
+
+				}
 			}
 		}//using computer generated data
 		else{
@@ -95,7 +127,10 @@ int main(int argn, char* argv[]){
 
 	percival_global_params global_params(config_file);
 	percival_calib_params calib_params;
-	percival_load_calib_params(calib_params, global_params);
+	percival_load_calib_params(calib_params, global_params, true);
+
+	/*settin the number of threads to use*/
+	tbb::task_scheduler_init init(max_threads);
 
 	if(use_meaningless_image){
 		/*14 images per iteration*/
@@ -103,6 +138,12 @@ int main(int argn, char* argv[]){
 		percival_frame_mem<unsigned short int>* reset_frame_stack= new percival_frame_mem<unsigned short int>[repeat];
 		percival_frame_mem<float>* ADC_decoded_sample_frame_stack= new percival_frame_mem<float>[repeat];
 		percival_frame_mem<float>* ADC_decoded_reset_frame_stack= new percival_frame_mem<float>[repeat];
+
+		percival_frame<unsigned short int>* sample_frame_stack_pipe = new percival_frame<unsigned short int>[repeat];
+		percival_frame<unsigned short int>* reset_frame_stack_pipe = new percival_frame<unsigned short int>[repeat];
+		percival_frame<float>* ADC_decoded_sample_frame_stack_pipe = new percival_frame<float>[repeat];
+		percival_frame<float>* ADC_decoded_reset_frame_stack_pipe = new percival_frame<float>[repeat];
+
 		percival_frame_mem<float>* CDS_frame_stack= new percival_frame_mem<float>[repeat];
 		percival_frame_mem<float>* electron_corrected_frame_stack= new percival_frame_mem<float>[repeat];
 
@@ -120,11 +161,16 @@ int main(int argn, char* argv[]){
 
 
 		for(int j = 0; j < repeat; j ++){
-			/*allocate memory*/
 			 (*(sample_frame_stack + j)).set_frame_size(height, width);
 			 (*(reset_frame_stack + j)).set_frame_size(height, width);
 			 (*(ADC_decoded_sample_frame_stack + j)).set_frame_size(height, width);
 			 (*(ADC_decoded_reset_frame_stack + j)).set_frame_size(height, width);
+
+			 *(sample_frame_stack_pipe + j) = *(sample_frame_stack + j);
+			 *(ADC_decoded_sample_frame_stack_pipe + j) = *(ADC_decoded_sample_frame_stack + j);
+			 *(reset_frame_stack_pipe + j) = *(reset_frame_stack + j);
+			 *(ADC_decoded_reset_frame_stack_pipe + j) = *(ADC_decoded_reset_frame_stack + j);
+
 			 (*(CDS_frame_stack + j)).set_frame_size(height, width);
 			 (*(	electron_corrected_frame_stack + j)).set_frame_size(height, width);
 
@@ -138,6 +184,22 @@ int main(int argn, char* argv[]){
 
 			 (*(	calibrated_sample_frame_stack + j)).set_frame_size(height, width);
 			 (*(	calibrated_reset_frame_stack + j)).set_frame_size(height, width);
+
+
+			/*unit functions*/
+//			percival_unit_ADC_decode(sample_frame, sample_coarse_frame, sample_fine_frame,sample_gain_frame);
+//			percival_unit_ADC_decode(reset_frame, reset_coarse_frame, reset_fine_frame,reset_gain_frame);
+//
+//			percival_unit_ADC_calibration(sample_coarse_frame, sample_fine_frame, calibrated_sample_frame, calib_params);
+//			percival_unit_ADC_calibration(reset_coarse_frame, reset_fine_frame, calibrated_reset_frame, calib_params);
+//
+//			percival_unit_gain_multiplication(sample_frame, calibrated_sample_frame, ADC_decoded_sample_frame, calib_params);
+//			percival_unit_gain_multiplication(reset_frame, calibrated_reset_frame, ADC_decoded_reset_frame, calib_params);
+//
+//			percival_ADC_decode_pipe(sample_frame, ADC_decoded_sample_frame ,calib_params, sample_gain_frame, sample_fine_frame, sample_coarse_frame, calibrated_sample_frame);
+//			percival_ADC_decode_pipe(reset_frame, ADC_decoded_reset_frame ,calib_params, reset_gain_frame, reset_fine_frame, reset_coarse_frame, calibrated_reset_frame);
+//
+
 		}
 
 		for(unsigned int k = 0; k < 10; ++k){
@@ -146,8 +208,8 @@ int main(int argn, char* argv[]){
 				reset_frame = *(reset_frame_stack + j);
 
 				for(int i = 0; i < width * height; i++  ){
-					*(sample_frame.data + i) = i * (j * 3 * k) % 32767;		/*arbitrarily generate source data */
-					*(reset_frame.data + i) = i * (j * 5 * k) % 32767;
+					*(sample_frame.data + i) = i + (j + 3 + k) % 32767;		/*arbitrarily generate source data */
+					*(reset_frame.data + i) = i + (j + 5 + k) % 32767;
 				}
 			}
 			/*then do the computation*/
@@ -170,24 +232,23 @@ int main(int argn, char* argv[]){
 
 				calibrated_sample_frame = *(calibrated_sample_frame_stack + j);
 				calibrated_reset_frame = *(calibrated_reset_frame_stack + j);
+				/*functions to run*/
+//				percival_ADC_decode_pf(sample_frame, ADC_decoded_sample_frame ,calib_params);
+//				percival_ADC_decode_pf(reset_frame, ADC_decoded_reset_frame ,calib_params);
+//				std::cout << j << " " << *(ADC_decoded_sample_frame.data + 1000) << std::endl;
+//				percival_ADC_decode(sample_frame, ADC_decoded_sample_frame ,calib_params);
+//				percival_ADC_decode(reset_frame, ADC_decoded_reset_frame ,calib_params);
 
-				/*run a selection of the following functions*/
-				/*unit functions*/
-				//			percival_unit_ADC_decode(sample_frame, sample_coarse_frame, sample_fine_frame,sample_gain_frame);
-				//			percival_unit_ADC_decode(reset_frame, reset_coarse_frame, reset_fine_frame,reset_gain_frame);
-				//
-				//			percival_unit_ADC_calibration(sample_coarse_frame, sample_fine_frame, calibrated_sample_frame, calib_params);
-				//			percival_unit_ADC_calibration(reset_coarse_frame, reset_fine_frame, calibrated_reset_frame, calib_params);
-				//
-				//			percival_unit_gain_multiplication(sample_frame, calibrated_sample_frame, ADC_decoded_sample_frame, calib_params);
-				//			percival_unit_gain_multiplication(reset_frame, calibrated_reset_frame, ADC_decoded_reset_frame, calib_params);
-				//
-				//			percival_ADC_decode_pipe(sample_frame, ADC_decoded_sample_frame ,calib_params, sample_gain_frame, sample_fine_frame, sample_coarse_frame, calibrated_sample_frame);
-				//			percival_ADC_decode_pipe(reset_frame, ADC_decoded_reset_frame ,calib_params, reset_gain_frame, reset_fine_frame, reset_coarse_frame, calibrated_reset_frame);
-				//
-				//			percival_ADC_decode(sample_frame, ADC_decoded_sample_frame ,calib_params);
-				//			percival_ADC_decode(reset_frame, ADC_decoded_reset_frame ,calib_params);
+//				percival_ADC_decode_pf_combined_tbb_pipeline1(sample_frame, ADC_decoded_sample_frame ,calib_params, grain_size);
+//				percival_ADC_decode_pf_combined_tbb_pipeline1(reset_frame, ADC_decoded_reset_frame ,calib_params, grain_size);
+//				percival_CDS_correction(ADC_decoded_sample_frame, ADC_decoded_reset_frame, electron_corrected_frame);
+				if(execute_function)
+					percival_ADC_decode_combined_pipeline_avx(sample_frame, reset_frame, CDS_frame, calib_params, grain_size, max_tokens);
+//				percival_ADC_decode_pf_unit_combined_tbb_pipeline1(sample_frame, ADC_decoded_sample_frame ,calib_params, sample_gain_frame, sample_fine_frame, sample_coarse_frame, calibrated_sample_frame, 3528/7);
+//				percival_ADC_decode_pf_unit_combined_tbb_pipeline1(reset_frame, ADC_decoded_reset_frame ,calib_params, reset_gain_frame, reset_fine_frame, reset_coarse_frame, calibrated_reset_frame, 3528/7);
 			}
+//			percival_ADC_decode_pf_combined_tbb_pipeline_stream(sample_frame_stack_pipe, ADC_decoded_sample_frame_stack_pipe ,calib_params, 2, repeat);
+//			percival_ADC_decode_pf_combined_tbb_pipeline_stream(reset_frame_stack_pipe, ADC_decoded_reset_frame_stack_pipe ,calib_params, 2, repeat);
 		}
 	}else{
 		try{
@@ -231,4 +292,5 @@ int main(int argn, char* argv[]){
 	std::cout << "Done!" << std::endl;
 	return 0;
 }
+
 

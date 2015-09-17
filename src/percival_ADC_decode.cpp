@@ -75,6 +75,12 @@ void percival_ADC_decode(const percival_frame<unsigned short int> & src_frame, p
 		//these two values are from February test data from Hazem. should be changed if calibration data changes
 		float FMax = 222;
 		float CMax = 26;
+
+		/*
+				 *
+				 * Gain multiplication. Each Gain-lookup_table is as large as the sample frame, and corresponds to one gain bit.
+				 *
+				 */
 		float gain_factor = 1;
 				switch(gain){
 					case 0b00:
@@ -110,36 +116,7 @@ void percival_ADC_decode(const percival_frame<unsigned short int> & src_frame, p
 					)
 				)
 				);
-		/*
-		 *
-		 * Gain multiplication. Each Gain-lookup_table is as large as the sample frame, and corresponds to one gain bit.
-		 *
-		 */
 
-//	double version
-
-//		double VinMax=1.43;
-//		//these two values are from February test data from Hazem. should be changed if calibration data changes
-//		double FMax = 222;
-//		double CMax = 26;
-//
-//		*(des_frame.data + i)	= (float)
-//	    		(FMax * CMax *
-//				(
-//					1.0-
-//					(
-//							(1.0/VinMax)*
-//							(double)(
-//									(
-//											(double)((double)Oc_at_this_pixel - (double)fineBits - 1.0) / (double)Gc_at_this_pixel		//In hazem's code coarseBits == FineArr, fineBits == CoarseArr
-//									)
-//							+		(
-//											((double)coarseBits - (double)Of_at_this_pixel) / (double)Gf_at_this_pixel
-//									)
-//							)
-//					)
-//				)
-//				);
 	}
 }
 

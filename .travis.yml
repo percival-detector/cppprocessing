@@ -12,10 +12,12 @@ addons:
     packages:
     - libhdf5-serial-dev
     - libboost-test-dev
+    - libtbb-dev
   
 before_install:
+  - cat /usr/lib/pkgconfig/tbb.pc
   - mkdir build && cd build
-  - cmake ..
+  - cmake -DTBB_ROOT=/usr/ ..
 
 install:
   - pwd
@@ -27,5 +29,5 @@ before_script:
 script:
   - ./build/bin/pcvl-unittest --log_level=all
   - ./build/bin/pcvl-profiling 1 210 160 1 data/test_param_file.txt 
-
+  - ./build/bin/pcvl-tbb 1 210 160 1 data/test_param_file.txt 
   

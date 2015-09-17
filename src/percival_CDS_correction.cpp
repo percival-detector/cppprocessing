@@ -6,14 +6,11 @@
  */
 
 #include "percival_processing.h"
+#include "percival_data_validity_checks.h"
 
 void percival_CDS_correction(percival_frame<float> &sample, const percival_frame<float> &reset, percival_frame<float> &output){
-	//dimension checks
-	if((sample.width != reset.width) || (sample.height != reset.height))
-		throw dataspace_exception("In percival_CDS_correction(): sample dimension and reset dimension mismatch.");
 
-	if((output.width != sample.width) || (output.height != sample.height))
-		throw dataspace_exception("In percival_CDS_correction: calibration array height and sample array height mismatch.");
+	percival_CDS_correction_check(sample,reset,output);
 //can also put this as operator overloading
 	//todo: Confirm which gain bit indicates CDS_subtraction, 00, 01, 10, or 11
 	//exclude points in the list

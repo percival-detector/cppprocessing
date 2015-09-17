@@ -24,8 +24,8 @@ const char* HDF5_WRITE_FLOAT_DATA_SET_NAME= "float_sample_frame";
 
 class fixture_write_to_HDF5{
 	public:
-		percival_frame<short int> short_int_src_frame;
-		percival_frame<short int> short_int_read_frame;
+		percival_frame_mem<short int> short_int_src_frame;
+		percival_frame_mem<short int> short_int_read_frame;
 };
 
 BOOST_FIXTURE_TEST_SUITE(percival_HDF5_loader_test, fixture_write_to_HDF5)
@@ -34,10 +34,10 @@ BOOST_FIXTURE_TEST_SUITE(percival_HDF5_loader_test, fixture_write_to_HDF5)
 //
 //}
 
-//Assuming that incoming percival_frames are 2D
+//Assuming that incoming percival_frame_mems are 2D
 //
 BOOST_AUTO_TEST_CASE ( should_throw_if_src_is_of_unsupported_type  ){
-	percival_frame<long long int> long_long_int_buffer_frame;		//long long int is not supported
+	percival_frame_mem<long long int> long_long_int_buffer_frame;		//long long int is not supported
 	BOOST_REQUIRE_THROW( percival_HDF5_writer(long_long_int_buffer_frame, HDF5_WRITE_FILE_NAME, HDF5_WRITE_DATA_SET_NAME ), datatype_exception);
 }
 
@@ -81,8 +81,8 @@ BOOST_AUTO_TEST_CASE ( should_preserve_data_integrity_when_writing_int ){
 
 BOOST_AUTO_TEST_CASE ( should_preserve_data_integrity_when_writing_float ){
 
-	percival_frame<float> float_src_frame;
-	percival_frame<float> float_read_frame;
+	percival_frame_mem<float> float_src_frame;
+	percival_frame_mem<float> float_read_frame;
 
 	float test1 = 0.0;
 	float test2 = 542.0;
