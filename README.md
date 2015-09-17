@@ -48,6 +48,24 @@ HDF5-dependent functions are,
 percival_HDF5_loader
 percival_HDF5_writer
 ```
+Dimension checking functions specific to some functions are,
+```C++
+percival_unit_ADC_decode_check
+percival_unit_ADC_calibration_check
+percival_unit_gain_multiplication_check
+percival_CDS_correction_check
+percival_ADU_to_electron_correction_check
+```
+Generic checks are,
+```
+percival_input_calib_dimension_check
+percival_input_output_dimension_check
+percival_input_calib_dimension_check_AVX
+percival_input_calib_NULL_check
+percival_null_check
+```
+
+
 Function objects encapsulate the actual algorithms to be run. They are used in both parallelised version and non-parallelised versions. In parallelised version, the ```range_iterator``` type is ```tbb::blocked_range <unsigned int>```, together with ```parallel_for``` templated function. In non-parallelised version, the ```range_iterator``` type is ```percival_range_iterator_mock_p```.
 
 Extracting bits from the inital uint16 is coded in,
@@ -80,7 +98,8 @@ percival_range_iterator_mock_p
 ```
 Where the difference between percival_frame and percival_frame_mem is that the latter can allocate and align memory.
 The best performing function is ``` percival_algorithm_avx_pf ```.
-This was built in place of the original parallel version of the algorithm and there is currently no non-avx version. It can be found in older versions though.
+
+AVX version was built in place of the original parallel version of the algorithm and there is currently no non-avx parallel version. It can be found in older versions though. Or, it can be built with ```percival_ADC_decode_pipe_p <range_iterator>```
 
 How to run the test program
 ----------------------------
