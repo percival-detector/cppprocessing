@@ -280,8 +280,7 @@ void percival_algorithm_avx_pf(
 		const percival_frame<unsigned short int> & reset,
 		percival_frame<float> & output,
 		const percival_calib_params & calib_params,
-		unsigned int grain_size,
-		unsigned int max_tokens = 20);
+		unsigned int grain_size);
 
 
 #endif /* INCLUDE_PERCIVAL_AVX_H_ */

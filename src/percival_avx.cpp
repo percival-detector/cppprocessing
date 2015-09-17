@@ -14,8 +14,7 @@ void percival_algorithm_avx_pf(
 		const percival_frame<unsigned short int> & reset,
 		percival_frame<float> & output,
 		const percival_calib_params & calib_params,
-		unsigned int grain_size,
-		unsigned int max_tokens)
+		unsigned int grain_size)
 {
 	unsigned short int default_grain_size = sample.width;
 
@@ -37,6 +36,8 @@ void percival_algorithm_avx_pf(
 	/* grain size check */
 	if( (grain_size > NoOfPixels) || (grain_size <= 0) )
 		grain_size = default_grain_size;
+	if( (NoOfPixels%grain_size) )
+		throw dataspace_exception{"Grain size is not a factor of No of pixels."};
 
 	percival_algorithm_avx< tbb::blocked_range<unsigned int> > algorithm(sample, reset, output, calib_params, grain_size);
 
@@ -44,6 +45,6 @@ void percival_algorithm_avx_pf(
 	 * 	The chunk size should be multiples of grain_size.
 	 *	grain size must be factors of NoOfPixels
 	 */
-	tbb::blocked_range<unsigned int> range(0, NoOfPixels/grain_size, 2);
+	tbb::blocked_range<unsigned int> range(0, NoOfPixels/grain_size, 2);	/* This particular constant 2 is chosen on purpose */
 	tbb::parallel_for( range, algorithm);
 }

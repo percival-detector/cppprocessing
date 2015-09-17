@@ -89,33 +89,33 @@ percival_algorithm_avx_pf(
 		percival_frame<float> wrong_size_frame_float(tmp_float);
 		percival_frame<unsigned short> wrong_size_frame_int(tmp_int);
 
-		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(sample_frame, wrong_size_frame_int,output_frame, calib_params_avx, TEST_FRAME_WIDTH, 20), dataspace_exception);
-		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(wrong_size_frame_int,reset_frame,output_frame, calib_params_avx, TEST_FRAME_WIDTH, 20), dataspace_exception);
-		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(sample_frame,reset_frame,wrong_size_frame_float, calib_params_avx, TEST_FRAME_WIDTH, 20), dataspace_exception);
+		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(sample_frame, wrong_size_frame_int,output_frame, calib_params_avx, TEST_FRAME_WIDTH), dataspace_exception);
+		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(wrong_size_frame_int,reset_frame,output_frame, calib_params_avx, TEST_FRAME_WIDTH), dataspace_exception);
+		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(sample_frame,reset_frame,wrong_size_frame_float, calib_params_avx, TEST_FRAME_WIDTH), dataspace_exception);
 	}
 
 	BOOST_AUTO_TEST_CASE (should_throw_when_input_frame_has_NULL_pointer){
 		percival_frame<float> null_float;
 		percival_frame<unsigned short> null_int;
 
-		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(sample_frame, null_int,output_frame, calib_params_avx, TEST_FRAME_WIDTH, 20), dataspace_exception);
-		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(null_int,reset_frame,output_frame, calib_params_avx, TEST_FRAME_WIDTH, 20), dataspace_exception);
-		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(sample_frame,reset_frame, null_float, calib_params_avx, TEST_FRAME_WIDTH, 20), dataspace_exception);
+		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(sample_frame, null_int,output_frame, calib_params_avx, TEST_FRAME_WIDTH), dataspace_exception);
+		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(null_int,reset_frame,output_frame, calib_params_avx, TEST_FRAME_WIDTH), dataspace_exception);
+		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(sample_frame,reset_frame, null_float, calib_params_avx, TEST_FRAME_WIDTH), dataspace_exception);
 	}
 
 
 	BOOST_AUTO_TEST_CASE (should_throw_exception_when_calibration_arrays_and_input_dimensions_mismatch){
 		calib_params_avx.Gc.set_frame_size(10, 7);
-		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(sample_frame,reset_frame,output_frame, calib_params_avx, TEST_FRAME_WIDTH, 20), dataspace_exception);
+		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(sample_frame,reset_frame,output_frame, calib_params_avx, TEST_FRAME_WIDTH), dataspace_exception);
 
 		calib_params_avx.Gc.set_frame_size(TEST_FRAME_HEIGHT, 10);
-		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(sample_frame,reset_frame,output_frame, calib_params_avx, TEST_FRAME_WIDTH, 20), dataspace_exception);
+		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(sample_frame,reset_frame,output_frame, calib_params_avx, TEST_FRAME_WIDTH), dataspace_exception);
 
 		calib_params_avx.Gain_lookup_table1.set_frame_size(10,10);
-		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(sample_frame,reset_frame,output_frame, calib_params_avx, TEST_FRAME_WIDTH, 20), dataspace_exception);
+		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(sample_frame,reset_frame,output_frame, calib_params_avx, TEST_FRAME_WIDTH), dataspace_exception);
 
 		calib_params_avx.ADU_to_electrons_conversion.set_frame_size(10,10);
-		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(sample_frame,reset_frame,output_frame, calib_params_avx, TEST_FRAME_WIDTH, 20), dataspace_exception);
+		BOOST_REQUIRE_THROW(percival_algorithm_avx_pf(sample_frame,reset_frame,output_frame, calib_params_avx, TEST_FRAME_WIDTH), dataspace_exception);
 	}
 
 	BOOST_AUTO_TEST_CASE ( should_throw_exception_if_grain_size_exceed_no_of_element_or_below_zero ){
@@ -159,7 +159,7 @@ percival_algorithm_avx_pf(
 
 			float correct_result = ( ( Oc - 0b011111) * Gc - ( 0b01111101 - Of) * Gf ) * G2 * ADU_2e_conv;
 
-			BOOST_REQUIRE_NO_THROW(percival_algorithm_avx_pf(sample_frame, reset_frame, output_frame, calib_params_avx, TEST_FRAME_WIDTH, 20));
+			BOOST_REQUIRE_NO_THROW(percival_algorithm_avx_pf(sample_frame, reset_frame, output_frame, calib_params_avx, TEST_FRAME_WIDTH));
 			BOOST_REQUIRE_CLOSE(correct_result, *(output_frame.data + location), 0.01);
 		}
 
@@ -193,7 +193,7 @@ percival_algorithm_avx_pf(
 
 				float correct_result = ( ( Oc - 0b011111 ) * Gc - ( 0b01111101 - Of ) * Gf ) * G2 * ADU_2e_conv;
 
-				BOOST_REQUIRE_NO_THROW(percival_algorithm_avx_pf(sample_frame, reset_frame, output_frame, calib_params_avx, TEST_FRAME_WIDTH, 20));
+				BOOST_REQUIRE_NO_THROW(percival_algorithm_avx_pf(sample_frame, reset_frame, output_frame, calib_params_avx, TEST_FRAME_WIDTH));
 				BOOST_REQUIRE_CLOSE(correct_result, *(output_frame.data + 14), 0.01);
 			}
 
@@ -226,7 +226,7 @@ percival_algorithm_avx_pf(
 
 						float correct_result = ( ( Oc - 0b011111 ) * Gc - ( 0b01111101 - Of ) * Gf ) * G2 * ADU_2e_conv;
 
-						BOOST_REQUIRE_NO_THROW(percival_algorithm_avx_pf(sample_frame, reset_frame, output_frame, calib_params_avx, TEST_FRAME_WIDTH, 20));
+						BOOST_REQUIRE_NO_THROW(percival_algorithm_avx_pf(sample_frame, reset_frame, output_frame, calib_params_avx, TEST_FRAME_WIDTH));
 						BOOST_REQUIRE_CLOSE(correct_result, *(output_frame.data + location), 0.01);
 					}
 
@@ -259,7 +259,7 @@ percival_algorithm_avx_pf(
 
 						float correct_result = ( ( Oc - 0b011111 ) * Gc - ( 0b01111101 - Of ) * Gf ) * G2 * ADU_2e_conv;
 
-						BOOST_REQUIRE_NO_THROW(percival_algorithm_avx_pf(sample_frame, reset_frame, output_frame, calib_params_avx, TEST_FRAME_WIDTH, 20));
+						BOOST_REQUIRE_NO_THROW(percival_algorithm_avx_pf(sample_frame, reset_frame, output_frame, calib_params_avx, TEST_FRAME_WIDTH));
 						BOOST_REQUIRE_CLOSE(correct_result, *(output_frame.data + location), 0.01);
 					}
 
@@ -294,7 +294,7 @@ percival_algorithm_avx_pf(
 						float reset_result = ( ( Oc - 0b001111 ) * Gc - ( 0b01110101 - Of ) * Gf ) * G4 * ADU_2e_conv;
 						float correct_result = sample_result - reset_result;
 
-						BOOST_REQUIRE_NO_THROW(percival_algorithm_avx_pf(sample_frame, reset_frame, output_frame, calib_params_avx, TEST_FRAME_WIDTH, 20));
+						BOOST_REQUIRE_NO_THROW(percival_algorithm_avx_pf(sample_frame, reset_frame, output_frame, calib_params_avx, TEST_FRAME_WIDTH));
 						BOOST_REQUIRE_CLOSE(correct_result, *(output_frame.data + location), 0.01);
 				}
 BOOST_AUTO_TEST_SUITE_END()
