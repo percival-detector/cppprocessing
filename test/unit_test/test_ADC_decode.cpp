@@ -63,34 +63,34 @@ public:
 	}
 };
 
-BOOST_FIXTURE_TEST_SUITE (percival_ADC_decode_test,fixture_frame)
+BOOST_FIXTURE_TEST_SUITE (percival_ADC_decode_correction_gain_multiplication_test,fixture_frame)
 
 //RANGE TESTS
 	BOOST_AUTO_TEST_CASE (should_throw_exception_when_output_and_input_dimensions_mismatch){
 		percival_frame<float> wrong_size_frame;
 		wrong_size_frame.set_frame_size(10,10);
-		BOOST_REQUIRE_THROW(percival_ADC_decode(src_frame,wrong_size_frame, calib_params), dataspace_exception);
+		BOOST_REQUIRE_THROW(percival_ADC_decode_correction_gain_multiplication(src_frame,wrong_size_frame, calib_params), dataspace_exception);
 	}
 
 	BOOST_AUTO_TEST_CASE (should_throw_exception_when_calibration_arrays_and_input_dimensions_mismatch){
 		calib_params.Gc.set_frame_size(10, 7);
-		BOOST_REQUIRE_THROW(percival_ADC_decode(src_frame,des_frame, calib_params), dataspace_exception);
+		BOOST_REQUIRE_THROW(percival_ADC_decode_correction_gain_multiplication(src_frame,des_frame, calib_params), dataspace_exception);
 
 		calib_params.Gc.set_frame_size(TEST_FRAME_HEIGHT, 10);
-		BOOST_REQUIRE_THROW(percival_ADC_decode(src_frame,des_frame, calib_params), dataspace_exception);
+		BOOST_REQUIRE_THROW(percival_ADC_decode_correction_gain_multiplication(src_frame,des_frame, calib_params), dataspace_exception);
 
 		calib_params.Gain_lookup_table1.set_frame_size(10,10);
-		BOOST_REQUIRE_THROW(percival_ADC_decode(src_frame,des_frame, calib_params), dataspace_exception);
+		BOOST_REQUIRE_THROW(percival_ADC_decode_correction_gain_multiplication(src_frame,des_frame, calib_params), dataspace_exception);
 	}
 
 //Data check
 //	BOOST_AUTO_TEST_CASE(two_input_data_point_with_the_last_fifteen_bits_equal_should_return_same_result){
 //		*(src_frame.data) = 0b1111111111101111;		//overflow if all digits are 1's
-//		BOOST_REQUIRE_NO_THROW(percival_ADC_decode(src_frame, des_frame));
+//		BOOST_REQUIRE_NO_THROW(percival_ADC_decode_correction_gain_multiplication(src_frame, des_frame));
 //		std::cout << *(src_frame.data) << std::endl;
 //		float result = *(des_frame.data);
 //		*(src_frame.data) = 0b0111111111101111;
-//		BOOST_REQUIRE_NO_THROW(percival_ADC_decode(src_frame, des_frame));
+//		BOOST_REQUIRE_NO_THROW(percival_ADC_decode_correction_gain_multiplication(src_frame, des_frame));
 //		BOOST_REQUIRE_CLOSE(result, *(des_frame.data), 0.01);
 //
 //	}
@@ -124,7 +124,7 @@ BOOST_FIXTURE_TEST_SUITE (percival_ADC_decode_test,fixture_frame)
 //		*(src_frame.data + src_frame.width * (src_frame.height) -1) 	= given_input;
 //		*(src_frame.data + src_frame.width * (src_frame.height) /2) 	= given_input;		//central pixel
 //
-//		BOOST_REQUIRE_NO_THROW( percival_ADC_decode(src_frame, des_frame) );
+//		BOOST_REQUIRE_NO_THROW( percival_ADC_decode_correction_gain_multiplication(src_frame, des_frame) );
 //
 //		BOOST_REQUIRE_EQUAL(expected_output, *(des_frame.data + 										0));
 //		BOOST_REQUIRE_EQUAL(expected_output, *(des_frame.data + des_frame.width 						-1));
@@ -149,7 +149,7 @@ BOOST_FIXTURE_TEST_SUITE (percival_ADC_decode_test,fixture_frame)
 //		*(src_frame.data	+ 1) = 32767;
 //		*(src_frame.data 	+ 2) = 21853;
 //
-//		BOOST_REQUIRE_NO_THROW(percival_ADC_decode(src_frame, des_frame));
+//		BOOST_REQUIRE_NO_THROW(percival_ADC_decode_correction_gain_multiplication(src_frame, des_frame));
 //
 //		BOOST_REQUIRE_EQUAL(	gain_coarse_fine_to_int_output(0,0,0), 		*(des_frame.data + 0)	);
 //		BOOST_REQUIRE_EQUAL(	gain_coarse_fine_to_int_output(31,255,3), 	*(des_frame.data + 1)	);

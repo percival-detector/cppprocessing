@@ -60,8 +60,8 @@ public:
 
 template<typename range_iterator>
 class percival_unit_ADC_calibration_p{
-	const percival_frame<unsigned short int> fine;
-	const percival_frame<unsigned short int> coarse;
+	const percival_frame<unsigned short int> Fine;
+	const percival_frame<unsigned short int> Coarse;
 	percival_frame<float> output_frame;
 	percival_calib_params calib_params;
 
@@ -72,10 +72,10 @@ public:
 			const  percival_frame<unsigned short int> & Fine,
 			percival_frame<float>& output_frame,
 			const percival_calib_params & calib):
-				fine(Fine),
-				coarse(Coarse),
+				Fine(Fine),
+				Coarse(Coarse),
 				output_frame(output_frame),
-				calib_params(calib_params)
+				calib_params(calib)
 {}
 
 	void operator()( const range_iterator & r ) const{
@@ -95,29 +95,17 @@ public:
 		Gf = calib_params.Gf.data;
 		Of = calib_params.Of.data;
 		output = output_frame.data;
-		coarse = (this -> coarse).data;
-		fine =  (this -> fine).data;
-		width =  (this -> fine).width;
+		coarse = Coarse.data;
+		fine =  Fine.data;
+		width =  Fine.width;
 		calib_data_width = calib_params.Gc.width;
 
 		row_counter = begin%width;
-		col_counter = row_counter%7; row = begin/width;
+		col_counter = row_counter%7;
+		row = begin/width;
 
 
-		for (unsigned int i=r.begin(); i<end; ++i ){
-			if( (col_counter^7) )
-				col_counter++;
-			else{
-				col_counter = 0;
-			}
-
-			if( (row_counter^width) ){
-				row_counter++;
-			}else{
-				row_counter = 0;
-				row++;
-			}
-
+		for (unsigned int i=begin; i<end; ++i ){
 			position_in_calib_array = col_counter + row * calib_data_width;
 
 			coarseBits = *(coarse + i);
@@ -127,6 +115,19 @@ public:
 			coarse_calibrated = (*(Oc + position_in_calib_array) - coarseBits) * *(Gc + position_in_calib_array);
 
 			*(output+i) = coarse_calibrated - fine_calibrated;
+
+			/* Advance counters */
+			if( (col_counter^6) )
+				col_counter++;
+			else{
+				col_counter = 0;
+			}
+			if( (row_counter^(width-1)) ){
+				row_counter++;
+			}else{
+				row_counter = 0;
+				row++;
+			}
 		}
 	}
 };

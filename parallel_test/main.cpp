@@ -269,10 +269,10 @@ int main(int argn, char* argv[]){
 		electron_corrected_frame.set_frame_size(height, width);
 
 		for(int i = 0; i < repeat; i++){
-			percival_ADC_decode(sample_frame, ADC_decoded_sample_frame, calib_params);
-			percival_ADC_decode(reset_frame, ADC_decoded_reset_frame, calib_params);
+			percival_ADC_decode_correction_gain_multiplication(sample_frame, ADC_decoded_sample_frame, calib_params);
+			percival_ADC_decode_correction_gain_multiplication(reset_frame, ADC_decoded_reset_frame, calib_params);
 
-			percival_CDS_correction(ADC_decoded_sample_frame, ADC_decoded_reset_frame, CDS_frame);
+			percival_CDS_subtraction(ADC_decoded_sample_frame, ADC_decoded_reset_frame, CDS_frame);
 			percival_ADU_to_electron_correction(CDS_frame, electron_corrected_frame, calib_params);
 		}
 	////used for writing output

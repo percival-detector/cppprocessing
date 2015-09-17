@@ -70,8 +70,10 @@ BOOST_FIXTURE_TEST_SUITE (percival_unit_ADC_calibration_test,fixture_unit_ADC_ca
 	BOOST_AUTO_TEST_CASE ( should_use_correct_location_in_calibration_array ){
 		*(coarse_frame.data) = 25;
 		*(fine_frame.data) = 156;
+
 		*(coarse_frame.data + 7) = 25;
 		*(fine_frame.data + 7) = 156;
+
 		*(coarse_frame.data + 14) = 25;
 		*(fine_frame.data + 14) = 156;
 

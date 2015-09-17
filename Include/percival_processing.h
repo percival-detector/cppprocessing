@@ -170,7 +170,7 @@ public:
 };
 
 
-void percival_ADC_decode(const percival_frame<unsigned short int> &, percival_frame<float> &, const percival_calib_params & calib_params, bool store_gain = false);
+void percival_ADC_decode_correction_gain_multiplication(const percival_frame<unsigned short int> &, percival_frame<float> &, const percival_calib_params & calib_params, bool store_gain = false);
 void percival_ADU_to_electron_correction(percival_frame<float> &CDS_Img, percival_frame<float> &output, const percival_calib_params &);
 void percival_CDS_subtraction(percival_frame<float> &sample, const percival_frame<float> &reset, percival_frame<float>& output);
 

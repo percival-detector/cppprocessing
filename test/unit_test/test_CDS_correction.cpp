@@ -12,7 +12,7 @@
 
 const int TEST_FRAME_HEIGHT 	= 	32;
 const int TEST_FRAME_WIDTH		=	512;
-class fixture_test_percival_CDS_correction{
+class fixture_test_percival_CDS_subtraction{
 	public:
 		percival_frame_mem<float> tmp1;
 		percival_frame_mem<float> tmp2;
@@ -22,7 +22,7 @@ class fixture_test_percival_CDS_correction{
 		percival_frame<float> reset_frame;
 		percival_frame<float> output_frame;
 
-		fixture_test_percival_CDS_correction():
+		fixture_test_percival_CDS_subtraction():
 			tmp1(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
 			tmp2(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
 			tmp3(TEST_FRAME_HEIGHT, TEST_FRAME_WIDTH),
@@ -32,7 +32,7 @@ class fixture_test_percival_CDS_correction{
 		{}
 };
 
-BOOST_FIXTURE_TEST_SUITE(percival_CDS_correction_test, fixture_test_percival_CDS_correction)
+BOOST_FIXTURE_TEST_SUITE(percival_CDS_subtraction_test, fixture_test_percival_CDS_subtraction)
 
 //subtracting sample from reset
 
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE ( should_throw_exception_if_sample_and_reset_dimension_mism
 	int reset_frame_width = 3;
 	int reset_frame_height = 7;
 	reset_frame.set_frame_size(reset_frame_height, reset_frame_width);
-	BOOST_REQUIRE_THROW(percival_CDS_correction(sample_frame, reset_frame, output_frame), dataspace_exception);
+	BOOST_REQUIRE_THROW(percival_CDS_subtraction(sample_frame, reset_frame, output_frame), dataspace_exception);
 }
 
 BOOST_AUTO_TEST_CASE ( should_throw_exception_when_output_and_input_dimensions_mismatch ){
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE ( should_throw_exception_when_output_and_input_dimensions_m
 	sample_frame.set_frame_size(frame_height, frame_width);
 	reset_frame.set_frame_size(frame_height, frame_width);
 	output_frame.set_frame_size(3,2);
-	BOOST_REQUIRE_THROW(percival_CDS_correction(sample_frame, reset_frame, output_frame), dataspace_exception);
+	BOOST_REQUIRE_THROW(percival_CDS_subtraction(sample_frame, reset_frame, output_frame), dataspace_exception);
 }
 
 BOOST_AUTO_TEST_CASE ( should_give_sensible_result ){
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE ( should_give_sensible_result ){
 	*(reset_frame.data + 					 TEST_FRAME_WIDTH - 1)		= test3R;
 	*(reset_frame.data + TEST_FRAME_WIDTH * (TEST_FRAME_HEIGHT - 1) )	= test4R;
 
-	BOOST_REQUIRE_NO_THROW(percival_CDS_correction(sample_frame, reset_frame, output_frame));
+	BOOST_REQUIRE_NO_THROW(percival_CDS_subtraction(sample_frame, reset_frame, output_frame));
 	//four corners
 	BOOST_REQUIRE_CLOSE_FRACTION(*(output_frame.data), test1S - test1R, 0.01);												//upper left
 	BOOST_REQUIRE_CLOSE_FRACTION(*(output_frame.data + TEST_FRAME_HEIGHT * TEST_FRAME_WIDTH - 1), test2S - test2R, 0.01);	//Lower right
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE ( should_not_do_subtraction_if_CDS_subtraction_index_includ
 	*(reset_frame.data)													= test1R;
 	sample_frame.CDS_subtraction_indices.push_back(0);			//include index 0 in the list
 
-	BOOST_REQUIRE_NO_THROW(percival_CDS_correction(sample_frame, reset_frame, output_frame));
+	BOOST_REQUIRE_NO_THROW(percival_CDS_subtraction(sample_frame, reset_frame, output_frame));
 	//four corners
 	BOOST_REQUIRE_CLOSE_FRACTION(*(output_frame.data), test1S, 0.01);												//upper left
 }

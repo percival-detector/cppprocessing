@@ -7,7 +7,7 @@
 
 #include "percival_processing.h"
 
-void percival_ADC_decode(const percival_frame<unsigned short int> & src_frame, percival_frame<float> & des_frame, const percival_calib_params & calib_params, bool store_gain){
+void percival_ADC_decode_correction_gain_multiplication(const percival_frame<unsigned short int> & src_frame, percival_frame<float> & des_frame, const percival_calib_params & calib_params, bool store_gain){
 	//initialize destination matrix
 	if(src_frame.width != des_frame.width || src_frame.height != des_frame.height){
 		throw dataspace_exception("percival_ADC_decode: output and input dimension mismatch.");
