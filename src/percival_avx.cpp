@@ -9,25 +9,6 @@
 #include "percival_parallel.h"
 #include "tbb/blocked_range.h"
 
-/*
- * 	This function is used to get the largest 2's exponential smaller than x.
- * 	If x is 1, return 1; if x is 0, return 0;
- * 	Only accepts uint32
- */
-inline unsigned int get_two_exponentials(unsigned int x){
-	if(x == 0)
-		return 0;
-	if(x == 1)
-		return 1;
-
-	unsigned int two_exponentials = 1;
-	for(unsigned int i=0; i < 32; i++){
-		if(two_exponentials*2 <= x)
-			two_exponentials*=2;
-	}
-	return two_exponentials;
-}
-
 void percival_ADC_decode_combined_pipeline_avx(
 		const percival_frame<unsigned short int> & sample,
 		const percival_frame<unsigned short int> & reset,
