@@ -1,7 +1,8 @@
 
 set(CMAKE_INCLUDE_CURRENT_DIR on)
 
-include_directories(${HDF5_INCLUDE_DIRS})
+# FIXME: we should not depend on anything parallel in here I think...
+include_directories(${HDF5_INCLUDE_DIRS} ../percival_parallel/)
 
 # Add the AVX flag
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx" )
