@@ -286,13 +286,6 @@ int main(int argn, char* argv[]){
 			percival_CDS_subtraction(ADC_decoded_sample_frame, ADC_decoded_reset_frame, CDS_frame);
 			percival_ADU_to_electron_correction(CDS_frame, electron_corrected_frame, calib_params);
 		}
-	//used for writing output
-		percival_HDF5_writer(ADC_decoded_sample_frame,  "./12-08-2015 output.h5", "ADC_decoded_sample_frame");
-		percival_HDF5_writer(ADC_decoded_reset_frame,  "./12-08-2015 output.h5", "ADC_decoded_reset_frame");
-		percival_HDF5_writer(CDS_frame, "./12-08-2015 output.h5", "CDS_frame");
-		percival_HDF5_writer(electron_corrected_frame,  "./12-08-2015 output.h5", "electron_corrected_frame");
-
-	//	std::cout << *(calib_params.ADU_to_electrons_conversion.data + 2) << std::endl;
 	}
 	std::cout << "Done!" << std::endl;
 	return 0;
