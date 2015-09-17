@@ -9,7 +9,7 @@
 #include "percival_parallel.h"
 #include "tbb/blocked_range.h"
 
-void percival_ADC_decode_combined_pipeline_avx(
+void percival_algorithm_avx_pf(
 		const percival_frame<unsigned short int> & sample,
 		const percival_frame<unsigned short int> & reset,
 		percival_frame<float> & output,

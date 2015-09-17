@@ -257,7 +257,7 @@ int main(int argn, char* argv[]){
 				 *
 				 */
 				if(execute_function)
-					percival_ADC_decode_combined_pipeline_avx(sample_frame, reset_frame, CDS_frame, calib_params, grain_size, max_tokens);
+					percival_algorithm_avx_pf(sample_frame, reset_frame, CDS_frame, calib_params, grain_size, max_tokens);
 
 			}
 		}
