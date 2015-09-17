@@ -61,7 +61,7 @@ void percival_ADC_decode_combined_pipeline_avx(
 
 	/*
 	 * 	The chunk size should be multiples of grain_size.
-	 *
+	 *	grain size must be factors of NoOfPixels
 	 */
 	tbb::blocked_range<unsigned int> range(0, NoOfPixels/grain_size, 2);
 	tbb::parallel_for( range, algorithm);

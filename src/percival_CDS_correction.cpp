@@ -1,5 +1,5 @@
 /*
- * percival_CDS_correction.cpp
+ * percival_CDS_subtraction.cpp
  *
  *  Created on: 3 Aug 2015
  *      Author: pqm78245
@@ -8,7 +8,7 @@
 #include "percival_processing.h"
 #include "percival_data_validity_checks.h"
 
-void percival_CDS_correction(percival_frame<float> &sample, const percival_frame<float> &reset, percival_frame<float> &output){
+void percival_CDS_subtraction(percival_frame<float> &sample, const percival_frame<float> &reset, percival_frame<float> &output){
 
 	percival_CDS_correction_check(sample,reset,output);
 //can also put this as operator overloading

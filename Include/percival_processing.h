@@ -48,7 +48,7 @@ public:
 			/*allocating memory*/
 			not_aligned = new T[width * height + ( align_to_N_bytes + 32 )/sizeof(T)];	/*32Bytes extra space to align*/
 
-			/*align to 128 bits boundary*/
+			/*align to boundary*/
 			std::size_t address = reinterpret_cast<std::size_t>(not_aligned);
 			std::size_t offset = address % align_to_N_bytes;
 			data = reinterpret_cast<T*>(reinterpret_cast<std::size_t>(not_aligned) + align_to_N_bytes - offset);
@@ -172,7 +172,7 @@ public:
 
 void percival_ADC_decode(const percival_frame<unsigned short int> &, percival_frame<float> &, const percival_calib_params & calib_params, bool store_gain = false);
 void percival_ADU_to_electron_correction(percival_frame<float> &CDS_Img, percival_frame<float> &output, const percival_calib_params &);
-void percival_CDS_correction(percival_frame<float> &sample, const percival_frame<float> &reset, percival_frame<float>& output);
+void percival_CDS_subtraction(percival_frame<float> &sample, const percival_frame<float> &reset, percival_frame<float>& output);
 
 void percival_unit_gain_multiplication(const percival_frame<unsigned short int> & src_frame, const percival_frame<float> & calibrated, percival_frame<float> & output, const percival_calib_params & calib_params, bool check_dimensions = true);
 void percival_unit_ADC_decode(const percival_frame<unsigned short int> &, percival_frame<unsigned short int> & Coarse, percival_frame<unsigned short int> & Fine, percival_frame<unsigned short int> & Gain);

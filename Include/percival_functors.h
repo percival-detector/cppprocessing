@@ -13,7 +13,9 @@
  *
  */
 
-struct percival_range_iterator_mock_p{	/*this object mocks the block_range object in tbb so that the syntax of my library can accommodate tbb library*/
+/*this object mocks the block_range object in tbb so that the syntax of my library can accommodate tbb library*/
+
+struct percival_range_iterator_mock_p{
 	unsigned int lower;
 	unsigned int upper;
 
@@ -26,9 +28,9 @@ struct percival_range_iterator_mock_p{	/*this object mocks the block_range objec
 };
 
 /*
- * 	Unit functors
- * 		unit_ADC_decode
- * 		unit_ADC_calibration
+ * 	Function objects for the following steps
+ * 		unit_ADC_decode int16 to coarse, fine and gain
+ * 		unit_ADC_calibration	coarse and fine to float
  * 		unit_gain_multiplication
  *
  */
@@ -81,11 +83,11 @@ public:
 		unsigned int end = r.end();
 		unsigned int begin = r.begin();
 		/*defining reusable variables*/
-		unsigned int row, position_in_calib_array, width, calib_data_width, coarseBits, fineBits;			/*28 bytes*/
-		unsigned int col_counter, row_counter;		/*8 bytes*/
-		float coarse_calibrated, fine_calibrated;		/*8 bytes*/
-		unsigned short int * coarse, *fine;		/*8 bytes*/
-		float* Gc, *Oc, *Gf,* Of, *output;		/*40 bytes. Pointers are of word size*/
+		unsigned int row, position_in_calib_array, width, calib_data_width, coarseBits, fineBits;
+		unsigned int col_counter, row_counter;
+		float coarse_calibrated, fine_calibrated;
+		unsigned short int * coarse, *fine;
+		float* Gc, *Oc, *Gf,* Of, *output;
 
 		/* avoid repeated dereferencing*/
 		Gc = calib_params.Gc.data;
@@ -231,45 +233,38 @@ public:
 
 /*===============================================================================================================================*/
 /*
- * 	Ultimate combined giant huge functor
- *	AVX version
- */
-
-struct head_to_CDS{
-	percival_frame<unsigned short int> input_reset;
-	percival_frame<unsigned short int> input_sample;
-	percival_frame<float> output;
-};
-
-/*
- * 	Functor used by TBB pipeline
- *
- *
- */
-
-/*===============================================================================================================================*/
-/*
- * 	Ultimate combined giant huge functor
+ * 	Combined processing steps Function object.
  *	Non-AVX version
+ *
+ *	ADC Coarse, Fine and Gain decoding
+ *	ADC correction
+ *	Gain Multiplication
+ *	CDS subtraction
+ *	Dark image subtraction
+ *
+ *	Further processing can be added
+ *
  */
 
 
 template<typename range_iterator>
-class percival_algorithm_p{
+class percival_algorithm_p{		/* p for parallel */
+
 	const percival_frame<unsigned short> input_sample;
 	const percival_frame<unsigned short> input_reset;
 	percival_frame<float> output_frame;
 	const percival_calib_params calib;
+
 public:
 	percival_algorithm_p(
 			const percival_frame<unsigned short> &input_sample,
 			const percival_frame<unsigned short> &output_reset,
 			percival_frame<float> &output_frame,
 			const percival_calib_params & calib ):
-		input_sample( input_sample ),
-		input_reset( input_reset ),
-		output_frame(output_frame),
-		calib( calib )
+				input_sample( input_sample ),
+				input_reset( input_reset ),
+				output_frame(output_frame),
+				calib( calib )
 
 {}
 
@@ -325,18 +320,18 @@ public:
 
 			do{
 				pixel = *(data + i);
-				/* unit_ADC_decode */
+				/* Decoding Extracting integer fields  */
 				gain = pixel & 0x0003;
 				fineBits = (pixel & 0x3FC) >> 2;
 				coarseBits = (pixel & 0x7c00) >> 10;
-				/* unit_ADC_calib */
+				/* ADC linear correction */
 				coarse_calibrated = (*(Oc + position_in_calib_array) - coarseBits) * *(Gc + position_in_calib_array);
 				fine_calibrated = (fineBits - *(Of + position_in_calib_array)) * *(Gf + position_in_calib_array);
-				/* unit_ADC_gain_multiplication */
+				/* Gain multiplication */
 				switch(gain){
 				case 0b00:
 					gain_factor = *(G1 + i);
-					count = 1;
+					count = 1;	/* used to hop between slot 0 and 1 */
 					data = reset_frame;
 					break;
 				case 0b01:
@@ -351,17 +346,19 @@ public:
 				default:
 					throw datatype_exception("Invalid gain bit detected.");
 				}
-			arr[current_count] = gain_factor * (coarse_calibrated - fine_calibrated); /*store sample in slot 1 and reset in slot 0*/
+			/*store sample in slot 1 and reset in slot 0*/
+			arr[current_count] = gain_factor * (coarse_calibrated - fine_calibrated);
 			current_count = (current_count+1)&0x1;
 		}while( count&current_count );
-		/* subtraction */
+
+		/* CDS subtraction */
 		result = arr[0] - arr[1];
 
 		result *= ADU_to_electron;
 
 		/*writing to memory*/
 		*(output+i) = result;
-
+		/* Advance counters */
 		if( (col_counter^7) )
 			col_counter++;
 		else{
