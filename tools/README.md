@@ -16,6 +16,8 @@
 - bandwidth.py output will be in ```oprof_report/host_name/```
 - profile results will be displayed and the raw profile result will also be written to ```oprof_report/host_name/```.
 
+If any of the following script does not work especially when writing to file, it is probably because some folders do not exist. If they return such errors, touch the file before running the script.
+
 ## What do they do?
 
 ### calibration_data_generator.py
