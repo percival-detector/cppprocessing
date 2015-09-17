@@ -1,0 +1,156 @@
+16:30:27 **** Clean-only build of configuration parallel_profile for project cppProcessing2.0 ****
+make clean 
+rm -rf  ./.metadata/.plugins/org.eclipse.cdt.managedbuilder.core/spec.d  ./src/percival_ADC_decode.o ./src/percival_ADU_to_electron_correction.o ./src/percival_CDS_correction.o ./src/percival_avx.o ./src/percival_data_validity_checks.o ./src/percival_exceptions.o ./src/percival_global_params.o ./src/percival_unit_ADC_calibration.o ./src/percival_unit_ADC_decode.o ./src/percival_unit_gain_multiplication.o  ./percival_parallel/percival_ADC_decode_pipe.o ./percival_parallel/percival_unit_ADC_calibration_pf.o ./percival_parallel/percival_unit_ADC_decode_p.o ./percival_parallel/percival_unit_gain_multiplication_pf.o  ./parallel_test/main.o  ./H5_src/percival_calib_params.o ./H5_src/percival_load_calib_params.o  ./.metadata/.plugins/org.eclipse.cdt.managedbuilder.core/spec.o  ./.metadata/.plugins/org.eclipse.cdt.make.core/specs.o  ./src/percival_ADC_decode.d ./src/percival_ADU_to_electron_correction.d ./src/percival_CDS_correction.d ./src/percival_avx.d ./src/percival_data_validity_checks.d ./src/percival_exceptions.d ./src/percival_global_params.d ./src/percival_unit_ADC_calibration.d ./src/percival_unit_ADC_decode.d ./src/percival_unit_gain_multiplication.d  ./percival_parallel/percival_ADC_decode_pipe.d ./percival_parallel/percival_unit_ADC_calibration_pf.d ./percival_parallel/percival_unit_ADC_decode_p.d ./percival_parallel/percival_unit_gain_multiplication_pf.d  ./parallel_test/main.d  ./H5_src/percival_calib_params.d ./H5_src/percival_load_calib_params.d  ./.metadata/.plugins/org.eclipse.cdt.make.core/specs.d  ./.metadata/.plugins/org.eclipse.cdt.managedbuilder.core/spec.d  ./.metadata/.plugins/org.eclipse.cdt.make.core/specs.d  cppProcessing2.0
+ 
+
+16:30:28 Build Finished (took 168ms)
+
+16:30:36 **** Incremental Build of configuration parallel_profile for project cppProcessing2.0 ****
+make all 
+Building file: ../src/percival_ADC_decode.cpp
+Invoking: GCC C++ Compiler
+g++ -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/H5_src" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/Include" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/src" -I/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/percival_parallel" -I/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include -O3 -mavx -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/percival_ADC_decode.d" -MT"src/percival_ADC_decode.d" -o "src/percival_ADC_decode.o" "../src/percival_ADC_decode.cpp"
+../src/percival_ADC_decode.cpp: In function ‘void percival_ADC_decode_correction_gain_multiplication(const percival_frame<short unsigned int>&, percival_frame<float>&, const percival_calib_params&, bool)’:
+../src/percival_ADC_decode.cpp:32: warning: unused variable ‘calib_data_height’
+Finished building: ../src/percival_ADC_decode.cpp
+ 
+Building file: ../src/percival_ADU_to_electron_correction.cpp
+Invoking: GCC C++ Compiler
+g++ -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/H5_src" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/Include" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/src" -I/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/percival_parallel" -I/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include -O3 -mavx -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/percival_ADU_to_electron_correction.d" -MT"src/percival_ADU_to_electron_correction.d" -o "src/percival_ADU_to_electron_correction.o" "../src/percival_ADU_to_electron_correction.cpp"
+Finished building: ../src/percival_ADU_to_electron_correction.cpp
+ 
+Building file: ../src/percival_CDS_correction.cpp
+Invoking: GCC C++ Compiler
+g++ -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/H5_src" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/Include" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/src" -I/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/percival_parallel" -I/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include -O3 -mavx -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/percival_CDS_correction.d" -MT"src/percival_CDS_correction.d" -o "src/percival_CDS_correction.o" "../src/percival_CDS_correction.cpp"
+../src/percival_CDS_correction.cpp: In function ‘void percival_CDS_subtraction(percival_frame<float>&, const percival_frame<float>&, percival_frame<float>&)’:
+../src/percival_CDS_correction.cpp:18: warning: comparison between signed and unsigned integer expressions
+Finished building: ../src/percival_CDS_correction.cpp
+ 
+Building file: ../src/percival_avx.cpp
+Invoking: GCC C++ Compiler
+g++ -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/H5_src" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/Include" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/src" -I/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/percival_parallel" -I/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include -O3 -mavx -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/percival_avx.d" -MT"src/percival_avx.d" -o "src/percival_avx.o" "../src/percival_avx.cpp"
+../src/percival_avx.cpp: In function ‘void percival_algorithm_avx_pf(const percival_frame<short unsigned int>&, const percival_frame<short unsigned int>&, percival_frame<float>&, const percival_calib_params&, unsigned int)’:
+../src/percival_avx.cpp:40: warning: extended initializer lists only available with -std=c++0x or -std=gnu++0x
+In file included from ../src/percival_avx.cpp:8:
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_avx.h: In member function ‘void percival_algorithm_avx<range_iterator>::operator()(range_iterator&) const [with range_iterator = tbb::blocked_range<unsigned int>]’:
+/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include/tbb/parallel_for.h:102:   instantiated from ‘void tbb::interface7::internal::start_for<Range, Body, Partitioner>::run_body(Range&) [with Range = tbb::blocked_range<unsigned int>, Body = percival_algorithm_avx<tbb::blocked_range<unsigned int> >, Partitioner = const tbb::auto_partitioner]’
+/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include/tbb/partitioner.h:250:   instantiated from ‘void tbb::interface7::internal::partition_type_base<Partition>::execute(StartType&, Range&) [with StartType = tbb::interface7::internal::start_for<tbb::blocked_range<unsigned int>, percival_algorithm_avx<tbb::blocked_range<unsigned int> >, const tbb::auto_partitioner>, Range = tbb::blocked_range<unsigned int>, Partition = tbb::interface7::internal::auto_partition_type]’
+/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include/tbb/parallel_for.h:127:   instantiated from ‘tbb::task* tbb::interface7::internal::start_for<Range, Body, Partitioner>::execute() [with Range = tbb::blocked_range<unsigned int>, Body = percival_algorithm_avx<tbb::blocked_range<unsigned int> >, Partitioner = const tbb::auto_partitioner]’
+../src/percival_avx.cpp:50:   instantiated from here
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_avx.h:76: warning: unused variable ‘tmp_ymm’
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_avx.h:76: warning: unused variable ‘tmp_ymm3’
+In file included from ../src/percival_avx.cpp:8:
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_avx.h:71: warning: ‘Gc_ymm’ may be used uninitialized in this function
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_avx.h:71: warning: ‘Oc_ymm’ may be used uninitialized in this function
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_avx.h:71: warning: ‘Gf_ymm’ may be used uninitialized in this function
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_avx.h:71: warning: ‘Of_ymm’ may be used uninitialized in this function
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_avx.h:75: warning: ‘sample_result_ymm’ may be used uninitialized in this function
+Finished building: ../src/percival_avx.cpp
+ 
+Building file: ../src/percival_data_validity_checks.cpp
+Invoking: GCC C++ Compiler
+g++ -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/H5_src" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/Include" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/src" -I/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/percival_parallel" -I/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include -O3 -mavx -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/percival_data_validity_checks.d" -MT"src/percival_data_validity_checks.d" -o "src/percival_data_validity_checks.o" "../src/percival_data_validity_checks.cpp"
+Finished building: ../src/percival_data_validity_checks.cpp
+ 
+Building file: ../src/percival_exceptions.cpp
+Invoking: GCC C++ Compiler
+g++ -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/H5_src" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/Include" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/src" -I/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/percival_parallel" -I/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include -O3 -mavx -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/percival_exceptions.d" -MT"src/percival_exceptions.d" -o "src/percival_exceptions.o" "../src/percival_exceptions.cpp"
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_exceptions.h: In constructor ‘datatype_exception::datatype_exception(int, const char*, bool, const char*)’:
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_exceptions.h:32: warning: ‘datatype_exception::size’ will be initialized after
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_exceptions.h:28: warning:   ‘std::string datatype_exception::type’
+../src/percival_exceptions.cpp:16: warning:   when initialized here
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_exceptions.h:33: warning: ‘datatype_exception::sign’ will be initialized after
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_exceptions.h:27: warning:   ‘std::string datatype_exception::err_msg’
+../src/percival_exceptions.cpp:16: warning:   when initialized here
+Finished building: ../src/percival_exceptions.cpp
+ 
+Building file: ../src/percival_global_params.cpp
+Invoking: GCC C++ Compiler
+g++ -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/H5_src" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/Include" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/src" -I/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/percival_parallel" -I/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include -O3 -mavx -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/percival_global_params.d" -MT"src/percival_global_params.d" -o "src/percival_global_params.o" "../src/percival_global_params.cpp"
+Finished building: ../src/percival_global_params.cpp
+ 
+Building file: ../src/percival_unit_ADC_calibration.cpp
+Invoking: GCC C++ Compiler
+g++ -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/H5_src" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/Include" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/src" -I/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/percival_parallel" -I/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include -O3 -mavx -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/percival_unit_ADC_calibration.d" -MT"src/percival_unit_ADC_calibration.d" -o "src/percival_unit_ADC_calibration.o" "../src/percival_unit_ADC_calibration.cpp"
+Finished building: ../src/percival_unit_ADC_calibration.cpp
+ 
+Building file: ../src/percival_unit_ADC_decode.cpp
+Invoking: GCC C++ Compiler
+g++ -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/H5_src" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/Include" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/src" -I/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/percival_parallel" -I/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include -O3 -mavx -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/percival_unit_ADC_decode.d" -MT"src/percival_unit_ADC_decode.d" -o "src/percival_unit_ADC_decode.o" "../src/percival_unit_ADC_decode.cpp"
+Finished building: ../src/percival_unit_ADC_decode.cpp
+ 
+Building file: ../src/percival_unit_gain_multiplication.cpp
+Invoking: GCC C++ Compiler
+g++ -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/H5_src" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/Include" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/src" -I/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/percival_parallel" -I/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include -O3 -mavx -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/percival_unit_gain_multiplication.d" -MT"src/percival_unit_gain_multiplication.d" -o "src/percival_unit_gain_multiplication.o" "../src/percival_unit_gain_multiplication.cpp"
+In file included from ../src/percival_unit_gain_multiplication.cpp:10:
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_functors.h: In constructor ‘percival_unit_gain_multiplication_p<range_iterator>::percival_unit_gain_multiplication_p(const percival_frame<short unsigned int>&, const percival_frame<float>&, percival_frame<float>&, const percival_calib_params&) [with range_iterator = percival_range_iterator_mock_p]’:
+../src/percival_unit_gain_multiplication.cpp:32:   instantiated from here
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_functors.h:140: warning: ‘percival_unit_gain_multiplication_p<percival_range_iterator_mock_p>::src_frame’ will be initialized after
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_functors.h:139: warning:   ‘percival_frame<float> percival_unit_gain_multiplication_p<percival_range_iterator_mock_p>::calibrated’
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_functors.h:144: warning:   when initialized here
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_functors.h:139: warning: ‘percival_unit_gain_multiplication_p<percival_range_iterator_mock_p>::calibrated’ will be initialized after
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_functors.h:138: warning:   ‘percival_frame<float> percival_unit_gain_multiplication_p<percival_range_iterator_mock_p>::output’
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_functors.h:144: warning:   when initialized here
+Finished building: ../src/percival_unit_gain_multiplication.cpp
+ 
+Building file: ../percival_parallel/percival_unit_ADC_calibration_pf.cpp
+Invoking: GCC C++ Compiler
+g++ -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/H5_src" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/Include" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/src" -I/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/percival_parallel" -I/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include -O3 -mavx -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"percival_parallel/percival_unit_ADC_calibration_pf.d" -MT"percival_parallel/percival_unit_ADC_calibration_pf.d" -o "percival_parallel/percival_unit_ADC_calibration_pf.o" "../percival_parallel/percival_unit_ADC_calibration_pf.cpp"
+Finished building: ../percival_parallel/percival_unit_ADC_calibration_pf.cpp
+ 
+Building file: ../percival_parallel/percival_unit_ADC_decode_p.cpp
+Invoking: GCC C++ Compiler
+g++ -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/H5_src" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/Include" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/src" -I/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/percival_parallel" -I/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include -O3 -mavx -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"percival_parallel/percival_unit_ADC_decode_p.d" -MT"percival_parallel/percival_unit_ADC_decode_p.d" -o "percival_parallel/percival_unit_ADC_decode_p.o" "../percival_parallel/percival_unit_ADC_decode_p.cpp"
+Finished building: ../percival_parallel/percival_unit_ADC_decode_p.cpp
+ 
+Building file: ../percival_parallel/percival_unit_gain_multiplication_pf.cpp
+Invoking: GCC C++ Compiler
+g++ -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/H5_src" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/Include" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/src" -I/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/percival_parallel" -I/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include -O3 -mavx -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"percival_parallel/percival_unit_gain_multiplication_pf.d" -MT"percival_parallel/percival_unit_gain_multiplication_pf.d" -o "percival_parallel/percival_unit_gain_multiplication_pf.o" "../percival_parallel/percival_unit_gain_multiplication_pf.cpp"
+In file included from ../percival_parallel/percival_parallel.h:15,
+                 from ../percival_parallel/percival_unit_gain_multiplication_pf.cpp:8:
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_functors.h: In constructor ‘percival_unit_gain_multiplication_p<range_iterator>::percival_unit_gain_multiplication_p(const percival_frame<short unsigned int>&, const percival_frame<float>&, percival_frame<float>&, const percival_calib_params&) [with range_iterator = tbb::blocked_range<unsigned int>]’:
+../percival_parallel/percival_unit_gain_multiplication_pf.cpp:25:   instantiated from here
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_functors.h:140: warning: ‘percival_unit_gain_multiplication_p<tbb::blocked_range<unsigned int> >::src_frame’ will be initialized after
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_functors.h:139: warning:   ‘percival_frame<float> percival_unit_gain_multiplication_p<tbb::blocked_range<unsigned int> >::calibrated’
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_functors.h:144: warning:   when initialized here
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_functors.h:139: warning: ‘percival_unit_gain_multiplication_p<tbb::blocked_range<unsigned int> >::calibrated’ will be initialized after
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_functors.h:138: warning:   ‘percival_frame<float> percival_unit_gain_multiplication_p<tbb::blocked_range<unsigned int> >::output’
+/home/pqm78245/percivalProcessing/cppProcessing2.0/Include/percival_functors.h:144: warning:   when initialized here
+Finished building: ../percival_parallel/percival_unit_gain_multiplication_pf.cpp
+ 
+Building file: ../parallel_test/main.cpp
+Invoking: GCC C++ Compiler
+g++ -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/H5_src" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/Include" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/src" -I/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/percival_parallel" -I/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include -O3 -mavx -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"parallel_test/main.d" -MT"parallel_test/main.d" -o "parallel_test/main.o" "../parallel_test/main.cpp"
+../parallel_test/main.cpp: In function ‘int main(int, char**)’:
+../parallel_test/main.cpp:95: warning: format ‘%d’ expects type ‘int*’, but argument 3 has type ‘bool*’
+Finished building: ../parallel_test/main.cpp
+ 
+Building file: ../H5_src/percival_calib_params.cpp
+Invoking: GCC C++ Compiler
+g++ -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/H5_src" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/Include" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/src" -I/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/percival_parallel" -I/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include -O3 -mavx -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"H5_src/percival_calib_params.d" -MT"H5_src/percival_calib_params.d" -o "H5_src/percival_calib_params.o" "../H5_src/percival_calib_params.cpp"
+Finished building: ../H5_src/percival_calib_params.cpp
+ 
+Building file: ../H5_src/percival_load_calib_params.cpp
+Invoking: GCC C++ Compiler
+g++ -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/H5_src" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/Include" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/src" -I/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/percival_parallel" -I/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include -O3 -mavx -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"H5_src/percival_load_calib_params.d" -MT"H5_src/percival_load_calib_params.d" -o "H5_src/percival_load_calib_params.o" "../H5_src/percival_load_calib_params.cpp"
+Finished building: ../H5_src/percival_load_calib_params.cpp
+ 
+Building file: ../.metadata/.plugins/org.eclipse.cdt.managedbuilder.core/spec.C
+Invoking: GCC C++ Compiler
+g++ -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/H5_src" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/Include" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/src" -I/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/percival_parallel" -I/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include -O3 -mavx -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF".metadata/.plugins/org.eclipse.cdt.managedbuilder.core/spec.d" -MT".metadata/.plugins/org.eclipse.cdt.managedbuilder.core/spec.d" -o ".metadata/.plugins/org.eclipse.cdt.managedbuilder.core/spec.o" "../.metadata/.plugins/org.eclipse.cdt.managedbuilder.core/spec.C"
+Finished building: ../.metadata/.plugins/org.eclipse.cdt.managedbuilder.core/spec.C
+ 
+Building file: ../.metadata/.plugins/org.eclipse.cdt.make.core/specs.c
+Invoking: GCC C Compiler
+gcc -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/src" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/Include" -I/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/include -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/H5_src" -I"/home/pqm78245/percivalProcessing/cppProcessing2.0/percival_parallel" -I/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/include -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF".metadata/.plugins/org.eclipse.cdt.make.core/specs.d" -MT".metadata/.plugins/org.eclipse.cdt.make.core/specs.d" -o ".metadata/.plugins/org.eclipse.cdt.make.core/specs.o" "../.metadata/.plugins/org.eclipse.cdt.make.core/specs.c"
+Finished building: ../.metadata/.plugins/org.eclipse.cdt.make.core/specs.c
+ 
+Building target: cppProcessing2.0
+Invoking: GCC C++ Linker
+g++ -L/dls_sw/prod/tools/RHEL6-x86_64/hdf5/1-8-14/prefix/lib -L/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/lib/ -Wl,-rpath=/dls_sw/work/tools/RHEL6-x86_64/tbb/prefix/lib/ -o "cppProcessing2.0"  ./src/percival_ADC_decode.o ./src/percival_ADU_to_electron_correction.o ./src/percival_CDS_correction.o ./src/percival_avx.o ./src/percival_data_validity_checks.o ./src/percival_exceptions.o ./src/percival_global_params.o ./src/percival_unit_ADC_calibration.o ./src/percival_unit_ADC_decode.o ./src/percival_unit_gain_multiplication.o  ./percival_parallel/percival_unit_ADC_calibration_pf.o ./percival_parallel/percival_unit_ADC_decode_p.o ./percival_parallel/percival_unit_gain_multiplication_pf.o  ./parallel_test/main.o  ./H5_src/percival_calib_params.o ./H5_src/percival_load_calib_params.o  ./.metadata/.plugins/org.eclipse.cdt.managedbuilder.core/spec.o  ./.metadata/.plugins/org.eclipse.cdt.make.core/specs.o   -lhdf5 -ltbb
+Finished building target: cppProcessing2.0
+ 
+
+16:30:41 Build Finished (took 4s.618ms)
+
+
